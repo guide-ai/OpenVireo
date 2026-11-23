@@ -53,20 +53,47 @@ export type ObjectXLabStep=(typeof OBJECT_X_LAB_STEPS)[number];
 export type ObjectXLabSummary=Readonly<{
  target:boolean;clockSet:boolean;listBuilt:boolean;images:number;imagesOfTarget:number;
  motionMeasured:boolean;answered:boolean;described:boolean;revealed:boolean;saved:boolean;
+ /** Front GUIDE-COMPANION, for Show me where only (never a mark): the observatory clock was set, here or in the observatory,
+  * to a time after the last image of the target. */
+ laterClock:boolean;
 }>;
-export const INITIAL_OBJECT_X_LAB_SUMMARY:ObjectXLabSummary=Object.freeze({target:false,clockSet:false,listBuilt:false,images:0,imagesOfTarget:0,motionMeasured:false,answered:false,described:false,revealed:false,saved:false});
-/** next (Front GUIDE-COMPANION): the first step not done, in list order; 'done' when every step is done. */
-export type ObjectXLabProgress=Readonly<{done:Readonly<Record<ObjectXLabStep,boolean>>;summary:ObjectXLabSummary;next:ObjectXLabStep|'done'}>;
+export const INITIAL_OBJECT_X_LAB_SUMMARY:ObjectXLabSummary=Object.freeze({target:false,clockSet:false,listBuilt:false,images:0,imagesOfTarget:0,motionMeasured:false,answered:false,described:false,revealed:false,saved:false,laterClock:false});
+/** Front GUIDE-COMPANION, for Show me where only (never a mark): where the telescope stands for an image of the target.
+ * 'elsewhere': neither the telescope nor the observatory's coordinate boxes are on the target's field; 'entered': the boxes
+ * are and the telescope is not there yet; 'on-target': the telescope points at its field; 'unknown': no unrevealed target is
+ * known to the shell (none chosen, or already revealed). */
+export type ObjectXAim='elsewhere'|'entered'|'on-target'|'unknown';
+/** The next action of the two imaging steps (image, repeat): set a later time ('clock', repeat only), copy the coordinates to
+ * the observatory ('copy'), point the telescope ('point'), take the image ('expose'), or, with the aim unknown, whichever of
+ * pointing and exposing the observatory page allows ('any'). */
+export type ObjectXImageAction='clock'|'copy'|'point'|'expose'|'any';
+/** next (Front GUIDE-COMPANION): the first step not done, in list order; 'done' when every step is done. imageAction: the
+ * next action while `next` is an imaging step, else null. */
+export type ObjectXLabProgress=Readonly<{done:Readonly<Record<ObjectXLabStep,boolean>>;summary:ObjectXLabSummary;next:ObjectXLabStep|'done';imageAction:ObjectXImageAction|null}>;
 /** "done" means the student did the step; nothing judges whether the answer is right before the reveal. "measure" is done
  * when a motion was measured or the student chose a non-moving answer (pulsars, stars, galaxies and QSOs do not move). */
-export function objectXLabProgress(s:ObjectXLabSummary,answer:ObjectXKind|null=null):ObjectXLabProgress{
+export function objectXLabProgress(s:ObjectXLabSummary,answer:ObjectXKind|null=null,aim:ObjectXAim='unknown'):ObjectXLabProgress{
  const done={target:s.target,clock:s.clockSet,list:s.listBuilt,image:s.imagesOfTarget>0,repeat:s.imagesOfTarget>=2,
   measure:s.motionMeasured||(answer!==null&&answer!=='asteroid'),classify:s.answered,describe:s.described,reveal:s.revealed,save:s.saved};
- return Object.freeze({done:Object.freeze(done),summary:s,next:OBJECT_X_LAB_STEPS.find(step=>!done[step])??'done'});
+ const next=OBJECT_X_LAB_STEPS.find(step=>!done[step])??'done';
+ const imageAction=next!=='image'&&next!=='repeat'?null:next==='repeat'&&!s.laterClock?'clock':aim==='on-target'?'expose':aim==='entered'?'point':aim==='elsewhere'?'copy':'any';
+ return Object.freeze({done:Object.freeze(done),summary:s,next,imageAction});
 }
 export const sameObjectXLabSummary=(a:ObjectXLabSummary,b:ObjectXLabSummary)=>(Object.keys(a) as (keyof ObjectXLabSummary)[]).every(k=>a[k]===b[k]);
 /** Field radius (degrees) within which an image counts as "of the target": half the 0.4 m field diagonal is ~0.2°. */
 export const OBJECT_X_ON_TARGET_DEGREES=0.25;
+
+/** The observatory clock (`clockJd`: the time it was last set to, here or in the observatory) is after every image of the
+ * target (`imageJds`); false with no image. Letting the clock run is not setting a later time, as in the guide's own text. */
+export const objectXLaterClock=(imageJds:readonly number[],clockJd:number):boolean=>imageJds.length>0&&Number.isFinite(clockJd)&&imageJds.every(jd=>clockJd>jd);
+/** Where the telescope stands for an image of `target` (the unrevealed target, RA in hours and Dec in degrees as everywhere in
+ * the shell): `pointing` is the telescope, `entered` the numbers in the observatory's coordinate boxes. Both use the radius
+ * within which an image counts as "of the target", so coordinates typed by hand from the sexagesimal read-out count as entered. */
+export function objectXAim(target:Readonly<{ra:number;dec:number}>|null,pointing:Readonly<{ra:number;dec:number}>,entered:Readonly<{ra:number;dec:number}>):ObjectXAim{
+ if(!target)return 'unknown';
+ const near=(p:Readonly<{ra:number;dec:number}>)=>Number.isFinite(p.ra)&&Number.isFinite(p.dec)&&separationDegrees(p.ra,p.dec,target.ra,target.dec)<=OBJECT_X_ON_TARGET_DEGREES;
+ return near(pointing)?'on-target':near(entered)?'entered':'elsewhere';
+}
 
 /** [W] Radius around an unrevealed target inside which no instrument names a catalogue object (review 2 H1): the finder field
  * is 2.5°, so any object an observatory view can show next to the target is covered. */

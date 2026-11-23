@@ -25,6 +25,9 @@ export function hubbleLabProgress(archive:readonly LabArchiveEntry[],measurement
  const duplicateTargets=new Set(includedTargets).size!==includedTargets.length;
  const targets=GALAXY_TARGETS.map(({id})=>Object.freeze({id,archived:archive.some(a=>a.targetId===id),measured:bound.some(m=>measurementGalaxyTarget(m.origin)===id),inHubble:includedTargets.filter(t=>t===id).length===1&&result.rows.some(r=>r.acquiredTargetId===id&&!r.issues.length)}));
  const archived=targets.filter(t=>t.archived).length,measured=targets.filter(t=>t.measured).length,inHubble=targets.filter(t=>t.inHubble).length;
- const next=archived<targets.length?'acquire':measured<targets.length?'measure':included.some(m=>!m)?'dataset':workspace.recipeId!=='vireo'?'recipe':inHubble<targets.length||workspace.rows.length!==targets.length||result.value===undefined?'inputs':'interpret';
+ // One galaxy at a time, as the exercise is carried out: an archived spectrum that has no measurement yet is measured before
+ // the next galaxy is acquired (user report, 2026-11-23: the guide stayed on "acquire" until all the galaxies were archived, so
+ // nothing seemed to move while the student acquired and measured them one by one).
+ const next=targets.some(t=>t.archived&&!t.measured)?'measure':archived<targets.length?'acquire':included.some(m=>!m)?'dataset':workspace.recipeId!=='vireo'?'recipe':inHubble<targets.length||workspace.rows.length!==targets.length||result.value===undefined?'inputs':'interpret';
  return Object.freeze({targets:Object.freeze(targets),archived,measured,inHubble,duplicateTargets,total:targets.length,original:HUBBLE_HOT_LIST.length,next});
 }

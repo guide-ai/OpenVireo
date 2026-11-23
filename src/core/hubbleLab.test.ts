@@ -10,11 +10,17 @@ const workspace=():HubbleWorkspace=>({recipeId:'vireo',rows:records.map((m,i)=>{
 describe('bounded Hubble lab workflow progress',()=>{
  it('starts empty and counts unique targets rather than repeat snapshots or labels',()=>{
   expect(hubbleLabProgress([],[],EMPTY_HUBBLE)).toMatchObject({archived:0,measured:0,inHubble:0,next:'acquire'});
-  expect(hubbleLabProgress([archive[0],archive[0]],[],EMPTY_HUBBLE)).toMatchObject({archived:1,measured:0,next:'acquire'});
-  expect(hubbleLabProgress(archive.slice(0,3),[],EMPTY_HUBBLE)).toMatchObject({archived:3,total:13,original:13,next:'acquire'});
-  expect(hubbleLabProgress(archive.slice(0,5),[],EMPTY_HUBBLE)).toMatchObject({archived:5,total:13,next:'acquire'});
+  expect(hubbleLabProgress([archive[0],archive[0]],[],EMPTY_HUBBLE)).toMatchObject({archived:1,measured:0,next:'measure'});
+  expect(hubbleLabProgress(archive.slice(0,3),[],EMPTY_HUBBLE)).toMatchObject({archived:3,total:13,original:13,next:'measure'});
+  expect(hubbleLabProgress(archive.slice(0,5),[],EMPTY_HUBBLE)).toMatchObject({archived:5,total:13,next:'measure'});
   expect(hubbleLabProgress(archive,[],EMPTY_HUBBLE)).toMatchObject({archived:13,measured:0,total:13,original:13,next:'measure'});
   expect(hubbleLabProgress(archive,[],EMPTY_HUBBLE).targets.map(t=>t.id)).toEqual(['36773','36747','54876','54875','54891','NGC 7499','NGC 7501','NGC 7503','36805','NGC 4874','NGC 4889','51976','51975']);
+ });
+ it('goes one galaxy at a time: an archived spectrum is measured before the next galaxy is acquired',()=>{
+  expect(hubbleLabProgress(archive.slice(0,1),records.slice(0,1),EMPTY_HUBBLE)).toMatchObject({archived:1,measured:1,next:'acquire'});
+  expect(hubbleLabProgress(archive.slice(0,2),records.slice(0,1),EMPTY_HUBBLE)).toMatchObject({archived:2,measured:1,next:'measure'});
+  expect(hubbleLabProgress(archive.slice(0,2),records.slice(0,2),EMPTY_HUBBLE)).toMatchObject({archived:2,measured:2,next:'acquire'});
+  expect(hubbleLabProgress(archive,records.slice(0,12),EMPTY_HUBBLE)).toMatchObject({archived:13,measured:12,next:'measure'});
  });
  it('requires the archive identity, curve digest and bound target; generic/stellar claims do not count',()=>{
   const generic=createMeasurement(20,'54876','claimed.ssp','a'.repeat(64),{base:0,position:3,factor:1,step:.001},'GLXYLNS.LST');

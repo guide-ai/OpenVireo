@@ -53,3 +53,16 @@ export function companionNow(p:CompanionProgress):CompanionNow{
   case 'pleiades':return at(p.lab,PLEIADES_LAB_STEPS,p.progress.next,'save');
  }
 }
+
+/** The key of the current step's controls in help/guideTargets.ts (Show me where). It is the step itself, except where a step
+ * is a cycle of several actions that the guide's own state tells apart: the two Object X imaging steps (set a later time, copy
+ * the coordinates, point, take the image), the Pleiades sample step (the selected star's readings, notebook entries and B−V,
+ * as for the first star) and the pulsar setup step while tracking is off. It changes what is outlined, never the step shown. */
+export function companionTarget(p:CompanionProgress):string{
+ switch(p.lab){
+  case 'object-x':{const a=p.progress.imageAction;return a===null?p.progress.next:a==='clock'?'repeat':a==='expose'?'image':`image-${a}`;}// image-copy, image-point, image-any
+  case 'pulsars':return p.progress.next==='setup'&&p.progress.trackingOff?'setup-tracking':p.progress.next;
+  case 'pleiades':{const need=p.progress.sampleNeed;return need&&need!=='done'?need:p.progress.next;}
+  default:return p.progress.next;
+ }
+}

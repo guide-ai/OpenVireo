@@ -17,6 +17,13 @@ const LSS_ROW=`${id('lss-rows')} button`,LSS_NEW_ROW=`${id('lss-rows')} tr:not([
 const GALAXY_NEW=`${id('galaxy-exposure-page')}:not([data-target-archived])`;
 /** The LSS acquisition controls, last action first. */
 const LSS_OBSERVE=[id('lss-acq-pause'),id('lss-acq-start'),id('lss-acq-activate'),LSS_ROW,'#lss-field'];
+/** The LSS survey page while the row the telescope points at has no record yet: its exposure and measurement controls then
+ * belong to the galaxy in hand. Once it is recorded they stay enabled, and the next action is another row. */
+// An `id`, not a data-testid: the script walks name a known layout problem by its nearest data-testid (tests/fixtures/rtlKnown.ts).
+const LSS_IN_HAND='#lss-page:not([data-pointed-recorded])';
+const LSS_CYCLE=[id('lss-record-z'),'#lss-shift','#lss-step',id('lss-acq-pause'),id('lss-acq-start'),id('lss-acq-activate')].map(s=>`${LSS_IN_HAND} ${s}`);
+/** Pointing the telescope at the Object X coordinates, in the observatory. */
+const OBJECT_X_POINT=[id('dome-open'),id('point-coordinates'),id('camera-control')];
 
 export const GUIDE_TARGETS:Readonly<Record<LabSlug,Readonly<Record<string,readonly string[]>>>>=Object.freeze({
  // Keys are the phases of core/hubbleLab.ts.
@@ -35,7 +42,8 @@ export const GUIDE_TARGETS:Readonly<Record<LabSlug,Readonly<Record<string,readon
   load:[id('lss-load-list'),'#lss-field'],
   observe:LSS_OBSERVE,
   record:[id('lss-record-z'),'#lss-shift','#lss-step',...LSS_OBSERVE],
-  repeat:[LSS_NEW_ROW,LSS_ROW,'#lss-field'],
+  // Each further galaxy is the same cycle: its row, its spectrum, its Record Z.
+  repeat:[...LSS_CYCLE,LSS_NEW_ROW,LSS_ROW,'#lss-field'],
   wedge:[id('lss-plot-wedge')],
   describe:['#lss-description'],
   save:[SAVE],
@@ -45,8 +53,16 @@ export const GUIDE_TARGETS:Readonly<Record<LabSlug,Readonly<Record<string,readon
   clock:[id('objectx-date'),id('objectx-set-clock')],
   list:[id('objectx-build-list')],
   // The camera's own "turn tracking on" shortcut is there only while tracking is what the camera is waiting for.
-  image:[id('camera-start'),`${id('camera-control')} ${id('tracking-shortcut')}`,id('dome-open'),id('point-coordinates'),id('camera-control')],
-  // The step's first action, on the Object X page (guideCompanionRoute.ts): a later time, then Set the observatory clock.
+  // Both imaging steps (image, repeat) use these four keys, by what core/objectXLab.ts imageAction says comes next.
+  // 'image' is the exposure, with the telescope on the target's field: while the camera exposes, the camera itself.
+  image:[id('camera-start'),`${id('camera-control')} ${id('tracking-shortcut')}`,id('dome-open'),id('camera-control'),id('point-coordinates')],
+  // Nothing is known about where the telescope stands (no unrevealed target): the exposure if the page allows it, else the pointing.
+  'image-any':[id('camera-start'),`${id('camera-control')} ${id('tracking-shortcut')}`,...OBJECT_X_POINT],
+  // The coordinates are not in the observatory yet: the Object X page's own button copies them and goes there.
+  'image-copy':[id('objectx-point-observatory'),id('objectx-target')],
+  // The coordinates are entered and the telescope is elsewhere: the dome, then Point to coordinates.
+  'image-point':OBJECT_X_POINT,
+  // The repeat step's first action, on the Object X page: a later time, then Set the observatory clock.
   repeat:[id('objectx-date'),id('objectx-set-clock')],
   measure:[id('objectx-measure-viewport'),id('objectx-measure-start'),id('objectx-measure-first'),id('objectx-measure-section')],
   classify:[id('objectx-answer')],
@@ -90,6 +106,8 @@ export const GUIDE_TARGETS:Readonly<Record<LabSlug,Readonly<Record<string,readon
   measure:[id('photo-start'),'#photo-pointing'],
   record:[id('photo-record'),id('photo-start')],
   color:[id('photo-calc-color'),'#photo-b-reading'],
+  // For each further star the strip points at measure, record and color again (core/guideCompanion.ts companionTarget);
+  // 'sample' is left for choosing the next star.
   sample:['#photo-target'],
   distance:['#pleiades-modulus'],
   save:[SAVE],

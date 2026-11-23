@@ -28,6 +28,8 @@ async function lastOption(page:Page,label:string){return (await page.getByLabel(
 async function saveInvestigation(page:Page){const wait=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();return readFile((await(await wait).path())!);}
 async function guide(page:Page){await openHeaderTools(page);await page.getByTestId('pleiades-lab-open').click();await expect(page.getByTestId('pleiades-lab-dialog')).toBeVisible();}
 const step=(page:Page,name:string)=>page.getByTestId(`pleiades-lab-step-${name}`);
+/** The companion's Show me where under an installed clock: its two timer turns are run by hand. */
+async function companionShow(page:Page){await page.getByTestId('guide-companion-show').click();await page.clock.runFor(50);await page.clock.runFor(50);await expect(page.getByTestId('guide-companion-spot')).toBeVisible();}
 
 test('nondefault row 1 (01799-01442) is measured as N2230.DAT@144496, then all 24 stars with own B/V transcriptions, manual fit and Save/fresh Restore',async({page})=>{
  test.setTimeout(240000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
@@ -49,10 +51,18 @@ test('nondefault row 1 (01799-01442) is measured as N2230.DAT@144496, then all 2
  for(const band of ['V','B']as const){await page.getByLabel('Photometer filter',{exact:true}).selectOption(band);await run(page);}
  await page.getByLabel('Photometer pointing',{exact:true}).selectOption('object');
  for(const [i,row] of PLEIADES_ADMITTED_ROWS.entries()){
+  // Front GUIDE-COMPANION: the sample step is one cycle per star, and Show me where follows it: the next star, its readings,
+  // its notebook entries and its B−V, as for the first star. The strip stays on step 7 and shows the guide's own count.
+  const strip=page.getByTestId('guide-companion'),second=i===1;
+  if(second){await expect(strip).toHaveAttribute('data-step','sample');await expect(strip).toHaveAttribute('data-target','sample');await expect(page.getByTestId('guide-companion-counts')).toHaveText('Admitted stars with your own confirmed B−V: 1 of 24');
+   await companionShow(page);await expect(select).toBeFocused();}
   if(i>0)await select.selectOption(row.catalogId);await expect(select).toHaveValue(row.catalogId);await readout(page,row);
+  if(second){await expect(strip).toHaveAttribute('data-target','measure');await expect(strip).toHaveAttribute('data-step','sample');await companionShow(page);await expect(page.getByTestId('photo-start')).toBeFocused();}
   const v=await measure(page,'V'),b=await measure(page,'B');
+  if(second)await expect(strip).toHaveAttribute('data-target','color');
   await page.getByLabel('Saved B reading',{exact:true}).selectOption(await lastOption(page,'Saved B reading'));await page.getByLabel('Saved V reading',{exact:true}).selectOption(await lastOption(page,'Saved V reading'));
   await page.getByRole('button',{name:'Calculate B−V',exact:true}).click();await expect(page.getByTestId('photo-manual-bv')).toHaveText(String(Number((Number(b)-Number(v)).toFixed(3))));
+  if(second){await expect(strip).toHaveAttribute('data-target','sample');await expect(page.getByTestId('guide-companion-counts')).toHaveText('Admitted stars with your own confirmed B−V: 2 of 24');}
  }
  await expect(page.locator('.photometer-notebook tbody tr')).toHaveCount(48);
  await guide(page);await expect(step(page,'sample')).toHaveAttribute('data-done','true');await expect(page.getByTestId('pleiades-lab-coverage')).toContainText('24 of 24');await expect(step(page,'distance')).toHaveAttribute('data-done','false');await page.getByTestId('pleiades-lab-close').click();

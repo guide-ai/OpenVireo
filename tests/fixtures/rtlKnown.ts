@@ -54,7 +54,8 @@ export const RTL_SITES={
  // ---- RT12: numbers and data rendered straight into elements ----
  zValue:{problem:node(num,String.raw`div\.z-value \[z-value\]`),file:'src/SpectrumInstrument.tsx (the z read-out)',owner:'RT12',why:NUMBERS},
  stepFactor:{problem:node('×10?','small'),file:'src/SpectrumInstrument.tsx (the control step buttons’ ×1 and ×10)',owner:'RT12',why:NUMBERS},
- drawsOf:{problem:node(String.raw` / \d+`,'strong'),file:'src/StarExposure.tsx (the draws “— / 765” of .source-summary)',owner:'RT12',why:NUMBERS},
+ // Front GUIDE-COMPANION: the galaxy exposure page has a test id of its own (galaxy-exposure-page), which the problem's place names.
+ drawsOf:{problem:node(String.raw` / \d+`,String.raw`strong(?: \[galaxy-exposure-page\])?`),file:'src/StarExposure.tsx, src/GalaxyExposure.tsx (the slit level “— / 765” of .source-summary)',owner:'RT12',why:NUMBERS},
  txtSuffix:{problem:node(String.raw` \(\.TXT\)`,String.raw`button\.secondary-button \[lss-(?:results|region)-txt\]`),file:'src/LssSurvey.tsx (" (.TXT)" appended to the translated button text)',owner:'RT12',why:COMPOSED},
  wedgeData:{problem:new RegExp(String.raw`^bidi node: “.*” in (?:dd \[wedge-details\]|code\.wedge-pre \[wedge-details\]|td \[wedge-row-0\])$`),file:'src/components/WedgeLab.tsx (the selected row’s details and raw line, the wedge table’s cells)',owner:'RT12',why:NUMBERS},
  nativeNumbers:{problem:new RegExp(String.raw`^bidi node: “.*” in (?:output \[native-number-(?:b|dec)\]|samp)$`),file:'src/NativeObservationResults.tsx (the inspected DAT record’s fields and their binary forms)',owner:'RT12',why:NUMBERS},

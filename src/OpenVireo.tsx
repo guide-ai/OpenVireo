@@ -66,7 +66,7 @@ import GuideCompanion from './components/GuideCompanion';
 import {companionPlace} from './components/guideCompanionRoute';
 import type {CompanionProgress} from './core/guideCompanion';
 import type {ClusterLabProgress} from './core/clusterLab';
-import {INITIAL_OBJECT_X_LAB_SUMMARY,objectXLabProgress,sameObjectXLabSummary,type ObjectXKind,type ObjectXLabSummary} from './core/objectXLab';
+import {INITIAL_OBJECT_X_LAB_SUMMARY,objectXAim,objectXLabProgress,sameObjectXLabSummary,type ObjectXKind,type ObjectXLabSummary} from './core/objectXLab';
 import type {ObjectXController} from './ObjectXLab';
 import type {ObjectXInvestigation} from './io/objectXInvestigation';
 import {OBJECT_X_LAB} from './objectx/ObjectXMessages';
@@ -352,9 +352,10 @@ export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={
   const objectXCurrent=useRef<ObjectXInvestigation|null>(null),objectXToken=useRef(0),[objectXRestore,setObjectXRestore]=useState<{token:number;investigation:ObjectXInvestigation|null}|null>(null);
   const [objectXSummary,setObjectXSummary]=useState<Omit<ObjectXLabSummary,'saved'>>(INITIAL_OBJECT_X_LAB_SUMMARY),[objectXAnswer,setObjectXAnswer]=useState<ObjectXKind|null>(null);
   const [objectXSaved,setObjectXSaved]=useState<ObjectXInvestigation|null>(null),objectXPendingRestore=useRef<ObjectXInvestigation|null>(null);
-  const objectXProgress=objectXLabProgress({...objectXSummary,saved:objectXSaved!==null&&objectXSaved===objectXCurrent.current},objectXAnswer);
   // E08 hidden identity (review 2 H1): the unrevealed target's position; names of catalogue objects near it are hidden.
   const [objectXHidden,setObjectXHidden]=useState<ObjectXHiddenTarget|null>(null);
+  // Front GUIDE-COMPANION: where the telescope stands for an image of the hidden target (Show me where only; no mark depends on it).
+  const objectXProgress=objectXLabProgress({...objectXSummary,saved:objectXSaved!==null&&objectXSaved===objectXCurrent.current},objectXAnswer,objectXAim(objectXHidden,pointing,{ra:Number(ra),dec:Number(dec)}));
   const [objectXAreas,setObjectXAreas]=useState<readonly Pointing[]|null>(()=>loadedObjectXPositions());
   useEffect(()=>{if(!objectXHidden||objectXAreas)return;let live=true;loadObjectXPositions().then(l=>{if(live)setObjectXAreas(l);},()=>{});return()=>{live=false;};},[objectXHidden,objectXAreas]);
   const catalogMask=useMemo(()=>objectXCatalogMask(objectXAreas,objectXHidden),[objectXAreas,objectXHidden]);

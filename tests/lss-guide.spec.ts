@@ -5,6 +5,8 @@ import {okWithVelocity} from './fixtures/lss-velocity';
 const step=(page:Page,s:string)=>page.getByTestId(`lss-lab-step-${s}`);
 async function openGuide(page:Page){await openHeaderTools(page);await page.getByTestId('lss-lab-open').click();await expect(page.getByRole('dialog',{name:'Mapping large-scale structure'})).toBeVisible();}
 async function closeGuide(page:Page){await page.getByRole('dialog').getByRole('button',{name:'Close LSS guide',exact:true}).click();}
+/** The companion's Show me where under an installed clock: its two timer turns are run by hand. */
+async function companionShow(page:Page){await page.getByTestId('guide-companion-show').click();await page.clock.runFor(50);await page.clock.runFor(50);await expect(page.getByTestId('guide-companion-spot')).toBeVisible();}
 test('E02 guide: steps check off from loading, recording, plotting, describing and saving',async({page})=>{
  test.setTimeout(120000);
  await page.clock.install();await page.goto('/#observatory');await openGuide(page);
@@ -36,9 +38,17 @@ test('E02 guide: five different galaxies complete the repeat step; repeated Reco
  await page.getByLabel('Survey field',{exact:true}).selectOption('1');await page.getByRole('button',{name:'Load selected list',exact:true}).click();await expect(page.getByTestId('lss-rows')).toBeVisible({timeout:30000});
  const rows=[1,2,4,5,7];
  for(const [i,row] of rows.entries()){
+  // Front GUIDE-COMPANION: in the repeat step Show me where follows the galaxy in hand. The first galaxy is recorded and its
+  // exposure and Record Z buttons are still enabled, so the next action is a row with no record; once that row is pointed at,
+  // its own exposure, then its measurement.
+  const strip=page.getByTestId('guide-companion'),second=i===1;
+  if(second){await expect(strip).toHaveAttribute('data-step','repeat');await expect(page.locator('#lss-page')).toHaveAttribute('data-pointed-recorded','true');
+   await companionShow(page);await expect(page.getByTestId('lss-row-2').getByRole('button',{name:'Point and view',exact:true})).toBeFocused();}
   await page.getByTestId(`lss-row-${row}`).getByRole('button',{name:'Point and view',exact:true}).click();
+  if(second){await expect(page.locator('#lss-page')).not.toHaveAttribute('data-pointed-recorded');await companionShow(page);await expect(page.getByTestId('lss-acq-activate')).toBeFocused();}
   await page.getByRole('button',{name:'Activate spectrometer',exact:true}).click();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
   await page.getByRole('button',{name:'Start exposure',exact:true}).click();await page.clock.runFor(500);await page.getByRole('button',{name:'Pause exposure',exact:true}).click();
+  if(second){await expect(page.locator('#lss-step')).toBeVisible();await companionShow(page);await expect(page.locator('#lss-step')).toBeFocused();await expect(strip).toHaveAttribute('data-step','repeat');}
   await page.getByLabel('z step',{exact:true}).fill('.001');await page.getByRole('button',{name:'Set step',exact:true}).click();await page.getByLabel('Shift',{exact:true}).fill(String(20+i));
   await page.getByRole('button',{name:'Record Z',exact:true}).click();await okWithVelocity(page);
   if(i===0){for(let k=0;k<4;k++){await page.getByRole('button',{name:'Record Z',exact:true}).click();await okWithVelocity(page);}

@@ -13,7 +13,7 @@ import {readFitsBytes} from './io/fitsImage';
 import {formatSexagesimal,tanWcsFromCards,targetMotion,type MeasurementLog,type TanWcs} from './core/astrometryMeasure';
 import {DEFAULT_LIMITING_MAGNITUDE,movingPairs,type ObservableList} from './core/asteroidField';
 import {separationDegrees} from './core/ephemeris';
-import {OBJECT_X_DEFAULT_UTC,OBJECT_X_ID_MAX,OBJECT_X_KINDS,OBJECT_X_ON_TARGET_DEGREES,objectXCameraListUse,objectXDataLabel,objectXTargets,revealObjectX,type ObjectXKind,type ObjectXLabSummary} from './core/objectXLab';
+import {OBJECT_X_DEFAULT_UTC,OBJECT_X_ID_MAX,OBJECT_X_KINDS,OBJECT_X_ON_TARGET_DEGREES,objectXCameraListUse,objectXLaterClock,objectXDataLabel,objectXTargets,revealObjectX,type ObjectXKind,type ObjectXLabSummary} from './core/objectXLab';
 import {parseClockUTC} from './core/siteClock';
 import {cameraCatalogReference} from './core/cameraCatalogReference';
 import type {CameraExposureKind,CameraExtraSource} from './core/cameraExposure';
@@ -180,8 +180,10 @@ function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRA
  },[inv.measure,inv.images,loaded]);
  const motion=useMemo(()=>{if(!frames)return null;try{return targetMotion(inv.log,f=>frames[f]?.wcs??null);}catch{return null;}},[frames,inv.log]);
  const onTarget=(e:ObjectXExposure)=>!!target&&separationDegrees(e.ra,e.dec,target.ra,target.dec)<=OBJECT_X_ON_TARGET_DEGREES;
- useEffect(()=>{onSummary({target:inv.target!==null,clockSet:inv.clockSet,listBuilt:list!==null,images:inv.images.length,imagesOfTarget:inv.exposures.filter(onTarget).length,
-  motionMeasured:!!motion,answered:inv.answer!==null,described:inv.description.trim().length>0,revealed:inv.revealed},inv.answer);},[inv,list,motion,target]);
+ // laterClock (Show me where only): the clock was set, here or in the observatory, after the last image of the target.
+ useEffect(()=>{const ofTarget=inv.exposures.filter(onTarget);let laterClock=false;try{laterClock=objectXLaterClock(ofTarget.map(e=>e.jd),jdOfUtc(clockApplied));}catch{/* an unreadable clock is not later */}
+  onSummary({target:inv.target!==null,clockSet:inv.clockSet,listBuilt:list!==null,images:inv.images.length,imagesOfTarget:ofTarget.length,
+  motionMeasured:!!motion,answered:inv.answer!==null,described:inv.description.trim().length>0,revealed:inv.revealed,laterClock},inv.answer);},[inv,list,motion,target,clockApplied]);
 
  function setClock(){
   try{parseClockUTC(dateText);}catch{setNotice(M.dateInvalid);return;}
@@ -230,7 +232,7 @@ function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRA
      <div className="objectx-list-box"><div className="objectx-list-sizer" aria-hidden="true"><p>{M.listBuilt(99999,99999,99999,'2009-06-01 04:00:00')}</p><p className="observatory-note">{M.listErrors(99999)}</p></div>
      <div><p role="status" data-testid="objectx-list-status">{progress?M.building(progress[0],progress[1]):listError?M.listError:list?M.listBuilt(list.entries.length,list.neaCount,list.oppositionCount,utOfJd(list.jd)):M.noList}</p>
      {list&&list.errors.length>0&&<p className="observatory-note">{M.listErrors(list.errors.length)}</p>}</div></div>
-     <div className="button-row"><button className="primary-button" disabled={disabled||!target} onClick={()=>target&&onPrefill(target.ra,target.dec)}>{M.pointObservatory}</button></div>
+     <div className="button-row"><button className="primary-button" data-testid="objectx-point-observatory" disabled={disabled||!target} onClick={()=>target&&onPrefill(target.ra,target.dec)}>{M.pointObservatory}</button></div>
      <p className="observatory-note">{M.pointHelp}</p>
     </section>
     <section data-testid="objectx-branch-radio"><h3>{M.radioTitle}</h3><p>{M.radioHelp}</p>

@@ -7,6 +7,7 @@ import {spotBox,type Box} from '../help/tourPlacement';
 import {sameData} from '../renderStability';
 import {APP_SHELL_MESSAGES as SHELL} from './AppShellMessages';
 import {companionContent} from './guideCompanionContent';
+import {companionPlace} from './guideCompanionRoute';
 import './guide-companion.css';
 
 /** How long Show me where waits for the step's control (a page that is still loading). */
@@ -131,11 +132,11 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
   if(event.target instanceof Element&&event.target.closest('.guide-companion-details'))event.currentTarget.querySelector<HTMLElement>('[aria-expanded]')?.focus({preventScroll:true});
   setDetails(false);
  }
- return <aside ref={strip} className="guide-companion" aria-label={C.label} inert={inert} onKeyDown={keyDown} data-testid="guide-companion" data-lab={now.lab} data-step={now.step} data-all-done={now.allDone||undefined} data-i18n-shell="">
+ return <aside ref={strip} className="guide-companion" aria-label={C.label} inert={inert} onKeyDown={keyDown} data-testid="guide-companion" data-lab={now.lab} data-step={now.step} data-target={content.target} data-route={companionPlace(progress)?.route} data-all-done={now.allDone||undefined} data-i18n-shell="">
   {details&&<div className="guide-companion-details" id={`${id}-d`} role="group" aria-label={C.details} data-testid="guide-companion-details">{content.details}</div>}
   <div className="guide-companion-row">
    <div className="guide-companion-text">
-    <p className="guide-companion-place"><strong data-testid="guide-companion-lab">{content.name}</strong>{!content.closing&&<>{' '}<span data-testid="guide-companion-step">{C.stepOf(now.index,now.total)}</span></>}</p>
+    <p className="guide-companion-place"><strong data-testid="guide-companion-lab">{content.name}</strong>{!content.closing&&<>{' '}<span data-testid="guide-companion-step">{C.stepOf(now.index,now.total)}</span></>}{content.counts&&<span data-testid="guide-companion-counts">{content.counts}</span>}</p>
     <p className="guide-companion-next" role="status" data-testid="guide-companion-next">{content.line}</p>
     <p className="guide-companion-missing" role="status" data-testid="guide-companion-missing">{missing?C.notYet:''}</p>
    </div>
