@@ -29,6 +29,12 @@ had to remember the step, find the page and find the control. The companion keep
   (`hubbleNextText`/`hubbleItemBody`, `lssStepHelp`, `pulsarNextText`/`pulsarStepBody`, `pleiadesStepBody`,
   `classificationStepBody`, `ClusterLabGuideText.tsx`) and `src/components/guideCompanionContent.tsx` puts them together. The
   only strings of the strip itself are `companion` in `src/components/AppShellMessages.ts` (ten, in ten languages).
+- **Steps done many times show their count.** The Hubble, LSS and Object X guides have steps that take one action per galaxy,
+  record or image. The strip shows the guide's own counts line beside "Step n of m" (`hubbleCountsText`, `lssCountsText`,
+  Object X's `counts`), so the work is seen to count while the step stays. The Hubble guide also goes one galaxy at a time
+  (`core/hubbleLab.ts`, user report of 2026-11-23): an archived spectrum with no measurement is measured ("Step 2 of 5")
+  before the next galaxy is acquired ("Step 1 of 5"); before, it stayed on "acquire" until all the galaxies were archived, and
+  nothing seemed to move.
 - **Opening a guide starts its exercise; the strip does not.** Full guide shows the window without calling `startExercise`
   again (which forces the exercise's options and telescope access).
 

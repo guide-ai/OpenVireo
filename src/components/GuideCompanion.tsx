@@ -135,7 +135,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
   {details&&<div className="guide-companion-details" id={`${id}-d`} role="group" aria-label={C.details} data-testid="guide-companion-details">{content.details}</div>}
   <div className="guide-companion-row">
    <div className="guide-companion-text">
-    <p className="guide-companion-place"><strong data-testid="guide-companion-lab">{content.name}</strong>{!content.closing&&<>{' '}<span data-testid="guide-companion-step">{C.stepOf(now.index,now.total)}</span></>}</p>
+    <p className="guide-companion-place"><strong data-testid="guide-companion-lab">{content.name}</strong>{!content.closing&&<>{' '}<span data-testid="guide-companion-step">{C.stepOf(now.index,now.total)}</span></>}{content.counts&&<span data-testid="guide-companion-counts">{content.counts}</span>}</p>
     <p className="guide-companion-next" role="status" data-testid="guide-companion-next">{content.line}</p>
     <p className="guide-companion-missing" role="status" data-testid="guide-companion-missing">{missing?C.notYet:''}</p>
    </div>
