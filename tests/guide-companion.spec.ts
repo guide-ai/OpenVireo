@@ -147,7 +147,7 @@ test('a step whose control is not on the page yet says so, after waiting, and ou
  // The step's only control, taken off the page for this test.
  await id(page,'radio-exercise-start').evaluate(el=>el.removeAttribute('data-testid'));
  await id(page,'guide-companion-show').click();
- await expect(id(page,'guide-companion-missing')).toHaveText('That control is not on screen yet; it appears after an earlier action. This is the right page.',{timeout:10_000});
+ await expect(id(page,'guide-companion-missing')).toHaveText('That control is not on screen yet; it appears once an earlier action is done. You are on the right page.',{timeout:10_000});
  await expect(id(page,'guide-companion-spot')).toHaveCount(0);
 });
 

@@ -34,10 +34,12 @@ export function placeTourCard(target:Box|null,card:{width:number;height:number},
  * screen after scrolling). */
 export const SPOT_PAD=12,SPOT_RING=3;
 
-/** The outline around a highlighted part: SPOT_PAD of space all round, so the part's own text never touches the ring, pulled in
- * at the window's edges so the ring stays visible there (a sidebar at the edge, a part cut off by the window). */
-export function spotBox(target:Box,view:{width:number;height:number}):Box{
- const left=Math.max(target.left-SPOT_PAD,SPOT_RING),top=Math.max(target.top-SPOT_PAD,SPOT_RING);
- const right=Math.min(target.left+target.width+SPOT_PAD,view.width-SPOT_RING),bottom=Math.min(target.top+target.height+SPOT_PAD,view.height-SPOT_RING);
+/** The outline around a highlighted part: `pad` (the tour's SPOT_PAD) of space all round, so the part's own text never touches
+ * the ring, pulled in at the window's edges so the ring stays visible there (a sidebar at the edge, a part cut off by the
+ * window). Front GUIDE-COMPANION: Show me where outlines one control and passes a smaller `pad`, so the ring does not cross the
+ * control's own label. */
+export function spotBox(target:Box,view:{width:number;height:number},pad=SPOT_PAD):Box{
+ const left=Math.max(target.left-pad,SPOT_RING),top=Math.max(target.top-pad,SPOT_RING);
+ const right=Math.min(target.left+target.width+pad,view.width-SPOT_RING),bottom=Math.min(target.top+target.height+pad,view.height-SPOT_RING);
  return {left,top,width:Math.max(0,right-left),height:Math.max(0,bottom-top)};
 }

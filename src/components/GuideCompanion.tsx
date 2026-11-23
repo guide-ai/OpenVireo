@@ -13,6 +13,8 @@ import './guide-companion.css';
 export const SHOW_WAIT_MS=4000;
 /** How long the outline stays when nothing else clears it. */
 export const SPOT_MS=6000;
+/** Space between a control and its outline: less than the tour's, which outlines whole parts of the page. */
+const SPOT_PAD=6;
 
 /** Front GUIDE-COMPANION [W] (user decision, 2026-11-23): the strip that keeps the current step of the guide in use on screen
  * after its window is closed, at the bottom of every page. It shows the guide's own "Next:" line (core/guideCompanion.ts over
@@ -52,7 +54,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
  useEffect(()=>{
   if(!spot){setBox(null);return;}
   let frame=0;
-  const measure=()=>{const view=viewSize(),clip=spot.isConnected?clippedBox(spot,view):null,next=clip?spotBox(clip,view):null;setBox(old=>sameData(old,next)?old:next);};
+  const measure=()=>{const view=viewSize(),clip=spot.isConnected?clippedBox(spot,view):null,next=clip?spotBox(clip,view,SPOT_PAD):null;setBox(old=>sameData(old,next)?old:next);};
   const again=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(measure);},clear=()=>setSpot(null);
   measure();
   // The page can still move under the outline without a scroll (a part that finishes loading above the control).

@@ -9,7 +9,7 @@ export const APP_SHELL_ID:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
  toolsMenu:'Menu',
  skipToContent:'Langsung ke konten',
  pageBar:Object.freeze({label:'Investigasi, bahasa, dan bantuan',more:'Tindakan',moreName:'Tindakan investigasi lainnya'}),
- companion:Object.freeze({label:'Langkah panduan saat ini',stepOf:(n:number,total:number)=>`Langkah ${n} dari ${total}`,actions:'Tindakan panduan',show:'Tunjukkan',details:'Detail langkah',full:'Panduan penuh',hide:'Sembunyikan',hideName:'Sembunyikan panduan ini',notYet:'Kontrol itu belum tampil di layar; kontrol itu muncul setelah tindakan sebelumnya. Halaman ini sudah benar.',allDone:'Semua langkah sudah selesai.'}),
+ companion:Object.freeze({label:'Langkah panduan saat ini',stepOf:(n:number,total:number)=>`Langkah ${n} dari ${total}`,actions:'Tindakan panduan',show:'Tunjukkan letaknya',details:'Detail langkah',full:'Panduan lengkap',hide:'Sembunyikan',hideName:'Sembunyikan panduan ini',notYet:'Kontrol itu belum tampil di layar; kontrol tersebut baru muncul setelah tindakan sebelumnya. Anda sudah berada di halaman yang tepat.',allDone:'Semua langkah sudah selesai.'}),
  recovery:Object.freeze({
   updatedTitle:'Versi baru OpenVireo telah dirilis',
   updated:'Bagian situs ini tidak dapat dimuat karena situs diperbarui saat halaman ini terbuka.',

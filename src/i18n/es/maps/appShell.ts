@@ -9,7 +9,7 @@ export const APP_SHELL_ES:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
  toolsMenu:'Menú',// the phone menu button; «Herramientas» does not fit beside the brand and Help at 320 px
  skipToContent:'Saltar al contenido',
  pageBar:Object.freeze({label:'Investigación, idioma y ayuda',more:'Más',moreName:'Más acciones de la investigación'}),
- companion:Object.freeze({label:'Paso actual de la guía',stepOf:(n:number,total:number)=>`Paso ${n} de ${total}`,actions:'Acciones de la guía',show:'Muéstrame dónde',details:'Detalles del paso',full:'Guía completa',hide:'Ocultar',hideName:'Ocultar esta guía',notYet:'Ese control todavía no está en pantalla; aparece después de una acción anterior. Esta es la página correcta.',allDone:'Todos los pasos están hechos.'}),
+ companion:Object.freeze({label:'Paso actual de la guía',stepOf:(n:number,total:number)=>`Paso ${n} de ${total}`,actions:'Acciones de la guía',show:'Muéstrame dónde',details:'Detalles del paso',full:'Guía completa',hide:'Ocultar',hideName:'Ocultar esta guía',notYet:'Ese control todavía no está en pantalla; aparece después de una acción anterior. Esta es la página correcta.',allDone:'Completaste todos los pasos.'}),
  recovery:Object.freeze({
   updatedTitle:'Se publicó una nueva versión de OpenVireo',
   updated:'Esta parte del sitio no se pudo cargar porque el sitio se actualizó mientras esta página estaba abierta.',

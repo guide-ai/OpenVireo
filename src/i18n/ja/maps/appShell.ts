@@ -9,7 +9,7 @@ export const APP_SHELL_JA:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
  toolsMenu:'メニュー',// the phone menu button; it must stay short beside the brand and Help at 320 px
  skipToContent:'本文へ移動',
  pageBar:Object.freeze({label:'調査、言語、ヘルプ',more:'その他',moreName:'その他の調査操作'}),
- companion:Object.freeze({label:'ガイドの現在の手順',stepOf:(n:number,total:number)=>`手順${n}／${total}`,actions:'ガイドの操作',show:'場所を表示',details:'手順の詳細',full:'ガイド全体',hide:'隠す',hideName:'隠す：このガイド',notYet:'その操作部分はまだ画面にありません。前の操作を行うと表示されます。このページで合っています。',allDone:'すべての手順が終わりました。'}),
+ companion:Object.freeze({label:'ガイドの現在の手順',stepOf:(n:number,total:number)=>`手順${n}／${total}`,actions:'ガイドの操作',show:'場所を表示',details:'手順の詳細',full:'ガイド全体',hide:'非表示',hideName:'非表示：このガイド',notYet:'その操作部分はまだ画面にありません。前の操作を行うと表示されます。このページで合っています。',allDone:'すべての手順が終わりました。'}),
  recovery:Object.freeze({
   updatedTitle:'OpenVireoの新しいバージョンが公開されました',
   updated:'このページを開いている間にサイトが更新されたため、この部分を読み込めませんでした。',

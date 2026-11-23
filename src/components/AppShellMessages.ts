@@ -29,7 +29,7 @@ export const APP_SHELL_MESSAGES_EN:AppShellMessageCatalog=Object.freeze({
  skipToContent:'Skip to content',
  pageBar:Object.freeze({label:'Investigation, language and help',more:'More',moreName:'More investigation actions'}),
  companion:Object.freeze({label:'Current step of the guide',stepOf:(n:number,total:number)=>`Step ${n} of ${total}`,actions:'Guide actions',show:'Show me where',details:'Step details',full:'Full guide',hide:'Hide',hideName:'Hide this guide',
-  notYet:'That control is not on screen yet; it appears after an earlier action. This is the right page.',allDone:'Every step is done.'}),
+  notYet:'That control is not on screen yet; it appears once an earlier action is done. You are on the right page.',allDone:'Every step is done.'}),
  recovery:Object.freeze({
   updatedTitle:'A new version of OpenVireo was published',
   updated:'This part of the site could not be loaded because the site was updated while this page was open.',
