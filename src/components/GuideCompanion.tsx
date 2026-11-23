@@ -32,7 +32,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
  /** Opens the guide's window again; a stable callback. */onFull:()=>void;/** Removes the strip; a stable callback. */onHide:()=>void}){
  const C=SHELL.companion,now=companionNow(progress),content=companionContent(progress),selectors=guideTargets(now.lab,content.target);
  const [details,setDetails]=useState(false),[missing,setMissing]=useState(false),[spot,setSpot]=useState<Element|null>(null),[box,setBox]=useState<Box|null>(null);
- const strip=useRef<HTMLElement>(null),run=useRef(0),lost=useRef(false),searching=useRef(false),id=useId(),step=`${now.lab}/${content.target}`;
+ const strip=useRef<HTMLElement>(null),run=useRef(0),lost=useRef(false),searching=useRef(false),held=useRef<{token:number;until:number;place:()=>void}|null>(null),id=useId(),step=`${now.lab}/${content.target}`;
  // A new step (or another guide) ends a search in progress, its outline and its note. If the page itself moved the guide on
  // while Show me where was still looking (the classification page loads its first practice when it is shown) and the student
  // has pressed nothing since, the search starts again for the new step, so the request is never dropped without a word. When
@@ -47,11 +47,20 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
   return()=>{run.current++;};
  },[step]);
  // The student's own press or key ends a search's claim to follow the guide to its next step, and a focus that has landed
- // anywhere since is no longer a lost one.
+ // anywhere since is no longer a lost one. A page that is still being shown may focus its own heading (and scroll to it) a
+ // moment after the control was outlined (its module finished loading), which would leave the control under the strip: while
+ // the outline is shown (SPOT_MS) the control takes the
+ // focus and the scroll back from a heading, unless the student has pressed, typed or scrolled (Skip to content focuses a
+ // heading too).
  useEffect(()=>{
-  const touched=()=>{searching.current=false;},landed=()=>{lost.current=false;};
-  window.addEventListener('pointerdown',touched,true);window.addEventListener('keydown',touched,true);document.addEventListener('focusin',landed);
-  return()=>{searching.current=false;window.removeEventListener('pointerdown',touched,true);window.removeEventListener('keydown',touched,true);document.removeEventListener('focusin',landed);};
+  const touched=()=>{searching.current=false;held.current=null;};
+  const landed=(event:FocusEvent)=>{
+   lost.current=false;
+   const hold=held.current;
+   if(hold&&event.target instanceof HTMLHeadingElement&&hold.token===run.current&&performance.now()<hold.until)hold.place();
+  };
+  window.addEventListener('pointerdown',touched,true);window.addEventListener('keydown',touched,true);window.addEventListener('wheel',touched,{capture:true,passive:true});document.addEventListener('focusin',landed);
+  return()=>{searching.current=false;held.current=null;window.removeEventListener('pointerdown',touched,true);window.removeEventListener('keydown',touched,true);window.removeEventListener('wheel',touched,true);document.removeEventListener('focusin',landed);};
  },[]);
  useEffect(()=>{
   const el=strip.current,root=document.documentElement;
@@ -69,7 +78,8 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
   const again=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(measure);},clear=()=>setSpot(null);
   measure();
   // The page can still move under the outline without a scroll (a part that finishes loading above the control).
-  const timer=window.setTimeout(clear,SPOT_MS),settle=window.setInterval(measure,250);
+  // The same check retries the focus that a heading took while the control was disabled for a moment (see `held`).
+  const timer=window.setTimeout(clear,SPOT_MS),settle=window.setInterval(()=>{measure();const hold=held.current;if(hold&&hold.token===run.current&&document.activeElement instanceof HTMLHeadingElement)hold.place();},250);
   window.addEventListener('resize',again);window.addEventListener('scroll',again,true);
   window.addEventListener('pointerdown',clear,true);window.addEventListener('keydown',clear,true);
   return()=>{cancelAnimationFrame(frame);window.clearTimeout(timer);window.clearInterval(settle);window.removeEventListener('resize',again);window.removeEventListener('scroll',again,true);
@@ -88,10 +98,14 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
     if(run.current!==token)return;
     searching.current=false;
     if(!el.isConnected){setMissing(true);return;}
-    el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});focusGuideTarget(el);setSpot(el);
-    // Whether that focus is later lost to nowhere (the page disabled or removed the control), read when the step changes.
-    const focused=document.activeElement;lost.current=false;
-    if(focused&&focused!==document.body)focused.addEventListener('focusout',()=>{window.setTimeout(()=>{lost.current=document.activeElement===document.body;},0);},{once:true});
+    const place=()=>{
+     if(!el.isConnected)return;
+     el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});focusGuideTarget(el);
+     // Whether that focus is later lost to nowhere (the page disabled or removed the control), read when the step changes.
+     const focused=document.activeElement;lost.current=false;
+     if(focused&&focused!==document.body)focused.addEventListener('focusout',()=>{window.setTimeout(()=>{lost.current=document.activeElement===document.body;},0);},{once:true});
+    };
+    place();setSpot(el);held.current={token,until:performance.now()+SPOT_MS,place};
    },0);
   });},0);
  }

@@ -44,6 +44,10 @@ test('the strip appears when a guide\'s window is closed, follows the work, and 
  expect(spot.x).toBeLessThan(target.x);expect(spot.y).toBeLessThan(target.y);
  expect(spot.x+spot.width).toBeGreaterThan(target.x+target.width);expect(spot.y+spot.height).toBeGreaterThan(target.y+target.height);
  expect(await id(page,'guide-companion-spot').evaluate(el=>getComputedStyle(el).pointerEvents)).toBe('none');
+ // A page that focuses its own heading a moment later (a route that finishes showing late) takes neither the focus nor the
+ // scroll away from the control.
+ await page.evaluate(()=>[...document.querySelectorAll<HTMLElement>('h1')].find(h=>h.closest('[hidden]')===null&&h.getClientRects().length>0)!.focus());
+ await expect(start).toBeFocused();await expect(start).toBeInViewport();
  // The student's next press ends the outline, and the work moves the strip on by itself.
  await start.click();
  await expect(id(page,'guide-companion-spot')).toHaveCount(0);

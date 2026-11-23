@@ -69,7 +69,10 @@ The sequence (`GuideCompanion.tsx` `show`):
 3. One turn later, after the shown page has focused its own heading, the control is scrolled to the middle of the window,
    focused and outlined. The outline follows the control and goes at the student's next press or key, when the step changes, or
    after 6 s.
-4. If no control is on the page, the strip says so ("That control is not on screen yet…") and outlines nothing.
+4. While the outline is shown the control keeps both: a page whose module finishes loading late focuses its own heading (and
+   scrolls to it), which would leave the control under the strip, so a heading that takes the focus gives it back, unless the
+   student has pressed something in between.
+5. If no control is on the page, the strip says so ("That control is not on screen yet…") and outlines nothing.
 
 If the page itself moves the guide on while step 2 is still waiting (the classification page loads its first practice when it
 is shown) and the student has pressed nothing since, the search starts again for the new step, so a request is never dropped
@@ -120,4 +123,6 @@ current step (m6); Hide left the focus nowhere (m7); a step change during the wa
 "lost focus" mark, Escape for Step details and a dead branch. Kept, and stated above: Hubble "dataset" outlines the card (m4),
 the rest of Object X "image" (m2), and Pulsars "point". "Step n of m" stays outside the live region: only the step's line is
 announced when it changes. Mid-exercise Show me where is tested for Hubble, LSS, the cluster HR and pulsars; Object X's later
-steps (which need two exposures) are covered by the page-of-step test only.
+steps (which need two exposures) are covered by the page-of-step test only. The coordinator's own screenshots then showed, once
+in three runs on a phone-sized window, the page's heading focus arriving after the control's and leaving the control under the
+strip; step 4 of Show me where closes that race and the strip's life test forces it.
