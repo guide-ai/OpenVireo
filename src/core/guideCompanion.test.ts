@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {companionNow,HUBBLE_GUIDE_ITEMS} from './guideCompanion';
+import {companionNow,HUBBLE_GUIDE_ITEMS,companionTarget} from './guideCompanion';
 import {hubbleLabProgress,type HubbleLabProgress} from './hubbleLab';
 import {EMPTY_HUBBLE} from './hubbleAnalysis';
 import {INITIAL_LSS_LAB_SUMMARY,LSS_LAB_REPEAT_RECORDS,LSS_LAB_STEPS,lssLabProgress} from './lssLab';
@@ -70,4 +70,20 @@ describe('companionNow (the current step is each guide\'s own next step)',()=>{
   // After a reload the list and pointing marks start again, but a restored measurement is not sent back to them.
   expect(now({list:false,pointed:false,photometer:{...EMPTY_PLEIADES_EXERCISE_SUMMARY,measuredTargets:1}})).toMatchObject({step:'record',index:5});
  });
+ it('Show me where follows the cycle inside a repeated step, and is the step itself everywhere else',()=>{
+  const objectX=(extra:Partial<typeof INITIAL_OBJECT_X_LAB_SUMMARY>,aim:Parameters<typeof objectXLabProgress>[2])=>companionTarget({lab:'object-x',progress:objectXLabProgress({...INITIAL_OBJECT_X_LAB_SUMMARY,target:true,clockSet:true,listBuilt:true,...extra},null,aim)});
+  expect([objectX({},'elsewhere'),objectX({},'entered'),objectX({},'on-target')]).toEqual(['image-copy','image-point','image']);
+  expect(objectX({imagesOfTarget:1},'on-target')).toBe('repeat');
+  expect([objectX({imagesOfTarget:1,laterClock:true},'elsewhere'),objectX({imagesOfTarget:1,laterClock:true},'entered'),objectX({imagesOfTarget:1,laterClock:true},'on-target')]).toEqual(['image-copy','image-point','image']);
+  expect(objectX({imagesOfTarget:2},'on-target')).toBe('measure');
+  expect(companionTarget({lab:'object-x',progress:objectXLabProgress(INITIAL_OBJECT_X_LAB_SUMMARY)})).toBe('target');
+  expect([objectX({},'unknown'),objectX({imagesOfTarget:1,laterClock:true},'unknown'),objectX({imagesOfTarget:1},'unknown')]).toEqual(['image-any','image-any','repeat']);
+  const pleiades=(current:'measure'|'record'|'color'|'done'|null,colorTargets:number)=>companionTarget({lab:'pleiades',progress:pleiadesLabProgress({list:true,pointed:true,photometer:{...EMPTY_PLEIADES_EXERCISE_SUMMARY,armed:true,access:'ready',measuredTargets:colorTargets,recordedTargets:colorTargets,colorTargets,current}})});
+  // The first star: the guide's own steps, whatever the selected star needs.
+  expect(pleiades('measure',0)).toBe('measure');
+  // The further stars: the same three actions, then the next star.
+  expect((['measure','record','color','done',null] as const).map(c=>pleiades(c,1))).toEqual(['measure','record','color','sample','sample']);
+  expect(pleiades('done',24)).toBe('distance');
+ });
 });
+

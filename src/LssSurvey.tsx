@@ -152,7 +152,7 @@ function LssSurvey({freeRecord=null,wedgeShown=false,spectralRange=DEFAULT_SPECT
  }
  function plot(){void handOver(current.current,false,false);}
  const draft=survey.draft;
- return <main className="observatory-main lss-main"><section className="observatory-heading"><div className="eyebrow">{t('lss.eyebrow')}</div><h1 ref={heading} tabIndex={-1}>{t('lss.title')}</h1><p>{t('lss.intro')}</p></section>
+ return <main className="observatory-main lss-main" id="lss-page" data-pointed-recorded={(!!row&&!!loaded&&survey.records.some(x=>x.field===loaded.field&&x.row===row.index))||undefined}><section className="observatory-heading"><div className="eyebrow">{t('lss.eyebrow')}</div><h1 ref={heading} tabIndex={-1}>{t('lss.title')}</h1><p>{t('lss.intro')}</p></section>
   <section className="card" aria-labelledby="lss-field-heading"><h2 id="lss-field-heading">{t('lss.fieldTitle')}</h2>
    <div className="lss-controls"><label htmlFor="lss-field">{t('lss.field')}</label><select id="lss-field" value={field??''} disabled={loading||!fields} onChange={e=>{update(s=>selectLssField(s,Number(e.target.value)));}}><option value="" disabled>{t('lss.chooseField')}</option>{(fields??[]).map(f=><option key={f.field} value={f.field}>{t('lss.fieldOption',{item:lssFieldsItemText(f).replace(/ /g,'\u00a0'),rows:LSS_FIELD_FILES[f.field-1].records})}</option>)}</select>
     <label htmlFor="lss-telescope">{t('lss.telescope')}</label><select id="lss-telescope" value={telescope} disabled={loading} onChange={e=>setTelescope(Number(e.target.value) as Telescope)}>{([0,1,2] as const).map(i=><option key={i} value={i}>{opticalProfile(i).name}</option>)}</select>

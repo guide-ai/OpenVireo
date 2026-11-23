@@ -20,26 +20,34 @@ export type PleiadesExerciseSummary=Readonly<{
  colorTargets:number;
  /** A confirmed manual cluster fit exists (a new color clears it in the photometer core). */
  fit:boolean;
+ /** Front GUIDE-COMPANION, for Show me where only (never a mark): what the selected photometry target still needs when it is
+  * an admitted row (null otherwise). */
+ current:PleiadesTargetNeed|null;
 }>;
-export const EMPTY_PLEIADES_EXERCISE_SUMMARY:PleiadesExerciseSummary=Object.freeze({armed:false,access:'pointing',measuredTargets:0,recordedTargets:0,colorTargets:0,fit:false});
+/** B and V readings of the star ('measure'), their notebook entries ('record'), its B−V ('color'), or nothing: choose the next star ('done'). */
+export type PleiadesTargetNeed='measure'|'record'|'color'|'done';
+export const EMPTY_PLEIADES_EXERCISE_SUMMARY:PleiadesExerciseSummary=Object.freeze({armed:false,access:'pointing',measuredTargets:0,recordedTargets:0,colorTargets:0,fit:false,current:null});
 export const samePleiadesExerciseSummary=(a:PleiadesExerciseSummary,b:PleiadesExerciseSummary)=>
- a.armed===b.armed&&a.access===b.access&&a.measuredTargets===b.measuredTargets&&a.recordedTargets===b.recordedTargets&&a.colorTargets===b.colorTargets&&a.fit===b.fit;
+ a.armed===b.armed&&a.access===b.access&&a.measuredTargets===b.measuredTargets&&a.recordedTargets===b.recordedTargets&&a.colorTargets===b.colorTargets&&a.fit===b.fit&&a.current===b.current;
 /** Number of admitted original targets the sample step covers. */
 export const PLEIADES_SAMPLE_TARGETS=PLEIADES_ADMITTED_ROWS.length;
 
 export function pleiadesExerciseSummary(state:PhotometerState|null,access:PhotometerPointingAccess):PleiadesExerciseSummary{
  if(!state)return Object.freeze({...EMPTY_PLEIADES_EXERCISE_SUMMARY,access});
  const entered=new Set(state.entries.map(e=>e.readingId));
- let measuredTargets=0,recordedTargets=0,colorTargets=0;
+ let measuredTargets=0,recordedTargets=0,colorTargets=0,current:PleiadesTargetNeed|null=null;
  for(const row of PLEIADES_ADMITTED_ROWS){
   const objects=state.readings.filter(r=>r.kind==='object'&&r.targetId===row.catalogId&&r.reduction?.status==='available'&&pleiadesSkyContext(state,r));
   const has=(filter:'B'|'V',confirmed:boolean)=>objects.some(r=>r.filter===filter&&(!confirmed||entered.has(r.id)));
-  if(has('B',false)&&has('V',false))measuredTargets++;
-  if(has('B',true)&&has('V',true))recordedTargets++;
+  const measured=has('B',false)&&has('V',false),recorded=has('B',true)&&has('V',true);
+  if(measured)measuredTargets++;
+  if(recorded)recordedTargets++;
   const color=state.colors[row.catalogId];
-  if(color&&color.targetId===row.catalogId&&entered.has(color.bReadingId)&&entered.has(color.vReadingId)&&[color.bReadingId,color.vReadingId].every(id=>objects.some(r=>r.id===id)))colorTargets++;
+  const colored=!!color&&color.targetId===row.catalogId&&entered.has(color.bReadingId)&&entered.has(color.vReadingId)&&[color.bReadingId,color.vReadingId].every(id=>objects.some(r=>r.id===id));
+  if(colored)colorTargets++;
+  if(row.catalogId===state.targetId)current=colored?'done':recorded?'color':measured?'record':'measure';
  }
- return Object.freeze({armed:state.armed,access,measuredTargets,recordedTargets,colorTargets,fit:!!state.clusterFit});
+ return Object.freeze({armed:state.armed,access,measuredTargets,recordedTargets,colorTargets,fit:!!state.clusterFit,current});
 }
 
 /** 'save' is an instruction (Save investigation, reload, Restore) and is never counted. */
@@ -52,6 +60,9 @@ export type PleiadesLabProgress=Readonly<{
  next:PleiadesLabStep;
  colorTargets:number;
  sampleTargets:number;
+ /** Front GUIDE-COMPANION, for Show me where only: during the sample step, what the selected star still needs (see
+  * PleiadesExerciseSummary.current); null in every other step. */
+ sampleNeed:PleiadesTargetNeed|null;
 }>;
 
 /** list: the shared Hot List currently holds the 24 exercise rows in order. pointed: the App pointing equals an admitted row. */
@@ -70,5 +81,5 @@ export function pleiadesLabProgress(i:Readonly<{list:boolean;pointed:boolean;pho
  };
  const measured=done.measure;
  const next=PLEIADES_LAB_COUNTED_STEPS.find(s=>!done[s]&&!(measured&&(s==='list'||s==='point'||s==='activate')))??'save';
- return Object.freeze({done:Object.freeze(done),next,colorTargets:p.colorTargets,sampleTargets:PLEIADES_SAMPLE_TARGETS});
+ return Object.freeze({done:Object.freeze(done),next,colorTargets:p.colorTargets,sampleTargets:PLEIADES_SAMPLE_TARGETS,sampleNeed:next==='sample'?p.current:null});
 }

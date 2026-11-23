@@ -576,13 +576,6 @@
  {
   "file": "src/LssLabGuide.tsx",
   "kind": "original",
-  "value": "LSS_LAB_STEPS.length",
-  "count": 1,
-  "reason": "identifier: the number of guide steps"
- },
- {
-  "file": "src/LssLabGuide.tsx",
-  "kind": "original",
   "value": "LSS_LAB_STEPS.map",
   "count": 1,
   "reason": "identifier: the guide's step ids; each step's text is a catalog key (lssLab.step.*, lssLab.help.*)"

@@ -11,7 +11,7 @@ import {PULSAR_LAB_STEPS} from '../core/pulsarLab';
 import {PLEIADES_LAB_STEPS} from '../core/pleiadesLab';
 import {APP_SHELL_MESSAGES_EN} from '../components/AppShellMessages';
 import {companionPlace} from '../components/guideCompanionRoute';
-import type {CompanionProgress} from '../core/guideCompanion';
+import {companionTarget,type CompanionProgress} from '../core/guideCompanion';
 import type {Route} from '../components/routePages';
 
 const SRC=path.resolve(import.meta.dirname,'..');
@@ -28,11 +28,12 @@ const BUILT:Readonly<Record<string,string>>={
  'db-native-confirm':"id={frame?prefix+'native-confirm':undefined}",
  'db-native-report':"id={prefix+'native-report'}",
 };
-/** The steps the companion can show for each guide: its list, plus the closing state that still has something to point at. */
+/** The steps the companion can show for each guide: its list, plus the closing state that still has something to point at
+ * and the keys of a cycle inside a step (core/guideCompanion.ts companionTarget). */
 const STEPS:Readonly<Record<string,readonly string[]>>={
  hubble:['acquire','measure','dataset','recipe','inputs','interpret'],
  'large-scale-structure':LSS_LAB_STEPS,
- 'object-x':OBJECT_X_LAB_STEPS,
+ 'object-x':[...OBJECT_X_LAB_STEPS,'image-copy','image-point','image-any'],
  'stellar-classification':CLASSIFICATION_LAB_STEPS,
  'cluster-hr':[...CLUSTER_LAB_STEPS,'preserve'],
  pulsars:[...PULSAR_LAB_STEPS,'setup-tracking'],
@@ -89,13 +90,32 @@ function routeOf(name:string):Route|undefined{
  return routes.size===1?[...routes][0]:undefined;
 }
 /** A progress object holding only what companionPlace reads: the current step (and, for the LSS wedge step, whether records are plotted). */
-const at=(lab:string,next:string,done:Readonly<Record<string,boolean>>={})=>({lab,progress:{next,done}}) as unknown as CompanionProgress;
+const at=(lab:string,next:string,done:Readonly<Record<string,boolean>>={},extra:Readonly<Record<string,unknown>>={})=>({lab,progress:{next,done,imageAction:null,sampleNeed:null,...extra}}) as unknown as CompanionProgress;
+/** The guide states at which Show me where uses a key (core/guideCompanion.ts companionTarget). A key is the step of its name,
+ * except the keys of a cycle inside a step, which are listed here with every state that leads to them. */
+const CYCLE_STATES:Readonly<Record<string,Readonly<Record<string,readonly (readonly [next:string,extra:Readonly<Record<string,unknown>>])[]>>>>={
+ 'object-x':{
+  image:[['image',{imageAction:'expose'}],['repeat',{imageAction:'expose'}]],
+  'image-copy':[['image',{imageAction:'copy'}],['repeat',{imageAction:'copy'}]],
+  'image-point':[['image',{imageAction:'point'}],['repeat',{imageAction:'point'}]],
+  'image-any':[['image',{imageAction:'any'}],['repeat',{imageAction:'any'}]],
+  repeat:[['repeat',{imageAction:'clock'}]],
+ },
+ pulsars:{'setup-tracking':[['setup',{trackingOff:true}]]},
+ pleiades:{
+  measure:[['measure',{}],['sample',{sampleNeed:'measure'}]],record:[['record',{}],['sample',{sampleNeed:'record'}]],color:[['color',{}],['sample',{sampleNeed:'color'}]],
+  sample:[['sample',{sampleNeed:'done'}],['sample',{}]],
+ },
+};
+const statesOf=(lab:string,key:string):readonly CompanionProgress[]=>(CYCLE_STATES[lab]?.[key]??[[key,{}]]).map(([next,extra])=>at(lab,next,{},extra));
 
 describe('guide targets are on the page of their step',()=>{
  it('every control a step points at is on the page Show me where goes to; a step with no page points only at Save investigation',()=>{
   const wrong:string[]=[];
-  for(const lab of LAB_SLUGS)for(const [key,selectors] of Object.entries(GUIDE_TARGETS[lab])){
-   const place=companionPlace(at(lab,key==='setup-tracking'?'setup':key));
+  for(const lab of LAB_SLUGS)for(const [key,selectors] of Object.entries(GUIDE_TARGETS[lab]))for(const state of statesOf(lab,key)){
+   // The state really leads to this key: the table below is checked against the rule, not against itself.
+   if(companionTarget(state)!==key)wrong.push(`${lab}/${key}: the state ${JSON.stringify(state.progress)} uses the key ${companionTarget(state)}`);
+   const place=companionPlace(state);
    for(const selector of selectors)for(const m of selector.matchAll(/\[data-testid="([^"]+)"\]|#([a-z][a-z0-9-]*)|\[(data-htl-exercise)="[^"]+"\]/g)){
     const name=m[1]?`testid:${m[1]}`:m[2]?`id:${m[2]}`:`attr:${m[3]}`;
     if(name===EVERYWHERE){if(place)wrong.push(`${lab}/${key}: Save investigation, but the step has the page ${place.route}`);continue;}
@@ -107,8 +127,12 @@ describe('guide targets are on the page of their step',()=>{
   expect(wrong).toEqual([]);
  });
  it('Object X "repeat" goes to the Object X page (its first action), although the guide\'s own button returns to the observatory',()=>{
-  expect(companionPlace(at('object-x','repeat'))).toEqual({route:'object-x'});
-  expect(companionPlace(at('object-x','image'))).toEqual({route:'observatory'});
+  expect(companionPlace(at('object-x','repeat',{},{imageAction:'clock'}))).toEqual({route:'object-x'});
+  // Both imaging steps: Copy the coordinates is on the Object X page, pointing and the exposure in the observatory.
+  for(const next of ['image','repeat']){
+   expect(companionPlace(at('object-x',next,{},{imageAction:'copy'}))).toEqual({route:'object-x'});
+   for(const imageAction of ['point','expose','any'])expect(companionPlace(at('object-x',next,{},{imageAction}))).toEqual({route:'observatory'});
+  }
   expect(companionPlace(at('object-x','done'))).toBeNull();
  });
  it('the Hubble workspace steps go to the spectrum page, the LSS wedge step to the survey until records are plotted, and the Pleiades list step opens the hot list',()=>{

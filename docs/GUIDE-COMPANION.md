@@ -29,9 +29,9 @@ had to remember the step, find the page and find the control. The companion keep
   (`hubbleNextText`/`hubbleItemBody`, `lssStepHelp`, `pulsarNextText`/`pulsarStepBody`, `pleiadesStepBody`,
   `classificationStepBody`, `ClusterLabGuideText.tsx`) and `src/components/guideCompanionContent.tsx` puts them together. The
   only strings of the strip itself are `companion` in `src/components/AppShellMessages.ts` (ten, in ten languages).
-- **Steps done many times show their count.** The Hubble, LSS and Object X guides have steps that take one action per galaxy,
-  record or image. The strip shows the guide's own counts line beside "Step n of m" (`hubbleCountsText`, `lssCountsText`,
-  Object X's `counts`), so the work is seen to count while the step stays. The Hubble guide also goes one galaxy at a time
+- **Steps done many times show their count.** The Hubble, LSS, Object X and Pleiades guides have steps that take one action
+  per galaxy, record, image or star. The strip shows the guide's own counts line beside "Step n of m" (`hubbleCountsText`,
+  `lssCountsText`, Object X's `counts`, the Pleiades coverage line), so the work is seen to count while the step stays. The Hubble guide also goes one galaxy at a time
   (`core/hubbleLab.ts`, user report of 2026-11-23): an archived spectrum with no measurement is measured ("Step 2 of 5")
   before the next galaxy is acquired ("Step 1 of 5"); before, it stayed on "acquire" until all the galaxies were archived, and
   nothing seemed to move.
@@ -52,13 +52,38 @@ Where a finished control stays enabled, the page publishes the state and the sel
 outlined, not Analyze again), `data-recorded` on a survey row of the LSS list (a row with no record is preferred), and
 `data-complete` on a Hubble row. These attributes are read from the same state the guides' marks use; they add no rule.
 
+### A step that is a cycle
+
+Three steps are done once per galaxy, image or star, and the guide's list keeps one line for all of them. The step shown
+does not change there, but Show me where follows the cycle (audit of the seven guides, 2026-11-23: before, it pointed at the
+cycle's first control every time, also after the student had used it):
+
+- **LSS "repeat"** (five different galaxies): a row with no record; once the telescope points at it, its own Activate, Start,
+  Pause, z step and Record Z; once it is recorded, another row. The page says which it is (`data-pointed-recorded` on
+  `#lss-page`), since a recorded galaxy's buttons stay enabled.
+- **Object X "image" and "repeat"**: `core/objectXLab.ts` `imageAction` names the next action from three facts the site already
+  holds: the clock was set, here or in the observatory, after the last image of the target (`objectXLaterClock`, repeat only;
+  a clock left running is not a later time, as in the guide's text), and whether the observatory's coordinate boxes or the
+  telescope are within the on-target radius of the target (`objectXAim`; the same radius that makes an image count, so
+  coordinates typed by hand count too). The keys are `repeat` (the later time, on the Object X page), `image-copy` (Copy the
+  coordinates to the observatory, on the Object X page), `image-point` (the dome, then Point to coordinates) and `image`
+  (tracking, Start exposure; the camera while it exposes). With no unrevealed target known to the shell (already revealed),
+  `image-any` is the whole observatory chain, as before.
+- **Pleiades "sample"** (24 stars): `PleiadesExerciseSummary.current` tells what the selected star still needs, and the strip
+  points at the same controls as for the first star (`measure`, `record`, `color`); with its B−V confirmed, at the Photometry
+  target selector.
+
+`core/guideCompanion.ts` `companionTarget` gives the key and `components/guideCompanionRoute.ts` its page; the strip publishes
+both (`data-target`, `data-route`) beside `data-step`. None of this is a mark, a count or a judgement: the guides' own steps,
+texts and done rules are unchanged.
+
 What the outline does not do, on purpose:
 
 - Hubble "dataset" (the workspace holds examples or other inputs): the guide asks to save and then clear rows. The card is
   outlined, never a button that discards work.
-- Object X "image": the chain is dome, Point to coordinates, field of view, tracking, exposure. The dome, the camera's own
-  "turn tracking on" shortcut and Start exposure are outlined when each is the missing action; after pointing, while the field
-  of view is still the finder, the outline stays on Point to coordinates and the camera's status line says what is missing.
+- Object X "image": the chain is Copy the coordinates, dome, Point to coordinates, field of view, tracking, exposure. Each is
+  outlined when it is the missing action, except the field of view: after pointing, while it is still the finder, the camera is
+  outlined and its status line says what is missing.
 - Pulsars "point": Pulsar Parameters and Receiver are both always enabled, so the first action (Pulsar Parameters) is outlined.
 - LSS "repeat": the first row with no record is outlined; it is a suggestion, any row may be observed.
 
@@ -118,6 +143,12 @@ the wedge" is a button of that page. Once records are plotted it leads to the we
   missing control, the page bar's menus over the strip, layout at 1280, 800 and 375 px, print, inert, Spanish and right to left.
 - `tests/hubble-guide.spec.ts`: Show me where in the middle of the Hubble exercise (the galaxy selector once a galaxy is
   archived; the recipe selector inside the closed Hubble card; Add saved measurements while there are no rows).
+- The cycles: `core/objectXLab.test.ts`, `core/pleiadesLab.test.ts` and `core/guideCompanion.test.ts` (the rules), and Show me
+  where inside the whole-exercise walks `tests/lss-guide.spec.ts` (second galaxy), `tests/pleiades-exercise.spec.ts` (second
+  star) and `tests/object-x-path.spec.ts` (both images).
+- `tests/fixtures/companion-audit.ts` is a harness, not a test: run any whole-exercise walk with its `test` and it writes, at
+  every change, the strip's step, key and page and the control Show me where would outline. It is how the seven guides were
+  audited; the traces are read by a person.
 
 ## Review
 
@@ -134,3 +165,22 @@ steps (which need two exposures) are covered by the page-of-step test only. The 
 in three runs on a phone-sized window, the page's heading focus arriving after the control's and leaving the control under the
 strip, or a disabled control outlined beside the enabled one; step 4 of Show me where closes both and the strip's life test
 forces the first.
+
+### Audit of the seven guides (2026-11-23)
+
+Asked to test every guide, the coordinator ran each whole-exercise walk with `tests/fixtures/companion-audit.ts` and read the
+traces. The steps of the seven guides advance as their texts say; the classification, cluster HR and pulsar guides and the
+Hubble guide (after its one-galaxy rule) needed nothing. Three steps were wrong in the same way (see "A step that is a
+cycle"): Show me where pointed at the first control of the LSS "repeat", Object X "repeat" and Pleiades "sample" steps every
+time, also after it had been used; Object X "image" offered Start exposure while the telescope pointed elsewhere, and the date
+again after the later time was set; and the Pleiades strip showed no count during its 24 stars. An independent Opus reviewer
+then read the fix (approve after minor fixes, all applied): coordinates typed by hand did not count as entered (an exact match
+was asked); with the target already revealed Point to coordinates could no longer be outlined (`image-any`); the later-clock
+rule became a pure, tested function. Known and left: the LSS marker follows the row list's own rule (same field and row), so a
+galaxy recorded from another field or as a free spectrum is treated as in hand; a later time set in the observatory's own clock
+dialog is covered by the rule's unit test and by reading, not by a walk.
+
+The same day the first merge's CI failed in one script walk (E01 under qps-rtl): the new test id of the galaxy exposure page
+renamed a known right-to-left problem, which is listed by its nearest test id (`tests/fixtures/rtlKnown.ts` `drawsOf`). The
+list was updated; a marker that only Show me where reads is now an `id` (`#lss-page`), and `npm run test:scripts` is part of
+this front's checks before a merge.

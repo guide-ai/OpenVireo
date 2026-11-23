@@ -30,6 +30,24 @@ describe('Pleiades E04 guide progress is derived only from real photometer state
   expect(fitted.colorTargets).toBe(2);expect(PLEIADES_SAMPLE_TARGETS).toBe(24);expect(fitted.done).toMatchObject({sample:false,distance:true});expect(fitted.next).toBe('sample');
   s=step(s,{type:'target',targetId:A});s=step(s,{type:'color',bReadingId:4,vReadingId:2});expect(progress(s).done.distance).toBe(false);
  });
+ it('tells what the selected star still needs, and reports it only during the sample step (Show me where, never a mark)',()=>{
+  const {measuredV,measured,recorded,colored}=firstStar(),need=(s:PhotometerState|null)=>pleiadesExerciseSummary(s,'ready').current;
+  expect(need(null)).toBeNull();
+  expect([measuredV,measured,recorded,colored].map(need)).toEqual(['measure','record','color','done']);
+  // The first star's own steps come first; the cycle is reported only once the guide is at "sample".
+  expect([measured,recorded].map(s=>progress(s).sampleNeed)).toEqual([null,null]);
+  expect(progress(colored)).toMatchObject({next:'sample',sampleNeed:'done'});
+  let s=step(colored,{type:'target',targetId:B});expect(progress(s)).toMatchObject({next:'sample',sampleNeed:'measure'});
+  // Its B reading alone, even transcribed, is not both readings yet.
+  s=complete(s);expect(progress(s).sampleNeed).toBe('measure');
+  s=step(s,{type:'record',readingId:5,value:10.758,note:''});expect(progress(s).sampleNeed).toBe('measure');
+  s=step(s,{type:'filter',filter:'V'});s=complete(s);expect(progress(s).sampleNeed).toBe('record');
+  s=step(s,{type:'record',readingId:6,value:8.996,note:''});expect(progress(s).sampleNeed).toBe('color');
+  s=step(s,{type:'color',bReadingId:5,vReadingId:6});expect(progress(s)).toMatchObject({next:'sample',sampleNeed:'done',colorTargets:2});
+  // Back on a star that already has its B−V: nothing is needed there.
+  expect(progress(step(s,{type:'target',targetId:A})).sampleNeed).toBe('done');
+  const a=pleiadesExerciseSummary(s,'ready');expect(samePleiadesExerciseSummary(a,{...a,current:'color'})).toBe(false);
+ });
  it('summaries compare by value so the photometer reports only changes',()=>{
   const {colored}=firstStar(),a=pleiadesExerciseSummary(colored,'ready'),b=pleiadesExerciseSummary(colored,'ready');
   expect(samePleiadesExerciseSummary(a,b)).toBe(true);expect(samePleiadesExerciseSummary(a,pleiadesExerciseSummary(colored,'pointing'))).toBe(false);

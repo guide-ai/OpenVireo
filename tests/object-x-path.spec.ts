@@ -50,6 +50,8 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  test.setTimeout(240_000);
  const body=await recorded;await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
  await openLab(page);
+ // Front GUIDE-COMPANION: the guide is opened and closed, so its strip follows the whole walk.
+ await clickHeaderTool(page,'Object X guide');await page.keyboard.press('Escape');const strip=page.getByTestId('guide-companion');await expect(strip).toHaveAttribute('data-step','target');
  // M1: no identifier or remark in the Object X route, guide or camera before the reveal.
  expect(await leaks(page)).toEqual([]);
  await page.getByLabel('ID # of your unknown object (from your exercise sheet or course, or one you choose)').fill('42');
@@ -62,22 +64,38 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  expect(await leaks(page)).toEqual([]);
  await page.screenshot({path:test.info().outputPath('object-x-start.png'),fullPage:true});
 
+ // Front GUIDE-COMPANION: the image step is a chain over two pages and Show me where follows it. The coordinates are not in
+ // the observatory yet: the Object X page's own Copy button, not the camera of a telescope that points elsewhere.
+ await expect(strip).toHaveAttribute('data-step','image');await expect(strip).toHaveAttribute('data-target','image-copy');await expect(strip).toHaveAttribute('data-route','object-x');
+ await page.getByTestId('guide-companion-show').click();await expect(page.getByTestId('guide-companion-spot')).toBeVisible();await expect(page.getByTestId('objectx-point-observatory')).toBeFocused();
  // Observatory: the coordinates are copied; the student opens the dome, points, tracks.
  await button(page,'Copy the coordinates to the observatory').click();
  await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ // Entered and not pointed at yet: the dome, then Point to coordinates.
+ await expect(strip).toHaveAttribute('data-target','image-point');await expect(strip).toHaveAttribute('data-route','observatory');
+ await page.getByTestId('guide-companion-show').click();await expect(page.getByTestId('dome-open')).toBeFocused();
  await button(page,'Open dome ↗').click();
  if(!await button(page,'Point to coordinates').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
  await button(page,'Point to coordinates').click();
+ // On the target's field: the camera.
+ await expect(strip).toHaveAttribute('data-target','image');await expect(strip).toHaveAttribute('data-step','image');
  // The plain view switch keeps the typed coordinates ("Switch to telescope view ↗" points at the selected catalogue object).
  await page.getByRole('group',{name:'Field of view'}).getByRole('button',{name:'Telescope · 15′',exact:true}).click();
  await expect(page.locator('.pointing-readout').first()).toContainText('22.72202');
  const startClock=async()=>{if(!await button(page,'Start observatory clock').isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();await button(page,'Start observatory clock').click();};
  await startClock();await button(page,'Turn tracking on').click();
  await exposeHere(page,'0','1');
+ // Front GUIDE-COMPANION: the second image starts with a later time, on the Object X page, although the telescope is still
+ // on the field and the camera is ready.
+ await expect(strip).toHaveAttribute('data-step','repeat');await expect(strip).toHaveAttribute('data-target','repeat');await expect(strip).toHaveAttribute('data-route','object-x');
+ await expect(page.getByTestId('guide-companion-counts')).toContainText('1 images of your object');
  // 45 minutes later: the student sets the clock again; the list is rebuilt for the new time and tracking stays on.
  await clickHeaderTool(page,'Object X');
  await page.getByLabel('Observation date and time (UT)').fill('2009-06-01T04:45:00');await button(page,'Set the observatory clock').click();
  await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on 2009-06-01 04:45:00 UT',{timeout:20_000});
+ // The later time is set and the list rebuilt: Show me where no longer points at the date, it goes to the camera.
+ await expect(strip).toHaveAttribute('data-step','repeat');await expect(strip).toHaveAttribute('data-target','image');await expect(strip).toHaveAttribute('data-route','observatory');
+ await page.getByTestId('guide-companion-show').click();await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();await expect(page.getByTestId('guide-companion-spot')).toBeVisible();
  await clickHeaderTool(page,'Observatory');await startClock();
  await exposeHere(page,'0','1');
  expect(await leaks(page)).toEqual([]);

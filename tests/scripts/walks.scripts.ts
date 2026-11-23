@@ -90,7 +90,9 @@ function RTL_KNOWN():Known[]{
  const topics=['OBSRVHLP','CAMHLP','HRANALHLP','PHOTOHLP','SPECHLP','MEASHLP','WDGPLTHLP','PLSANHLP','PULSRHLP'].map(f=>`${f}.LST topics`);
  return [
   // Front LAUNCH-2: the galaxy's slit level (drawsOf) is behind Research notes, so the walk meets it where it opens every disclosure.
-  ...at('E01',both,'Hubble lab guide','catalogLiteral'),...at('E01',both,'galaxy exposure','drawsOf'),...at('E01',both,['spectrometer route','star exposure and its SSP save'],'catalogLiteral'),
+  // Front GUIDE-COMPANION: the galaxy page's own test id names its slit level apart from the star exposure's, which the walk
+  // meets where that page is first shown (a problem is listed at the first step that shows it).
+  ...at('E01',both,'Hubble lab guide','catalogLiteral'),...at('E01',both,['galaxy exposure','star exposure and its SSP save'],'drawsOf'),...at('E01',both,['spectrometer route','star exposure and its SSP save'],'catalogLiteral'),
   ...at('E01',both,'spectrum analyser with the acquired galaxy','zValue','stepFactor','catalogLiteral'),
   ...at('E02',[320],['Retain Current Data?','Confirm Deletion!'],'wedgeStatus'),...at('E02',both,'Search Results','txtSuffix'),
   // The LSS survey (a lazily loaded part) renders its results button behind the lab guide or only once the survey opens: one
