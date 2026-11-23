@@ -1,33 +1,41 @@
 /** Front GUIDE-COMPANION [W]: the control each guide step points at ("Show me where"), as CSS selectors tried in order
  * (help/spot.ts chooseCandidate: the first that can be shown and is enabled). A step that is a short chain of actions lists its
  * controls from the last action to the first, so the page's own enabled state decides which one is outlined (where every control
- * of a step is always enabled, the first action comes first); no progress rule is added here. Every selector names an `id` or a `data-testid` (guideTargets.test.ts checks each one exists in the source), never
- * a position or a translated label. Pure data: no text, no DOM. New web presentation, not a CLEA resource. */
+ * of a step is always enabled, the first action comes first); no progress rule is added here. Every selector names an `id` or a
+ * `data-testid`, never a position or a translated label; a few also read a state the page itself publishes (a galaxy whose
+ * spectrum is already archived, a survey row already recorded), so a control the student has finished with is not outlined
+ * again. guideTargets.test.ts checks that each name exists in the source and is on the step's page
+ * (components/guideCompanionRoute.ts). Pure data: no text, no DOM. New web presentation, not a CLEA resource. */
 import type {LabSlug} from '../seo/labSlugs';
 
 const id=(name:string)=>`[data-testid="${name}"]`;
 /** Save investigation, in the page bar of every page. */
 const SAVE=id('investigation-save');
-/** The observable row buttons of the LSS survey list. */
-const LSS_ROW=`${id('lss-rows')} button`;
+/** The observable row buttons of the LSS survey list; first those of rows with no record yet. */
+const LSS_ROW=`${id('lss-rows')} button`,LSS_NEW_ROW=`${id('lss-rows')} tr:not([data-recorded]) button`;
+/** The galaxy exposure page while the chosen galaxy has no archived spectrum yet (core/hubbleLab.ts `archived`). */
+const GALAXY_NEW=`${id('galaxy-exposure-page')}:not([data-target-archived])`;
 /** The LSS acquisition controls, last action first. */
 const LSS_OBSERVE=[id('lss-acq-pause'),id('lss-acq-start'),id('lss-acq-activate'),LSS_ROW,'#lss-field'];
 
 export const GUIDE_TARGETS:Readonly<Record<LabSlug,Readonly<Record<string,readonly string[]>>>>=Object.freeze({
  // Keys are the phases of core/hubbleLab.ts.
  hubble:Object.freeze({
-  acquire:[id('galaxy-analyze'),id('galaxy-start'),id('galaxy-activate'),'#acquisition-galaxy'],
+  // Once the chosen galaxy is archived its exposure buttons stay enabled; the next action is choosing another galaxy.
+  acquire:[`${GALAXY_NEW} ${id('galaxy-analyze')}`,`${GALAXY_NEW} ${id('galaxy-start')}`,`${GALAXY_NEW} ${id('galaxy-activate')}`,'#acquisition-galaxy'],
   measure:[id('record-measurement'),'#reference'],
-  dataset:[id('hubble-add-measurements'),id('hubble-card-summary')],
+  // The step asks to save and then clear rows: the card is outlined, never a button that discards work.
+  dataset:[id('hubble-card-summary')],
   recipe:['#hubble-recipe',id('hubble-card-summary')],
-  inputs:[`${id('hubble-row')}:not([data-complete]) ${id('hubble-row-magnitude')}`,'#hubble-recipe',id('hubble-card-summary')],
+  // With the recipe chosen and no rows yet, the next action is Add saved measurements (disabled once nothing is missing).
+  inputs:[`${id('hubble-row')}:not([data-complete]) ${id('hubble-row-magnitude')}`,id('hubble-add-measurements'),'#hubble-recipe',id('hubble-card-summary')],
   interpret:[id('hubble-value'),id('hubble-card-summary')],
  }),
  'large-scale-structure':Object.freeze({
   load:[id('lss-load-list'),'#lss-field'],
   observe:LSS_OBSERVE,
   record:[id('lss-record-z'),'#lss-shift','#lss-step',...LSS_OBSERVE],
-  repeat:[LSS_ROW,'#lss-field'],
+  repeat:[LSS_NEW_ROW,LSS_ROW,'#lss-field'],
   wedge:[id('lss-plot-wedge')],
   describe:['#lss-description'],
   save:[SAVE],
@@ -36,8 +44,10 @@ export const GUIDE_TARGETS:Readonly<Record<LabSlug,Readonly<Record<string,readon
   target:[id('objectx-id'),id('objectx-target')],
   clock:[id('objectx-date'),id('objectx-set-clock')],
   list:[id('objectx-build-list')],
-  image:[id('camera-start'),id('dome-open'),id('point-coordinates'),id('camera-control')],
-  repeat:[id('objectx-date')],
+  // The camera's own "turn tracking on" shortcut is there only while tracking is what the camera is waiting for.
+  image:[id('camera-start'),`${id('camera-control')} ${id('tracking-shortcut')}`,id('dome-open'),id('point-coordinates'),id('camera-control')],
+  // The step's first action, on the Object X page (guideCompanionRoute.ts): a later time, then Set the observatory clock.
+  repeat:[id('objectx-date'),id('objectx-set-clock')],
   measure:[id('objectx-measure-viewport'),id('objectx-measure-start'),id('objectx-measure-first'),id('objectx-measure-section')],
   classify:[id('objectx-answer')],
   describe:[id('objectx-description')],

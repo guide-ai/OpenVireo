@@ -58,18 +58,42 @@ test('the strip appears when a guide\'s window is closed, follows the work, and 
  await expect(toggle).toHaveAttribute('aria-expanded','true');
  await expect(id(page,'guide-companion-details')).toContainText('For a first run, open Pulsar Parameters');
  await toggle.click();await expect(id(page,'guide-companion-details')).toHaveCount(0);
- // Full guide: the same window, with the same progress; closing it returns to the button.
+ // Escape closes Step details and leaves the focus on its button.
+ await toggle.click();await expect(id(page,'guide-companion-details')).toBeVisible();
+ await page.keyboard.press('Escape');
+ await expect(id(page,'guide-companion-details')).toHaveCount(0);await expect(toggle).toBeFocused();await expect(strip(page)).toBeVisible();
+ // Full guide: the same window, with the same progress, scrolled to the current step; closing it returns to the button.
  await id(page,'guide-companion-full').click();
  await expect(guideWindow(page)).toBeVisible();await expect(strip(page)).toBeHidden();
  await expect(id(page,'pulsar-lab-next')).toHaveAttribute('data-next','point');
+ await expect(id(page,'pulsar-lab-step-point')).toBeInViewport();
  await closeGuide(page);
  await expect(id(page,'guide-companion-full')).toBeFocused();
- // Hide removes it; opening a guide brings it back.
+ // Hide removes it and leaves the focus on the page's heading, not nowhere; opening a guide brings it back.
  await id(page,'guide-companion-hide').click();
  await expect(strip(page)).toHaveCount(0);
+ expect(await page.evaluate(()=>{const el=document.activeElement!;return {tag:el.tagName,hidden:el.closest('[hidden]')!==null};})).toEqual({tag:'H1',hidden:false});
  await page.locator('.portal-header nav').getByRole('button',{name:'Pulsar guide',exact:true}).click();
  await closeGuide(page);
  await expect(strip(page)).toHaveAttribute('data-step','point');
+});
+
+test('the page bar\'s Help and More menus open over the strip in a short window: every item can be pressed',async({page})=>{
+ await page.setViewportSize({width:1280,height:430});
+ await openGuide(page,'pulsars');await closeGuide(page);
+ await expect(strip(page)).toBeVisible();
+ for(const [button,list] of [['main-help-menu','.page-bar .fi-menu-list'],['investigation-more','[data-testid="investigation-menu"]']] as const){
+  await id(page,button).click();
+  const menu=page.locator(list);await expect(menu).toBeVisible();
+  // Every item that is on screen is the element under its own centre (nothing of the strip covers it).
+  const covered=await menu.evaluate(el=>[...el.querySelectorAll<HTMLElement>('button,a')].filter(item=>{
+   const r=item.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+   if(r.width===0||y<0||y>window.innerHeight)return false;
+   const top=document.elementFromPoint(x,y);return !(top&&(top===item||item.contains(top)));
+  }).map(item=>item.textContent));
+  expect(covered,button).toEqual([]);
+  await page.keyboard.press('Escape');
+ }
 });
 
 const FIRST_STEPS=[

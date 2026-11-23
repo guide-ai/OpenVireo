@@ -10,10 +10,14 @@ import {CLUSTER_LAB_STEPS} from '../core/clusterLab';
 import {PULSAR_LAB_STEPS} from '../core/pulsarLab';
 import {PLEIADES_LAB_STEPS} from '../core/pleiadesLab';
 import {APP_SHELL_MESSAGES_EN} from '../components/AppShellMessages';
+import {companionPlace} from '../components/guideCompanionRoute';
+import type {CompanionProgress} from '../core/guideCompanion';
+import type {Route} from '../components/routePages';
 
 const SRC=path.resolve(import.meta.dirname,'..');
 const files=(dir:string):string[]=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(path.join(dir,e.name)):/\.tsx$/.test(e.name)?[path.join(dir,e.name)]:[]);
-const source=files(SRC).map(f=>readFileSync(f,'utf8')).join('\n');
+const sources=files(SRC).map(f=>[path.relative(SRC,f).split(path.sep).join('/'),readFileSync(f,'utf8')] as const);
+const source=sources.map(([,text])=>text).join('\n');
 
 /** Targets whose `data-testid` or `id` is built at run time: the source text that builds each one. */
 const BUILT:Readonly<Record<string,string>>={
@@ -60,6 +64,60 @@ describe('guide targets (Show me where)',()=>{
    return !source.includes(kind==='testid'?`data-testid="${name}"`:kind==='id'?`id="${name}"`:`${name}=`);
   });
   expect(missing).toEqual([]);
+ });
+});
+
+/** The page each source file's controls are shown on. A file of the shell holds controls of several pages: those are named. */
+const FILE_ROUTE:Readonly<Record<string,Route>>={
+ 'ClassificationLab.tsx':'classification','ClassificationLineTable.tsx':'classification',
+ 'ClusterDatabaseLab.tsx':'cluster-database','NativeClusterAnalysis.tsx':'cluster-database',
+ 'HotListEditor.tsx':'observatory','CameraControl.tsx':'observatory','observatory/TrackingShortcut.tsx':'observatory',
+ 'HubbleAnalysis.tsx':'spectrum','SpectrumInstrument.tsx':'spectrum','GalaxyExposure.tsx':'galaxy-exposure',
+ 'LssSurvey.tsx':'lss-survey','LssMeasurement.tsx':'lss-survey','LssAcquisition.tsx':'lss-survey',
+ 'Photometer.tsx':'photometer','PleiadesAnalysis.tsx':'photometer',
+ 'components/RadioControlPanel.tsx':'radio-control','components/RadioTelescopeRoute.tsx':'radio-control','components/RadioPulsarParameters.tsx':'radio-control','components/RadioReceiverWindows.tsx':'radio-control',
+ 'components/PulsarAnalysis.tsx':'pulsar-analysis',
+ 'ObjectXLab.tsx':'object-x','ObjectXMeasure.tsx':'object-x',
+};
+const SHELL_ROUTE:Readonly<Record<string,Route>>={'id:acquisition-galaxy':'galaxy-exposure','testid:galaxy-exposure-page':'galaxy-exposure','testid:dome-open':'observatory','testid:point-coordinates':'observatory','testid:htl-details':'observatory','attr:data-htl-exercise':'observatory'};
+/** Save investigation is in the page bar of every page. */
+const EVERYWHERE='testid:investigation-save';
+function routeOf(name:string):Route|undefined{
+ if(SHELL_ROUTE[name])return SHELL_ROUTE[name];
+ const [kind,bare]=name.split(':'),needle=BUILT[bare]??(kind==='testid'?`data-testid="${bare}"`:`id="${bare}"`);
+ const routes=new Set(sources.filter(([,text])=>text.includes(needle)).map(([file])=>FILE_ROUTE[file]));
+ return routes.size===1?[...routes][0]:undefined;
+}
+/** A progress object holding only what companionPlace reads: the current step (and, for the LSS wedge step, whether records are plotted). */
+const at=(lab:string,next:string,done:Readonly<Record<string,boolean>>={})=>({lab,progress:{next,done}}) as unknown as CompanionProgress;
+
+describe('guide targets are on the page of their step',()=>{
+ it('every control a step points at is on the page Show me where goes to; a step with no page points only at Save investigation',()=>{
+  const wrong:string[]=[];
+  for(const lab of LAB_SLUGS)for(const [key,selectors] of Object.entries(GUIDE_TARGETS[lab])){
+   const place=companionPlace(at(lab,key==='setup-tracking'?'setup':key));
+   for(const selector of selectors)for(const m of selector.matchAll(/\[data-testid="([^"]+)"\]|#([a-z][a-z0-9-]*)|\[(data-htl-exercise)="[^"]+"\]/g)){
+    const name=m[1]?`testid:${m[1]}`:m[2]?`id:${m[2]}`:`attr:${m[3]}`;
+    if(name===EVERYWHERE){if(place)wrong.push(`${lab}/${key}: Save investigation, but the step has the page ${place.route}`);continue;}
+    const route=routeOf(name);
+    if(!place)wrong.push(`${lab}/${key}: ${name} needs a page, the step has none`);
+    else if(route!==place.route)wrong.push(`${lab}/${key}: ${name} is on ${route??'an unknown page'}, Show me where goes to ${place.route}`);
+   }
+  }
+  expect(wrong).toEqual([]);
+ });
+ it('Object X "repeat" goes to the Object X page (its first action), although the guide\'s own button returns to the observatory',()=>{
+  expect(companionPlace(at('object-x','repeat'))).toEqual({route:'object-x'});
+  expect(companionPlace(at('object-x','image'))).toEqual({route:'observatory'});
+  expect(companionPlace(at('object-x','done'))).toBeNull();
+ });
+ it('the Hubble workspace steps go to the spectrum page, the LSS wedge step to the survey until records are plotted, and the Pleiades list step opens the hot list',()=>{
+  for(const phase of ['dataset','recipe','inputs','interpret','measure'])expect(companionPlace(at('hubble',phase))).toEqual({route:'spectrum'});
+  expect(companionPlace(at('hubble','acquire'))).toEqual({route:'galaxy-exposure'});
+  expect(companionPlace(at('large-scale-structure','wedge',{wedge:false}))).toEqual({route:'lss-survey'});
+  expect(companionPlace(at('large-scale-structure','wedge',{wedge:true}))).toEqual({route:'lss-wedge'});
+  expect(companionPlace(at('pleiades','list'))).toEqual({route:'observatory',hotList:true});
+  expect(companionPlace(at('pleiades','save'))).toBeNull();
  });
 });
 

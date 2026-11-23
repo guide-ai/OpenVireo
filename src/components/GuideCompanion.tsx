@@ -1,4 +1,4 @@
-import {memo,useEffect,useId,useRef,useState} from 'react';
+import {memo,useEffect,useId,useRef,useState,type KeyboardEvent} from 'react';
 import {createPortal} from 'react-dom';
 import {companionNow,type CompanionProgress} from '../core/guideCompanion';
 import {guideTargets} from '../help/guideTargets';
@@ -32,16 +32,27 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
  /** Opens the guide's window again; a stable callback. */onFull:()=>void;/** Removes the strip; a stable callback. */onHide:()=>void}){
  const C=SHELL.companion,now=companionNow(progress),content=companionContent(progress),selectors=guideTargets(now.lab,content.target);
  const [details,setDetails]=useState(false),[missing,setMissing]=useState(false),[spot,setSpot]=useState<Element|null>(null),[box,setBox]=useState<Box|null>(null);
- const strip=useRef<HTMLElement>(null),run=useRef(0),lost=useRef(false),id=useId(),step=`${now.lab}/${content.target}`;
- // A new step (or another guide) ends a search in progress, its outline and its note. When Show me where had moved the focus
- // to a control that the page then disabled or removed (the step it belonged to is done), the focus is nowhere: it comes back
- // to the strip, which now shows the next step.
+ const strip=useRef<HTMLElement>(null),run=useRef(0),lost=useRef(false),searching=useRef(false),id=useId(),step=`${now.lab}/${content.target}`;
+ // A new step (or another guide) ends a search in progress, its outline and its note. If the page itself moved the guide on
+ // while Show me where was still looking (the classification page loads its first practice when it is shown) and the student
+ // has pressed nothing since, the search starts again for the new step, so the request is never dropped without a word. When
+ // Show me where had moved the focus to a control that the page then disabled or removed (the step it belonged to is done),
+ // the focus is nowhere: it comes back to the strip, which now shows the next step.
  useEffect(()=>{
   setMissing(false);setSpot(null);
-  if(lost.current&&document.activeElement===document.body)strip.current?.querySelector<HTMLElement>('button')?.focus({preventScroll:true});
+  if(searching.current&&selectors.length>0)show();
+  else if(lost.current&&document.activeElement===document.body)strip.current?.querySelector<HTMLElement>('button')?.focus({preventScroll:true});
+  if(!selectors.length)searching.current=false;
   lost.current=false;
   return()=>{run.current++;};
  },[step]);
+ // The student's own press or key ends a search's claim to follow the guide to its next step, and a focus that has landed
+ // anywhere since is no longer a lost one.
+ useEffect(()=>{
+  const touched=()=>{searching.current=false;},landed=()=>{lost.current=false;};
+  window.addEventListener('pointerdown',touched,true);window.addEventListener('keydown',touched,true);document.addEventListener('focusin',landed);
+  return()=>{searching.current=false;window.removeEventListener('pointerdown',touched,true);window.removeEventListener('keydown',touched,true);document.removeEventListener('focusin',landed);};
+ },[]);
  useEffect(()=>{
   const el=strip.current,root=document.documentElement;
   if(!el||typeof ResizeObserver==='undefined')return;
@@ -65,16 +76,17 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
    window.removeEventListener('pointerdown',clear,true);window.removeEventListener('keydown',clear,true);};
  },[spot]);
  function show(){
-  const token=++run.current;setMissing(false);setSpot(null);onGo();
+  const token=++run.current;searching.current=true;setMissing(false);setSpot(null);onGo();
   // After this click: React has then rendered the navigation, so the destination page is shown (or has started to load). A
   // timer, not an animation frame, so it also runs while the tab is not being painted.
   window.setTimeout(()=>{void waitForGuideTarget(selectors,SHOW_WAIT_MS,()=>run.current!==token).then(el=>{
    if(run.current!==token)return;
-   if(!el){setMissing(true);return;}
+   if(!el){searching.current=false;setMissing(true);return;}
    // One more turn: a page that has just been shown focuses its own heading in an effect of that render (and scrolls to it);
    // the step's control takes the scroll and the focus after that.
    window.setTimeout(()=>{
     if(run.current!==token)return;
+    searching.current=false;
     if(!el.isConnected){setMissing(true);return;}
     el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});focusGuideTarget(el);setSpot(el);
     // Whether that focus is later lost to nowhere (the page disabled or removed the control), read when the step changes.
@@ -83,7 +95,18 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
    },0);
   });},0);
  }
- return <aside ref={strip} className="guide-companion" aria-label={C.label} inert={inert} data-testid="guide-companion" data-lab={now.lab} data-step={now.step} data-all-done={now.allDone||undefined} data-i18n-shell="">
+ // The strip goes with the button that has the focus: the focus moves to the heading of the page shown, not to nowhere.
+ function hide(){
+  const heading=[...document.querySelectorAll<HTMLElement>('h1[tabindex="-1"]')].find(h=>h.closest('[hidden]')===null&&h.getClientRects().length>0);
+  heading?.focus({preventScroll:true});onHide();
+ }
+ // Escape closes Step details; a focus that was inside them goes to their button.
+ function keyDown(event:KeyboardEvent<HTMLElement>){
+  if(event.key!=='Escape'||!details)return;
+  if(event.target instanceof Element&&event.target.closest('.guide-companion-details'))event.currentTarget.querySelector<HTMLElement>('[aria-expanded]')?.focus({preventScroll:true});
+  setDetails(false);
+ }
+ return <aside ref={strip} className="guide-companion" aria-label={C.label} inert={inert} onKeyDown={keyDown} data-testid="guide-companion" data-lab={now.lab} data-step={now.step} data-all-done={now.allDone||undefined} data-i18n-shell="">
   {details&&<div className="guide-companion-details" id={`${id}-d`} role="group" aria-label={C.details} data-testid="guide-companion-details">{content.details}</div>}
   <div className="guide-companion-row">
    <div className="guide-companion-text">
@@ -95,7 +118,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
     {selectors.length>0&&<button type="button" className="primary-button" data-testid="guide-companion-show" onClick={show}>{C.show}</button>}
     <button type="button" className="secondary-button" aria-expanded={details} aria-controls={details?`${id}-d`:undefined} data-testid="guide-companion-details-toggle" onClick={()=>setDetails(v=>!v)}>{C.details}</button>
     <button type="button" className="secondary-button" data-testid="guide-companion-full" onClick={onFull}>{C.full}</button>
-    <button type="button" className="text-button" aria-label={C.hideName} data-testid="guide-companion-hide" onClick={onHide}>{C.hide}</button>
+    <button type="button" className="text-button" aria-label={C.hideName} data-testid="guide-companion-hide" onClick={hide}>{C.hide}</button>
    </div>
   </div>
   {box&&createPortal(<div className="guide-companion-spot" data-testid="guide-companion-spot" aria-hidden="true" style={{left:box.left,top:box.top,width:box.width,height:box.height}}/>,document.body)}

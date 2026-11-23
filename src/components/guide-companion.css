@@ -1,11 +1,12 @@
 /* Front GUIDE-COMPANION [W] (user decision, 2026-11-23): the strip that keeps the current step of the guide in use at the bottom
    of every page (GuideCompanion.tsx). Fixed 8 px above the bottom of the viewport, as wide as the page bar and the cards (the
-   content area: beside the fixed sidebar from 1100 px up). Its z-index (16) keeps it above route content and the page bar (15),
-   under the sidebar (20), the popup and member windows and the modal backdrops (20-50). One row from 900 px up (text, then the
+   content area: beside the fixed sidebar from 1100 px up). Its z-index (14) keeps it above route content and under the page bar (15), whose
+   Help and More menus may reach the bottom of a short window, the sidebar (20), the popup and member windows and the modal
+   backdrops (20-50). One row from 900 px up (text, then the
    actions); below that the actions go under the text; on a phone it never takes more than 45% of the screen (it scrolls
    inside). Text wraps and is never cut. --ov-companion-height comes from GuideCompanion.tsx: the page ends that much lower, and
    scrolling to a focused or anchored control stops above the strip (WCAG 2.4.11). Logical properties throughout (rtl.css). */
-.guide-companion{position:fixed;z-index:16;box-sizing:border-box;inset-block-end:8px;inset-inline:30px;max-width:1500px;max-height:60vh;max-height:60dvh;margin-inline:auto;overflow-y:auto;overscroll-behavior:contain;
+.guide-companion{position:fixed;z-index:14;box-sizing:border-box;inset-block-end:8px;inset-inline:30px;max-width:1500px;max-height:60vh;max-height:60dvh;margin-inline:auto;overflow-y:auto;overscroll-behavior:contain;
  padding-block:10px;padding-inline:16px 12px;border:1px solid var(--ov-border-strong);border-inline-start:4px solid var(--ov-accent);border-radius:var(--ov-radius-md);background:var(--ov-surface);color:var(--ov-text);box-shadow:var(--ov-shadow-lg),0 0 0 8px var(--ov-bg)}
 @media(min-width:1100px){.guide-companion{inset-inline-start:calc(var(--ov-sidebar-width) + 30px)}}
 @media(max-width:1150px){.guide-companion{inset-inline:16px}}
