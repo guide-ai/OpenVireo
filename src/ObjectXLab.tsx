@@ -202,7 +202,7 @@ function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRA
  return <main className="observatory-main objectx-lab" data-testid="objectx-lab">
   <div className="observatory-heading"><h1 tabIndex={-1}>{M.title}</h1><p>{M.scope}</p></div>
   <fieldset className="card" disabled={disabled}><legend><h2>{M.startTitle}</h2></legend>
-   <label>{M.idLabel}<input value={inv.id} maxLength={OBJECT_X_ID_MAX} onChange={e=>{const id=e.target.value;if(observatoryIdEditable(id))update(i=>({...i,id}));}}/></label>
+   <label>{M.idLabel}<input data-testid="objectx-id" value={inv.id} maxLength={OBJECT_X_ID_MAX} onChange={e=>{const id=e.target.value;if(observatoryIdEditable(id))update(i=>({...i,id}));}}/></label>
    <p className="observatory-note">{M.idHelp}</p>
    {htlError?<p role="alert">{M.targetsError}</p>:!htl?<p>{M.loadingTargets}</p>:<>
     <label>{M.targetLabel}<select data-testid="objectx-target" value={inv.target??''} onChange={e=>{const code=e.target.value||null;update(i=>i.revealed?i:{...i,target:code});}}>
@@ -212,9 +212,9 @@ function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRA
     <p className="observatory-note">{M.targetHelp}</p>
     {target&&<p data-testid="objectx-coordinates"><strong>{target.code}</strong> — {M.targetCoords(formatSexagesimal(target.ra,'ra'),formatSexagesimal(target.dec,'dec'))}</p>}
    </>}
-   <label>{M.dateLabel}<input value={dateText} maxLength={19} onChange={e=>setDateText(e.target.value.trim())} placeholder={M.datePlaceholder}/></label>
+   <label>{M.dateLabel}<input data-testid="objectx-date" value={dateText} maxLength={19} onChange={e=>setDateText(e.target.value.trim())} placeholder={M.datePlaceholder}/></label>
    <p className="observatory-note">{M.dateHelp}</p>
-   <button className="secondary-button" onClick={setClock}>{M.setClock}</button>
+   <button className="secondary-button" data-testid="objectx-set-clock" onClick={setClock}>{M.setClock}</button>
    {notice&&<p role="status">{notice}</p>}
   </fieldset>
 
@@ -225,7 +225,7 @@ function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRA
       {SELECTABLE_ORBIT_FILES.map(id=><option key={id} value={id}>{M.orbitNames[id]}</option>)}</select></label>
      <p className="observatory-note">{M.orbitNote}</p>
      <label>{M.limitLabel}<input type="number" step="0.5" min={-5} max={30} value={inv.limit} disabled={disabled} onChange={e=>{const v=Number(e.target.value);if(Number.isFinite(v)&&v>=-5&&v<=30)update(i=>({...i,limit:v}));}} onBlur={()=>{if(listRef.current&&listRef.current.limit!==invRef.current.limit)rebuildNow(undefined,invRef.current.limit);}}/></label>
-     <div className="button-row"><button className="secondary-button" disabled={disabled||progress!==null} onClick={()=>{let jd:number;try{jd=jdOfUtc(clockUtc());}catch{return;}void buildList(jd);}}>{M.buildList}</button></div>
+     <div className="button-row"><button className="secondary-button" data-testid="objectx-build-list" disabled={disabled||progress!==null} onClick={()=>{let jd:number;try{jd=jdOfUtc(clockUtc());}catch{return;}void buildList(jd);}}>{M.buildList}</button></div>
      {/* QA1 closure (Low): a hidden sizer with the longest status and note keeps this box's height, so Copy below does not move. */}
      <div className="objectx-list-box"><div className="objectx-list-sizer" aria-hidden="true"><p>{M.listBuilt(99999,99999,99999,'2009-06-01 04:00:00')}</p><p className="observatory-note">{M.listErrors(99999)}</p></div>
      <div><p role="status" data-testid="objectx-list-status">{progress?M.building(progress[0],progress[1]):listError?M.listError:list?M.listBuilt(list.entries.length,list.neaCount,list.oppositionCount,utOfJd(list.jd)):M.noList}</p>
@@ -253,12 +253,12 @@ function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRA
    {fitsError&&<p role="alert">{fitsError}</p>}
   </section>
 
-  <section className="card" aria-labelledby="objectx-measure"><h2 id="objectx-measure">{M.measureTitle}</h2>
+  <section className="card" aria-labelledby="objectx-measure" data-testid="objectx-measure-section"><h2 id="objectx-measure">{M.measureTitle}</h2>
    {inv.images.length<2?<p>{M.measureNeedTwo}</p>:<>
     <div className="button-row">
      {(['first','second'] as const).map((part,p)=><label key={part}>{p?M.measureSecond:M.measureFirst}<select data-testid={`objectx-measure-${part}`} disabled={disabled} value={inv.measure?inv.measure[part]:p} onChange={e=>chooseMeasure(part,Number(e.target.value))}>
       {inv.images.map((m,i)=><option key={m.sha256} value={i}>{m.label}</option>)}</select></label>)}
-     {!inv.measure&&<button className="secondary-button" disabled={disabled} onClick={()=>update(i=>({...i,measure:{first:0,second:1},log:[]}))}>{OBJECT_X_MEASURE.title}</button>}
+     {!inv.measure&&<button className="secondary-button" data-testid="objectx-measure-start" disabled={disabled} onClick={()=>update(i=>({...i,measure:{first:0,second:1},log:[]}))}>{OBJECT_X_MEASURE.title}</button>}
     </div>
     {inv.measure&&(frames?<ObjectXMeasure frames={frames} log={inv.log} active={active&&!busy} onLogChange={(log:MeasurementLog)=>update(i=>({...i,log}))}/>:<p>{M.measureNotLoaded}</p>)}
    </>}
@@ -275,9 +275,9 @@ function ObjectXLab({sessionId=null,editMode=false,spectralRange=DEFAULT_SPECTRA
     {OBJECT_X_KINDS.map(k=><label key={k}><input type="radio" name="objectx-answer" checked={inv.answer===k} disabled={inv.revealed} onChange={()=>update(i=>i.revealed?i:{...i,answer:k})}/>{kindName(k)}</label>)}
     {inv.revealed&&<p className="observatory-note">{M.answerFrozen}</p>}
    </fieldset>
-   <label>{M.describeLabel}<textarea rows={4} maxLength={4000} value={inv.description} onChange={e=>{const d=e.target.value;update(i=>({...i,description:d}));}}/></label>
+   <label>{M.describeLabel}<textarea data-testid="objectx-description" rows={4} maxLength={4000} value={inv.description} onChange={e=>{const d=e.target.value;update(i=>({...i,description:d}));}}/></label>
    {!inv.revealed&&<div className="button-row">
-    {!confirmReveal?<button className="secondary-button" disabled={!inv.target||!htl} onClick={()=>inv.answer?setConfirmReveal(true):setNotice(M.revealNeedAnswer)}>{M.reveal}</button>
+    {!confirmReveal?<button className="secondary-button" data-testid="objectx-reveal-button" disabled={!inv.target||!htl} onClick={()=>inv.answer?setConfirmReveal(true):setNotice(M.revealNeedAnswer)}>{M.reveal}</button>
      :<><span>{M.revealConfirm}</span><button className="primary-button" onClick={()=>{update(i=>({...i,revealed:true}));setConfirmReveal(false);}}>{M.reveal}</button></>}
    </div>}
    {reveal&&<div data-testid="objectx-reveal" role="status"><p>{M.revealed(reveal.id,reveal.remarks)}</p>{reveal.kind&&<p>{M.verdict(reveal.kind===inv.answer,kindName(reveal.kind),reveal.kind)}</p>}</div>}

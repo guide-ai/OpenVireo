@@ -9,6 +9,7 @@ export const APP_SHELL_HI:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
  toolsMenu:'मेनू',
  skipToContent:'सीधे सामग्री पर जाएँ',
  pageBar:Object.freeze({label:'जाँच, भाषा और सहायता',more:'अधिक',moreName:'अधिक जाँच क्रियाएँ'}),
+ companion:Object.freeze({label:'गाइड का मौजूदा चरण',stepOf:(n:number,total:number)=>`चरण ${n} / ${total}`,actions:'गाइड की क्रियाएँ',show:'कहाँ है, दिखाएँ',details:'चरण का विवरण',full:'पूरा गाइड',hide:'छिपाएँ',hideName:'छिपाएँ: यह गाइड',notYet:'यह नियंत्रण अभी स्क्रीन पर नहीं है; पहले की किसी क्रिया के बाद दिखाई देगा। आप सही पेज पर हैं।',allDone:'सभी चरण पूरे हो गए हैं।'}),
  recovery:Object.freeze({
   updatedTitle:'OpenVireo का नया संस्करण प्रकाशित हुआ है',
   updated:'साइट का यह हिस्सा लोड नहीं हो सका, क्योंकि यह पेज खुला होने के दौरान साइट अपडेट हो गई।',

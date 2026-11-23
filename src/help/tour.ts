@@ -19,7 +19,7 @@ export const TOUR_EN=Object.freeze({
   sections:Object.freeze({title:'Every page is in the menu',
    text:'Pages are grouped into sections: the optical and radio observatories, analysis tools, results and files. Click a section\'s name to open or close it. On a phone, the menu is behind the Tools button.'}),
   guides:Object.freeze({title:'Doing an exercise? Start with its guide',
-   text:'Each exercise has a guide that lists every step, ticks off what you have done and takes you to the right page.'}),
+   text:'Each exercise has a guide that lists every step, ticks off what you have done and takes you to the right page. After you close it, the current step stays at the bottom of the page.'}),
   observatory:Object.freeze({title:'Or explore the sky freely',
    text:'On the Observatory page: open the dome, choose an object and point the telescope. Then turn tracking on and use an instrument.'}),
   save:Object.freeze({title:'Save your work as a file',

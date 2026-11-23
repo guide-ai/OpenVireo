@@ -1,6 +1,7 @@
 import type {RefObject} from 'react';
 import {t} from './i18n';
 import {CLUSTER_LAB_STEPS,type ClusterLabProgress,type ClusterLabStep,type ClusterOwnStatus} from './core/clusterLab';
+import {clusterNextText,clusterStepBody} from './ClusterLabGuideText';
 import './hubble-lab.css';
 
 /** WEB-CLUSTER-GUIDE-01: the cluster HR (E05) guide for the database route, with the HubbleLabGuide layout. Every check
@@ -17,7 +18,7 @@ export default function ClusterLabGuide({dialogRef,progress,cluster,onNavigate,o
    <h3 id="cluster-lab-progress-heading">{t('clusterLab.progress')}</h3>
    <p data-testid="cluster-lab-counts" role="status">{t('clusterLab.counts',{done:progress.doneCount,total:CLUSTER_LAB_STEPS.length})}</p>
    <p data-testid="cluster-lab-active">{cluster===null?t('clusterLab.noDataset'):t('clusterLab.dataset',{cluster})}</p>
-   <p className="cluster-lab-next" data-testid="cluster-lab-next" data-next={progress.next}>{t(`clusterLab.next.${progress.next}`)}</p>
+   <p className="cluster-lab-next" data-testid="cluster-lab-next" data-next={progress.next}>{clusterNextText(progress.next)}</p>
    {progress.next!=='preserve'&&<button className="secondary-button" data-testid="cluster-lab-continue" onClick={()=>{if(progress.next!=='preserve')go(progress.next);}}>{t('clusterLab.continue')}</button>}
    <p>{t('clusterLab.progressHelp')}</p>
   </section>
@@ -25,7 +26,7 @@ export default function ClusterLabGuide({dialogRef,progress,cluster,onNavigate,o
    {CLUSTER_LAB_STEPS.map(step=><li key={step} data-testid={`cluster-lab-step-${step}`} data-done={progress.done[step]} data-next={progress.next===step||undefined}>
     <h3><span aria-hidden="true">{progress.done[step]?'✓':'○'}</span> {t(`clusterLab.step.${step}.title`)}</h3>
     <p data-testid={`cluster-lab-status-${step}`}>{t(progress.done[step]?'clusterLab.status.done':'clusterLab.status.notYet')}</p>
-    <p>{t(`clusterLab.step.${step}.help`)}</p>
+    {clusterStepBody(step)}
     <button className="secondary-button" onClick={()=>go(step)}>{t('clusterLab.go')}</button>
    </li>)}
   </ol>

@@ -1,0 +1,40 @@
+/* Front GUIDE-COMPANION [W] (user decision, 2026-11-23): the strip that keeps the current step of the guide in use at the bottom
+   of every page (GuideCompanion.tsx). Fixed 8 px above the bottom of the viewport, as wide as the page bar and the cards (the
+   content area: beside the fixed sidebar from 1100 px up). Its z-index (16) keeps it above route content and the page bar (15),
+   under the sidebar (20), the popup and member windows and the modal backdrops (20-50). One row from 900 px up (text, then the
+   actions); below that the actions go under the text; on a phone it never takes more than 45% of the screen (it scrolls
+   inside). Text wraps and is never cut. --ov-companion-height comes from GuideCompanion.tsx: the page ends that much lower, and
+   scrolling to a focused or anchored control stops above the strip (WCAG 2.4.11). Logical properties throughout (rtl.css). */
+.guide-companion{position:fixed;z-index:16;box-sizing:border-box;inset-block-end:8px;inset-inline:30px;max-width:1500px;max-height:60vh;max-height:60dvh;margin-inline:auto;overflow-y:auto;overscroll-behavior:contain;
+ padding-block:10px;padding-inline:16px 12px;border:1px solid var(--ov-border-strong);border-inline-start:4px solid var(--ov-accent);border-radius:var(--ov-radius-md);background:var(--ov-surface);color:var(--ov-text);box-shadow:var(--ov-shadow-lg),0 0 0 8px var(--ov-bg)}
+@media(min-width:1100px){.guide-companion{inset-inline-start:calc(var(--ov-sidebar-width) + 30px)}}
+@media(max-width:1150px){.guide-companion{inset-inline:16px}}
+@media(min-width:1100px) and (max-width:1150px){.guide-companion{inset-inline-start:calc(var(--ov-sidebar-width) + 16px)}}
+@media(max-width:520px){.guide-companion{inset-inline:12px;padding:8px 10px}}
+@media(max-width:599.98px){.guide-companion{max-height:45vh;max-height:45dvh}}
+.guide-companion-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;min-width:0}
+.guide-companion-text{flex:1 1 24rem;min-width:0;overflow-wrap:break-word}
+.guide-companion-text p{margin:0}
+.guide-companion-place{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 10px;font-size:var(--ov-text-xs);color:var(--ov-text-muted)}
+.guide-companion-place strong{color:var(--ov-text);font-weight:650;letter-spacing:.02em}
+.guide-companion-next{margin-block-start:2px!important;font-size:var(--ov-text-sm);line-height:1.5}
+.guide-companion-missing{font-size:var(--ov-text-sm);line-height:1.5;color:var(--ov-text-muted)}
+.guide-companion-missing:empty{display:none}
+.guide-companion-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0}
+.guide-companion-actions button{width:auto;flex:none;margin:0;min-height:36px;padding:6px 12px;font-size:13px;line-height:1.2}
+.guide-companion-actions .text-button{padding-inline:8px}
+.guide-companion :focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
+.guide-companion-details{margin-block-end:10px;padding-block-end:10px;border-block-end:1px solid var(--ov-border);font-size:var(--ov-text-sm);line-height:1.6}
+.guide-companion-details p,.guide-companion-details ul{margin-block:0 6px}
+.guide-companion-details>:last-child{margin-block-end:0}
+@media(max-width:599.98px){.guide-companion-actions button{min-height:40px}}
+/* The page ends below the strip, and a control scrolled to (focus, an anchor, scrollIntoView) stops above it. */
+body:has(.guide-companion){padding-block-end:calc(var(--ov-companion-height,4rem) + 24px)}
+:root:has(.guide-companion){scroll-padding-bottom:calc(var(--ov-companion-height,4rem) + 24px)}
+/* While a guide's own window is open the strip would repeat it. */
+body:has(dialog.hubble-lab-dialog[open]) .guide-companion{display:none}
+/* Show me where: an outline around the step's control, above the page and the page bar and under the sidebar and every window.
+   It never dims the page or takes a click. `outline`, so it stays visible in forced colours; physical left/top (viewport
+   coordinates from the control's own box). */
+.guide-companion-spot{position:fixed;z-index:19;border-radius:var(--ov-radius-md);outline:3px solid var(--ov-accent);box-shadow:0 0 0 6px color-mix(in srgb,var(--ov-accent) 25%,transparent);pointer-events:none}
+@media print{.guide-companion,.guide-companion-spot{display:none!important}body:has(.guide-companion){padding-block-end:0}}

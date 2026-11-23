@@ -9,6 +9,7 @@ export const APP_SHELL_ZH_HANT:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.
  toolsMenu:'選單',
  skipToContent:'跳到主要內容',
  pageBar:Object.freeze({label:'探究、語言和說明',more:'更多',moreName:'更多探究操作'}),
+ companion:Object.freeze({label:'指南的目前步驟',stepOf:(n:number,total:number)=>`第${n}步，共${total}步`,actions:'指南操作',show:'帶我前往',details:'步驟詳情',full:'完整指南',hide:'隱藏',hideName:'隱藏此指南',notYet:'該控制項尚未出現在畫面上；它會在先前的某個操作之後出現。這是正確的頁面。',allDone:'所有步驟都已完成。'}),
  recovery:Object.freeze({
   updatedTitle:'OpenVireo已發布新版本',
   updated:'此頁面開啟期間網站已更新，因此網站的這一部分無法載入。',

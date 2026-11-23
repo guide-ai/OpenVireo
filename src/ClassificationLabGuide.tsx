@@ -7,6 +7,15 @@ import './hubble-lab.css';
 import './pulsar-lab.css';
 import './pleiades-lab.css';
 
+/** Front GUIDE-COMPANION: what the guide says under a step's heading and status, shared with the companion strip's Step
+ * details. `ids` false (the companion) leaves out the test ids: the closed guide is still in the document. */
+export function classificationStepBody(step:ClassificationLabStep,ids=true){
+ return <>
+    <p>{t(`classLab.step.${step}.help`)}</p>
+    {step==='inspect'&&<ul data-testid={ids?'classification-lab-tools':undefined}><li>{t('classLab.step.inspect.table')}</li><li>{t('classLab.step.inspect.width')}</li><li>{t('classLab.step.inspect.reverse')}</li></ul>}
+ </>;
+}
+
 /** WEB-CLASSIFICATION-GUIDE-01: the Stellar classification (E03) guide, with the PleiadesLabGuide layout. Every mark is
  * recomputed from the current state by classificationLabProgress; nothing is stored. It gives no answer and grades nothing. */
 function ClassificationLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:ClassificationLabProgress;onNavigate:()=>void}){
@@ -31,8 +40,7 @@ function ClassificationLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefOb
    {CLASSIFICATION_LAB_STEPS.map(step=><li key={step} data-testid={`classification-lab-step-${step}`} data-done={progress.done[step]} data-next={progress.next===step||undefined} data-counted={step!=='save'}>
     <h3><span className="pleiades-lab-mark" aria-hidden="true" data-done={progress.done[step]}/>{t(`classLab.step.${step}.title`)}</h3>
     <p className="pulsar-lab-status" data-testid={`classification-lab-status-${step}`}>{statusText(step)}</p>
-    <p>{t(`classLab.step.${step}.help`)}</p>
-    {step==='inspect'&&<ul data-testid="classification-lab-tools"><li>{t('classLab.step.inspect.table')}</li><li>{t('classLab.step.inspect.width')}</li><li>{t('classLab.step.inspect.reverse')}</li></ul>}
+    {classificationStepBody(step)}
     <button className="secondary-button" onClick={go}>{t('classLab.goClassification')}</button>
    </li>)}
   </ol>

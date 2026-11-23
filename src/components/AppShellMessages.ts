@@ -12,6 +12,11 @@ export type AppShellMessageCatalog=Readonly<{
  /** Front HEADER [W]: the page bar at the top of the content area (src/components/PageBar.tsx). `label` names its region; `more` is the
   * visible word of the button beside Save investigation and must start `moreName`, its accessible name (WCAG 2.5.3). */
  pageBar:Readonly<{label:string;more:string;moreName:string}>;
+ /** Front GUIDE-COMPANION [W]: the strip that keeps the guide in use on every page (src/components/GuideCompanion.tsx). `label`
+  * names its region; `stepOf` follows the guide's name; `show`, `details`, `full` and `hide` are its buttons (`hide` must start
+  * `hideName`, its accessible name, WCAG 2.5.3); `notYet` is shown when Show me where finds no control on screen; `allDone` when
+  * a guide without a closing line of its own (LSS, Object X) has every step done. */
+ companion:Readonly<{label:string;stepOf:(n:number,total:number)=>string;actions:string;show:string;details:string;full:string;hide:string;hideName:string;notYet:string;allDone:string}>;
  /** Front REL1 review 1 M1 [W]: a part of the site that cannot load or stopped with an error (src/components/LazyBoundary.tsx). */
  recovery:Readonly<{updatedTitle:string;updated:string;errorTitle:string;error:string;kept:string;saveFirst:string;saveHow:string;save:string;reload:string}>;
 }>;
@@ -23,6 +28,8 @@ export const APP_SHELL_MESSAGES_EN:AppShellMessageCatalog=Object.freeze({
  toolsMenu:'Menu',
  skipToContent:'Skip to content',
  pageBar:Object.freeze({label:'Investigation, language and help',more:'More',moreName:'More investigation actions'}),
+ companion:Object.freeze({label:'Current step of the guide',stepOf:(n:number,total:number)=>`Step ${n} of ${total}`,actions:'Guide actions',show:'Show me where',details:'Step details',full:'Full guide',hide:'Hide',hideName:'Hide this guide',
+  notYet:'That control is not on screen yet; it appears after an earlier action. This is the right page.',allDone:'Every step is done.'}),
  recovery:Object.freeze({
   updatedTitle:'A new version of OpenVireo was published',
   updated:'This part of the site could not be loaded because the site was updated while this page was open.',

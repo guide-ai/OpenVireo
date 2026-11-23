@@ -265,7 +265,7 @@ function CameraControl({scopeUse,objectXHidden=null,vireoId='',showObjectId=fals
   {currentParameters&&<p className="observatory-note" data-testid="camera-parameters-note">{t('cameraParameters.cameraNote',{fields:uncertifiedExposureFields(currentParameters,camera).map(cameraParameterLabel).join(', ')})}</p>}
   {!validExposure&&<p className="camera-invalid" role="alert">{M.invalidExposure}</p>}
   <div className="button-row">
-   <button className="primary-button" disabled={!ready||!validExposure||running} onClick={start}>{M.start}</button>
+   <button className="primary-button" data-testid="camera-start" disabled={!ready||!validExposure||running} onClick={start}>{M.start}</button>
    <button className="secondary-button" disabled={!running||gate.phase==='releasing'} onClick={stop}>{M.stop}</button>
   </div>
   <p role="status" aria-live="polite" data-testid="camera-status">{!ready&&!running?(busy||!active?M.statusUnavailable:M.statusNotReady(M.accessReason[access]??'')):message}</p>

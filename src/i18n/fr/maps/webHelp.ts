@@ -27,6 +27,7 @@ const START={title:'Pour commencer',topics:[
  topic('Guides des TP',[
   p('Le groupe Guides des TP de l’en-tête a un bouton par exercice : Guide du TP Hubble, Guide LSS, Guide de l’Objet X, Guide des pulsars, Guide du TP Pléiades, Guide de classification et Guide du diagramme HR des amas.'),
   p('Un guide s’ouvre dans une fenêtre aux étapes numérotées. Une coche marque chaque étape terminée, et un bouton comme Continuer vers l’étape suivante ou Aller à l’étape suivante vous mène à la page de l’étape suivante. Fermez le guide quand vous voulez et rouvrez-le depuis l’en-tête ; votre progression est conservée tant que l’onglet reste ouvert.'),
+  p('Après la fermeture d’un guide, son étape en cours reste dans une bande en bas de chaque page. Me montrer où vous mène au contrôle de cette étape et l’entoure, Détails de l’étape affiche le texte du guide pour cette étape, Guide complet rouvre le guide et Masquer retire la bande. La bande passe d’elle-même à l’étape suivante au fil de votre travail. Comme le guide, elle montre ce que vous avez fait et ne juge jamais un résultat.'),
   p('Ouvrir un guide lance aussi l’exercice, comme le faisait le choix d’un exercice dans VIREO : cela fixe les télescopes ouverts (voir Télescopes et Demander du temps) et l’affichage ou non des noms et des magnitudes des objets. Dans l’exercice de l’Objet X, l’identité de l’objet reste cachée jusqu’à ce que vous la révéliez.'),
  ]),
  topic('Si vous venez de VIREO (Windows)',[

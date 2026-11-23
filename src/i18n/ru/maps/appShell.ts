@@ -9,6 +9,7 @@ export const APP_SHELL_RU:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
  toolsMenu:'Меню',
  skipToContent:'Перейти к содержимому',
  pageBar:Object.freeze({label:'Исследование, язык и справка',more:'Ещё',moreName:'Ещё действия с исследованием'}),
+ companion:Object.freeze({label:'Текущий шаг руководства',stepOf:(n:number,total:number)=>`Шаг ${n} из ${total}`,actions:'Действия руководства',show:'Показать, где',details:'Описание шага',full:'Всё руководство',hide:'Скрыть',hideName:'Скрыть это руководство',notYet:'Этого элемента пока нет на экране: он появится после одного из предыдущих действий. Вы на нужной странице.',allDone:'Все шаги выполнены.'}),
  recovery:Object.freeze({
   updatedTitle:'Опубликована новая версия OpenVireo',
   updated:'Эту часть сайта не удалось загрузить, потому что сайт обновился, пока эта страница была открыта.',
