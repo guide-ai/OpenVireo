@@ -70,8 +70,9 @@ The sequence (`GuideCompanion.tsx` `show`):
    focused and outlined. The outline follows the control and goes at the student's next press or key, when the step changes, or
    after 6 s.
 4. While the outline is shown the control keeps both: a page whose module finishes loading late focuses its own heading (and
-   scrolls to it), which would leave the control under the strip, so a heading that takes the focus gives it back, unless the
-   student has pressed something in between.
+   scrolls to it), which would leave the control under the strip, so a heading that takes the focus gives it back. If a
+   disabled control had to be outlined (a list that loaded slowly) and the page then enables the step's control, the outline
+   and the focus move to it. Both stop as soon as the student presses, types or scrolls.
 5. If no control is on the page, the strip says so ("That control is not on screen yet…") and outlines nothing.
 
 If the page itself moves the guide on while step 2 is still waiting (the classification page loads its first practice when it
@@ -125,4 +126,5 @@ the rest of Object X "image" (m2), and Pulsars "point". "Step n of m" stays outs
 announced when it changes. Mid-exercise Show me where is tested for Hubble, LSS, the cluster HR and pulsars; Object X's later
 steps (which need two exposures) are covered by the page-of-step test only. The coordinator's own screenshots then showed, once
 in three runs on a phone-sized window, the page's heading focus arriving after the control's and leaving the control under the
-strip; step 4 of Show me where closes that race and the strip's life test forces it.
+strip, or a disabled control outlined beside the enabled one; step 4 of Show me where closes both and the strip's life test
+forces the first.

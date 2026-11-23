@@ -169,6 +169,24 @@ test('Cluster HR: from another page, Full guide goes to the cluster database and
  await expect(id(page,'guide-companion-next')).toHaveText('Next: open the reference data values or choose a point to inspect.');
 });
 
+test('when every control of the step is disabled the first is outlined, and the outline and the focus move once the page enables one',async({page})=>{
+ await openGuide(page,'large-scale-structure');await closeGuide(page);
+ await show(page);
+ const field=page.locator('#lss-field'),load=id(page,'lss-load-list');
+ await expect(field).toBeFocused();await expect(load).toBeDisabled();
+ // A list that loads slowly keeps the field selector disabled too (set here by hand; React does not write it back).
+ await field.evaluate(el=>{(el as HTMLSelectElement).disabled=true;});
+ await id(page,'guide-companion-show').click();
+ await expect(id(page,'guide-companion-spot')).toBeVisible({timeout:15_000});
+ const spot=await box(page,'guide-companion-spot'),button=(await load.boundingBox())!;
+ expect(spot.y).toBeLessThan(button.y);expect(spot.y+spot.height).toBeGreaterThan(button.y+button.height);
+ await field.evaluate(el=>{(el as HTMLSelectElement).disabled=false;});
+ await expect(field).toBeFocused();
+ const moved=await box(page,'guide-companion-spot'),select=(await field.boundingBox())!;
+ expect(moved.y).toBeLessThan(select.y);expect(moved.y+moved.height).toBeGreaterThan(select.y+select.height);
+ expect(moved.y+moved.height).toBeLessThan(button.y+button.height);
+});
+
 test('a step whose control is not on the page yet says so, after waiting, and outlines nothing',async({page})=>{
  await openGuide(page,'pulsars');await closeGuide(page);
  await page.goto('/#radio-control');await expect(id(page,'radio-exercise-start')).toBeVisible({timeout:20_000});

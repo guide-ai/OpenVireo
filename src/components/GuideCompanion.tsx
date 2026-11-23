@@ -2,7 +2,7 @@ import {memo,useEffect,useId,useRef,useState,type KeyboardEvent} from 'react';
 import {createPortal} from 'react-dom';
 import {companionNow,type CompanionProgress} from '../core/guideCompanion';
 import {guideTargets} from '../help/guideTargets';
-import {clippedBox,focusGuideTarget,viewSize,waitForGuideTarget} from '../help/spot';
+import {clippedBox,findGuideTarget,focusGuideTarget,revealGuideTarget,viewSize,waitForGuideTarget} from '../help/spot';
 import {spotBox,type Box} from '../help/tourPlacement';
 import {sameData} from '../renderStability';
 import {APP_SHELL_MESSAGES as SHELL} from './AppShellMessages';
@@ -32,7 +32,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
  /** Opens the guide's window again; a stable callback. */onFull:()=>void;/** Removes the strip; a stable callback. */onHide:()=>void}){
  const C=SHELL.companion,now=companionNow(progress),content=companionContent(progress),selectors=guideTargets(now.lab,content.target);
  const [details,setDetails]=useState(false),[missing,setMissing]=useState(false),[spot,setSpot]=useState<Element|null>(null),[box,setBox]=useState<Box|null>(null);
- const strip=useRef<HTMLElement>(null),run=useRef(0),lost=useRef(false),searching=useRef(false),held=useRef<{token:number;until:number;place:()=>void}|null>(null),id=useId(),step=`${now.lab}/${content.target}`;
+ const strip=useRef<HTMLElement>(null),run=useRef(0),lost=useRef(false),searching=useRef(false),held=useRef<{token:number;el:Element}|null>(null),id=useId(),step=`${now.lab}/${content.target}`;
  // A new step (or another guide) ends a search in progress, its outline and its note. If the page itself moved the guide on
  // while Show me where was still looking (the classification page loads its first practice when it is shown) and the student
  // has pressed nothing since, the search starts again for the new step, so the request is never dropped without a word. When
@@ -46,18 +46,27 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
   lost.current=false;
   return()=>{run.current++;};
  },[step]);
- // The student's own press or key ends a search's claim to follow the guide to its next step, and a focus that has landed
- // anywhere since is no longer a lost one. A page that is still being shown may focus its own heading (and scroll to it) a
- // moment after the control was outlined (its module finished loading), which would leave the control under the strip: while
- // the outline is shown (SPOT_MS) the control takes the
- // focus and the scroll back from a heading, unless the student has pressed, typed or scrolled (Skip to content focuses a
- // heading too).
+ // Puts a control in the middle of the window and gives it the focus.
+ function place(el:Element){
+  if(!el.isConnected)return;
+  el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});focusGuideTarget(el);
+  // Whether that focus is later lost to nowhere (the page disabled or removed the control), read when the step changes.
+  const focused=document.activeElement;lost.current=false;
+  if(focused&&(focused===el||el.contains(focused)))focused.addEventListener('focusout',()=>{window.setTimeout(()=>{lost.current=document.activeElement===document.body;},0);},{once:true});
+ }
+ /** Outlines `el` as the control found by the search `token`, and holds it there while the outline is shown (`held`). */
+ function point(el:Element,token:number){place(el);setSpot(el);held.current={token,el};}
+ // The student's own press, key or scroll ends a search's claim to follow the guide to its next step and the hold of the
+ // outlined control, and a focus that has landed anywhere since is no longer a lost one. The hold: a page that is still being
+ // shown may focus its own heading (and scroll to it) a moment after the control was outlined, when its module finishes
+ // loading, which would leave the control under the strip; while the outline is shown the control takes the focus and the
+ // scroll back from a heading (Skip to content focuses a heading too, after a key).
  useEffect(()=>{
   const touched=()=>{searching.current=false;held.current=null;};
   const landed=(event:FocusEvent)=>{
    lost.current=false;
    const hold=held.current;
-   if(hold&&event.target instanceof HTMLHeadingElement&&hold.token===run.current&&performance.now()<hold.until)hold.place();
+   if(hold&&hold.token===run.current&&event.target instanceof HTMLHeadingElement)place(hold.el);
   };
   window.addEventListener('pointerdown',touched,true);window.addEventListener('keydown',touched,true);window.addEventListener('wheel',touched,{capture:true,passive:true});document.addEventListener('focusin',landed);
   return()=>{searching.current=false;held.current=null;window.removeEventListener('pointerdown',touched,true);window.removeEventListener('keydown',touched,true);window.removeEventListener('wheel',touched,true);document.removeEventListener('focusin',landed);};
@@ -77,13 +86,22 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
   const measure=()=>{const view=viewSize(),clip=spot.isConnected?clippedBox(spot,view):null,next=clip?spotBox(clip,view,SPOT_PAD):null;setBox(old=>sameData(old,next)?old:next);};
   const again=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(measure);},clear=()=>setSpot(null);
   measure();
-  // The page can still move under the outline without a scroll (a part that finishes loading above the control).
-  // The same check retries the focus that a heading took while the control was disabled for a moment (see `held`).
-  const timer=window.setTimeout(clear,SPOT_MS),settle=window.setInterval(()=>{measure();const hold=held.current;if(hold&&hold.token===run.current&&document.activeElement instanceof HTMLHeadingElement)hold.place();},250);
+  const disabled=(el:Element)=>el.matches(':disabled')||el.closest('[aria-disabled="true"]')!==null;
+  // The page can still move under the outline without a scroll (a part that finishes loading above the control). While the
+  // control is held, the same check moves the outline when a disabled control had to be outlined and the page has now enabled
+  // the step's control (a list that loaded slowly), and retries a focus that a heading still has.
+  const timer=window.setTimeout(clear,SPOT_MS),settle=window.setInterval(()=>{
+   measure();
+   const hold=held.current;
+   if(!hold||hold.token!==run.current||hold.el!==spot)return;
+   const found=disabled(spot)?findGuideTarget(selectors):null;
+   if(found?.enabled&&found.el!==spot&&revealGuideTarget(found.el)){point(found.el,hold.token);return;}
+   if(document.activeElement instanceof HTMLHeadingElement)place(spot);
+  },250);
   window.addEventListener('resize',again);window.addEventListener('scroll',again,true);
   window.addEventListener('pointerdown',clear,true);window.addEventListener('keydown',clear,true);
   return()=>{cancelAnimationFrame(frame);window.clearTimeout(timer);window.clearInterval(settle);window.removeEventListener('resize',again);window.removeEventListener('scroll',again,true);
-   window.removeEventListener('pointerdown',clear,true);window.removeEventListener('keydown',clear,true);};
+   window.removeEventListener('pointerdown',clear,true);window.removeEventListener('keydown',clear,true);if(held.current?.el===spot)held.current=null;};
  },[spot]);
  function show(){
   const token=++run.current;searching.current=true;setMissing(false);setSpot(null);onGo();
@@ -98,14 +116,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
     if(run.current!==token)return;
     searching.current=false;
     if(!el.isConnected){setMissing(true);return;}
-    const place=()=>{
-     if(!el.isConnected)return;
-     el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});focusGuideTarget(el);
-     // Whether that focus is later lost to nowhere (the page disabled or removed the control), read when the step changes.
-     const focused=document.activeElement;lost.current=false;
-     if(focused&&focused!==document.body)focused.addEventListener('focusout',()=>{window.setTimeout(()=>{lost.current=document.activeElement===document.body;},0);},{once:true});
-    };
-    place();setSpot(el);held.current={token,until:performance.now()+SPOT_MS,place};
+    point(el,token);
    },0);
   });},0);
  }
