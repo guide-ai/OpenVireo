@@ -55,13 +55,14 @@ export type ObjectXLabSummary=Readonly<{
  motionMeasured:boolean;answered:boolean;described:boolean;revealed:boolean;saved:boolean;
 }>;
 export const INITIAL_OBJECT_X_LAB_SUMMARY:ObjectXLabSummary=Object.freeze({target:false,clockSet:false,listBuilt:false,images:0,imagesOfTarget:0,motionMeasured:false,answered:false,described:false,revealed:false,saved:false});
-export type ObjectXLabProgress=Readonly<{done:Readonly<Record<ObjectXLabStep,boolean>>;summary:ObjectXLabSummary}>;
+/** next (Front GUIDE-COMPANION): the first step not done, in list order; 'done' when every step is done. */
+export type ObjectXLabProgress=Readonly<{done:Readonly<Record<ObjectXLabStep,boolean>>;summary:ObjectXLabSummary;next:ObjectXLabStep|'done'}>;
 /** "done" means the student did the step; nothing judges whether the answer is right before the reveal. "measure" is done
  * when a motion was measured or the student chose a non-moving answer (pulsars, stars, galaxies and QSOs do not move). */
 export function objectXLabProgress(s:ObjectXLabSummary,answer:ObjectXKind|null=null):ObjectXLabProgress{
  const done={target:s.target,clock:s.clockSet,list:s.listBuilt,image:s.imagesOfTarget>0,repeat:s.imagesOfTarget>=2,
   measure:s.motionMeasured||(answer!==null&&answer!=='asteroid'),classify:s.answered,describe:s.described,reveal:s.revealed,save:s.saved};
- return Object.freeze({done:Object.freeze(done),summary:s});
+ return Object.freeze({done:Object.freeze(done),summary:s,next:OBJECT_X_LAB_STEPS.find(step=>!done[step])??'done'});
 }
 export const sameObjectXLabSummary=(a:ObjectXLabSummary,b:ObjectXLabSummary)=>(Object.keys(a) as (keyof ObjectXLabSummary)[]).every(k=>a[k]===b[k]);
 /** Field radius (degrees) within which an image counts as "of the target": half the 0.4 m field diagonal is ~0.2°. */
