@@ -27,6 +27,7 @@ const START={title:'Mulai di sini',topics:[
  topic('Panduan praktikum',[
   p('Grup Panduan praktikum pada header memiliki satu tombol untuk setiap praktikum: Panduan praktikum Hubble, Panduan LSS, Panduan Objek X, Panduan pulsar, Panduan praktikum Pleiades, Panduan klasifikasi, dan Panduan diagram HR gugus bintang.'),
   p('Sebuah panduan terbuka sebagai jendela dengan langkah bernomor. Tanda centang menandai setiap langkah yang sudah Anda selesaikan, dan sebuah tombol seperti Lanjut ke langkah berikutnya membawa Anda ke halaman untuk langkah selanjutnya. Tutup panduan kapan saja dan buka lagi dari header; kemajuan Anda dipertahankan selama tab tetap terbuka.'),
+  p('Setelah Anda menutup sebuah panduan, langkahnya saat ini tetap berada di sebuah bilah di bagian bawah setiap halaman. Tunjukkan letaknya membawa Anda ke kontrol untuk langkah itu dan menyorotinya, Detail langkah menampilkan teks panduan untuk langkah itu, Panduan lengkap membuka kembali panduannya, dan Sembunyikan menghapus bilah tersebut. Bilah berpindah ke langkah berikutnya dengan sendirinya saat Anda bekerja. Seperti panduannya, bilah ini menunjukkan apa yang sudah Anda kerjakan dan tidak pernah menilai hasil.'),
   p('Membuka sebuah panduan juga memulai praktikum itu, seperti memilih praktikum di VIREO: panduan menentukan teleskop mana yang terbuka (lihat Teleskop dan Minta Waktu) dan apakah nama serta magnitudo objek ditampilkan. Pada praktikum Objek X, identitas objek tetap tersembunyi sampai Anda mengungkapkannya.'),
  ]),
  topic('Beralih dari VIREO (Windows)',[

@@ -136,6 +136,7 @@ svg.ob-spectrum-print-body:is(:lang(ja),:lang(zh),:lang(hi)){font-family:Courier
 .ob-menu .secondary-button:is(:lang(ja),:lang(zh),:lang(hi)),
 .site-tour-actions .primary-button:is(:lang(ja),:lang(zh),:lang(hi)),
 .site-tour-actions .secondary-button:is(:lang(ja),:lang(zh),:lang(hi)),
+.guide-companion-actions button:is(:lang(ja),:lang(zh),:lang(hi)),
 .radio-control .antenna-dialog .primary-button:is(:lang(ja),:lang(zh),:lang(hi)),
 .radio-control .antenna-dialog .secondary-button:is(:lang(ja),:lang(zh),:lang(hi)){line-height:1.5}
 /* Text below 1.5 in English: CJK 1.5, Hindi 1.7. */
@@ -171,6 +172,9 @@ body:lang(hi),
 .antenna-profile li:lang(hi),
 .radio-access-numeric li:lang(hi),
 .site-tour-card:lang(hi),
+.guide-companion-next:lang(hi),
+.guide-companion-missing:lang(hi),
+.guide-companion-details:lang(hi),
 .web-help-topic:lang(hi),
 .camera-information-lines:lang(hi),
 .instructor-mode-banner:lang(hi),

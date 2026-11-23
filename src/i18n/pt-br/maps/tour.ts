@@ -11,7 +11,7 @@ export const TOUR_PT:Translation<typeof TOUR_EN>=Object.freeze({
   sections:Object.freeze({title:'Todas as páginas estão no menu',
    text:'As páginas são agrupadas em seções: os observatórios óptico e de rádio, as ferramentas de análise, os resultados e os arquivos. Clique no nome de uma seção para abri-la ou fechá-la. No celular, o menu fica no botão Menu.'}),
   guides:Object.freeze({title:'Vai fazer um exercício? Comece pelo guia dele',
-   text:'Cada exercício tem um guia que lista todos os passos, marca o que você já fez e leva você até a página certa.'}),
+   text:'Cada exercício tem um guia que lista todas as etapas, marca o que você já fez e leva você até a página certa. Depois que você o fecha, a etapa atual continua na parte de baixo da página.'}),
   observatory:Object.freeze({title:'Ou explore o céu livremente',
    text:'Na página Observatório: abra a cúpula, escolha um objeto e aponte o telescópio. Depois ligue o acompanhamento e use um instrumento.'}),
   save:Object.freeze({title:'Salve o seu trabalho como arquivo',

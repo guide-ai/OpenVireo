@@ -27,6 +27,7 @@ const START={title:'Empieza aquí',topics:[
  topic('Guías de los ejercicios',[
   p('El grupo Guías de los ejercicios, en el encabezado, tiene un botón por ejercicio: Guía de la práctica de Hubble, Guía LSS, Guía del Objeto X, Guía de púlsares, Guía de la práctica de las Pléyades, Guía de clasificación y Guía del diagrama HR de cúmulos.'),
   p('Una guía se abre como una ventana con pasos numerados. Una marca indica cada paso que completaste, y un botón como Continuar al siguiente paso o Ir al siguiente paso te lleva a la página del paso siguiente. Cierra la guía cuando quieras y vuelve a abrirla desde el encabezado; tu avance se conserva mientras la pestaña siga abierta.'),
+  p('Después de cerrar una guía, su paso actual permanece en una franja al pie de todas las páginas. Muéstrame dónde te lleva al control de ese paso y lo resalta, Detalles del paso muestra el texto de la guía para ese paso, Guía completa vuelve a abrir la guía y Ocultar quita la franja. La franja avanza sola al siguiente paso mientras trabajas. Igual que la guía, muestra lo que hiciste y nunca juzga un resultado.'),
   p('Abrir una guía también inicia ese ejercicio, como lo hacía elegir un ejercicio en VIREO: define qué telescopios están abiertos (consulta Telescopios y Solicitar tiempo) y si se muestran los nombres y las magnitudes de los objetos. En el ejercicio del Objeto X, la identidad del objeto permanece oculta hasta que la reveles.'),
  ]),
  topic('Si vienes de VIREO (Windows)',[

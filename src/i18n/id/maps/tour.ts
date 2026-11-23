@@ -11,7 +11,7 @@ export const TOUR_ID:Translation<typeof TOUR_EN>=Object.freeze({
   sections:Object.freeze({title:'Semua halaman ada di menu',
    text:'Halaman dikelompokkan menjadi beberapa bagian: observatorium optik dan radio, alat analisis, hasil, dan file. Klik nama bagian untuk membukanya atau menutupnya. Di ponsel, menu ada di balik tombol Menu.'}),
   guides:Object.freeze({title:'Sedang mengerjakan praktikum? Mulai dari panduannya',
-   text:'Setiap praktikum memiliki panduan yang mencantumkan setiap langkah, mencentang apa yang sudah Anda kerjakan, dan membawa Anda ke halaman yang tepat.'}),
+   text:'Setiap praktikum memiliki panduan yang mencantumkan setiap langkah, mencentang apa yang sudah Anda kerjakan, dan membawa Anda ke halaman yang tepat. Setelah Anda menutupnya, langkah saat ini tetap berada di bagian bawah halaman.'}),
   observatory:Object.freeze({title:'Atau jelajahi langit dengan bebas',
    text:'Di halaman Observatorium: buka kubah, pilih sebuah objek, dan arahkan teleskop. Lalu nyalakan pelacakan dan gunakan sebuah instrumen.'}),
   save:Object.freeze({title:'Simpan pekerjaan Anda sebagai file',

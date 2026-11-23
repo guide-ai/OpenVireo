@@ -13,6 +13,26 @@ const STEP_DESTINATION:Readonly<Record<PulsarLabStep,PulsarLabDestination>>={set
 /** Steps whose "done" is a reading recorded by the learner (never a correctness judgement). */
 const READING_STEPS:ReadonlySet<PulsarLabStep>=new Set(['period','delay']);
 
+/** Front GUIDE-COMPANION: the "Next:" line, shared by the guide and the companion strip (components/GuideCompanion.tsx).
+ * Start keeps a Tracking that is off once the panel is on: the line then names the control that finishes setup. */
+export const pulsarNextText=(progress:PulsarLabProgress)=>progress.next==='setup'&&progress.trackingOff?t('pulsarLab.next.tracking'):t(`pulsarLab.next.${progress.next}`);
+/** Front GUIDE-COMPANION: what the guide says under a step's heading and status, shared with the companion strip's Step
+ * details. `ids` false (the companion) leaves out the test ids: the closed guide is still in the document. */
+export function pulsarStepBody(step:PulsarLabStep,progress:PulsarLabProgress,ids=true){
+ const id=(name:string)=>ids?name:undefined;
+ return <>
+    <p>{step==='setup'?t('pulsarLab.step.setup.help',{ut:PULSAR_EXERCISE_SCENARIO.ut}):step==='catalog'?t('pulsarLab.step.catalog.help',{file:BUNDLED_PULSAR_CATALOG.name}):t(`pulsarLab.step.${step}.help`)}</p>
+    {step==='channels'&&<p className="lab-recovery" data-testid={id('pulsar-lab-add-disarms')}>{t('pulsarLab.step.channels.disarm')}</p>}
+    {step==='channels'&&<p>{t('pulsarLab.step.channels.factor')}</p>}
+    {step==='period'&&<p data-testid={id('pulsar-lab-period-formula')}>{t('pulsarLab.step.period.formula')}</p>}
+    {step==='delay'&&<><p data-testid={id('pulsar-lab-delay-formula')}><code>{t('pulsarLab.step.delay.formula')}</code></p><p>{t('pulsarLab.step.delay.source')}</p></>}
+    {step==='investigation'&&<p className="lab-recovery" data-testid={id('pulsar-lab-investigation-note')} data-investigation={progress.investigation}>{t('pulsarLab.step.investigation.note')}</p>}
+    {step==='save'&&<p data-testid={id('pulsar-lab-save-optional')}>{t('pulsarLab.step.save.optional')}</p>}
+ </>;
+}
+/** Where each step is carried out (the companion's Show me where goes there too). */
+export const pulsarStepDestination=(step:PulsarLabStep):PulsarLabDestination=>STEP_DESTINATION[step];
+
 /** WEB-PULSAR-GUIDE-01: the Pulsars (E06) guide, with the HubbleLabGuide layout. Every check mark is recomputed from the current
  * state by pulsarLabProgress; nothing is stored. The guide explains manual arithmetic; it computes no measurement itself. */
 function PulsarLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:PulsarLabProgress;onNavigate:(destination:PulsarLabDestination)=>void}){
@@ -31,7 +51,7 @@ function PulsarLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTM
    <p data-testid="pulsar-lab-counts" role="status">{t('pulsarLab.counts',{done:doneCount,total:PULSAR_LAB_REQUIRED_STEPS.length})}</p>
    {/* Start keeps a Tracking that is off once the panel is on: name the control that finishes setup. */}
    <p className="pulsar-lab-next" data-testid="pulsar-lab-next" data-next={progress.next} data-tracking-off={progress.next==='setup'&&progress.trackingOff||undefined}>
-    {progress.next==='setup'&&progress.trackingOff?t('pulsarLab.next.tracking'):t(`pulsarLab.next.${progress.next}`)}</p>
+    {pulsarNextText(progress)}</p>
    <p className="lab-recovery" data-testid="pulsar-lab-backup" data-backup={progress.investigationBackup}>{t('pulsarLab.backup')}</p>
    {progress.recordArmed&&<p className="lab-recovery" data-testid="pulsar-lab-armed">{t('pulsarLab.armed')}</p>}
    <button className="secondary-button" data-testid="pulsar-lab-continue" onClick={()=>go(STEP_DESTINATION[progress.next])}>{t('pulsarLab.continue')}</button>
@@ -41,13 +61,7 @@ function PulsarLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTM
    {PULSAR_LAB_STEPS.map(step=><li key={step} data-testid={`pulsar-lab-step-${step}`} data-done={progress.done[step]} data-next={progress.next===step||undefined}>
     <h3><span className="pulsar-lab-mark" aria-hidden="true">{progress.done[step]?'✓':'○'}</span> {t(`pulsarLab.step.${step}.title`)}</h3>
     <p className="pulsar-lab-status" data-testid={`pulsar-lab-status-${step}`}>{statusText(step)}</p>
-    <p>{step==='setup'?t('pulsarLab.step.setup.help',{ut:PULSAR_EXERCISE_SCENARIO.ut}):step==='catalog'?t('pulsarLab.step.catalog.help',{file:BUNDLED_PULSAR_CATALOG.name}):t(`pulsarLab.step.${step}.help`)}</p>
-    {step==='channels'&&<p className="lab-recovery" data-testid="pulsar-lab-add-disarms">{t('pulsarLab.step.channels.disarm')}</p>}
-    {step==='channels'&&<p>{t('pulsarLab.step.channels.factor')}</p>}
-    {step==='period'&&<p data-testid="pulsar-lab-period-formula">{t('pulsarLab.step.period.formula')}</p>}
-    {step==='delay'&&<><p data-testid="pulsar-lab-delay-formula"><code>{t('pulsarLab.step.delay.formula')}</code></p><p>{t('pulsarLab.step.delay.source')}</p></>}
-    {step==='investigation'&&<p className="lab-recovery" data-testid="pulsar-lab-investigation-note" data-investigation={progress.investigation}>{t('pulsarLab.step.investigation.note')}</p>}
-    {step==='save'&&<p data-testid="pulsar-lab-save-optional">{t('pulsarLab.step.save.optional')}</p>}
+    {pulsarStepBody(step,progress)}
     <button className="secondary-button" onClick={()=>go(STEP_DESTINATION[step])}>{t(STEP_DESTINATION[step]==='radio-control'?'pulsarLab.goRadio':'pulsarLab.goAnalysis')}</button>
    </li>)}
   </ol>

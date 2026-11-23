@@ -37,6 +37,7 @@ const START:WebHelpGroup={title:'Start here',topics:[
  topic('exercise-guides','Exercise guides',[
   p('The Exercise guides group in the header has one button per exercise: Hubble lab guide, LSS guide, Object X guide, Pulsar guide, Pleiades lab guide, Classification guide and Cluster HR guide.'),
   p('A guide opens as a window with numbered steps. A tick marks each step you have completed, and a button such as Continue to next step or Go to the next step takes you to the page for the next step. Close the guide whenever you like and open it again from the header; your progress is kept while the tab stays open.'),
+  p('After you close a guide, its current step stays in a strip at the bottom of every page. Show me where takes you to the control for that step and outlines it, Step details shows the guide\'s text for the step, Full guide opens the guide again, and Hide removes the strip. The strip moves on to the next step by itself as you work. Like the guide, it shows what you have done and never judges a result.'),
   p('Opening a guide also starts that exercise, as choosing an exercise did in VIREO: it sets which telescopes are open (see Telescopes and Request Time) and whether object names and magnitudes are shown. In the Object X exercise the object\'s identity stays hidden until you reveal it.'),
  ],['telescope','getting-started']),
  topic('from-vireo','Coming from VIREO (Windows)',[

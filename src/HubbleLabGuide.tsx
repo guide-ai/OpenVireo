@@ -6,18 +6,38 @@ import {HUBBLE_SOURCES} from './core/hubbleAnalysis';
 import type {HubbleLabProgress} from './core/hubbleLab';
 import './hubble-lab.css';
 export type LabDestination='galaxy-exposure'|'spectrum'|'hubble';
+type Phase=HubbleLabProgress['next'];
+/** Front GUIDE-COMPANION: the guide's five list items; the progress reports a phase, and item 4 (keep the investigation) has
+ * no mark, so no phase points at it. */
+export type HubbleGuideItem='acquire'|'measure'|'hubble'|'save'|'interpret';
+export const hubblePhaseItem=(next:Phase):HubbleGuideItem=>next==='acquire'||next==='measure'||next==='interpret'?next:'hubble';
+/** Where each phase is carried out (the Continue button and the companion's Show me where). */
+export const hubblePhaseDestination=(next:Phase):LabDestination=>next==='acquire'?'galaxy-exposure':next==='measure'?'spectrum':'hubble';
+/** The "Next:" line, shared by the guide and the companion strip (components/GuideCompanion.tsx). */
+export const hubbleNextText=(progress:HubbleLabProgress)=>progress.next==='interpret'?t('lab.next.interpretSupported',{supported:progress.total,original:progress.original}):t(`lab.next.${progress.next}`);
+/** What the guide says under an item's heading, shared with the companion strip's Step details. */
+export function hubbleItemBody(item:HubbleGuideItem){
+ switch(item){
+  case 'acquire':return <><p>{t('lab.acquireHelp')}</p><p>{t('lab.acquisitionTime')}</p></>;
+  case 'measure':return <><p>{t('lab.measureHelp')}</p><p>{t('lab.stepHelp')}</p></>;
+  case 'hubble':return <><p>{t('lab.hubbleHelp')}</p><p>{t('lab.recipeHelp')}</p></>;
+  case 'save':return <><p>{t('lab.saveHelp')}</p><p>{t('lab.resultsHelp')}</p><p>{t('lab.sspHelp')}</p></>;
+  case 'interpret':return <><p>{t('lab.interpretHelp')}</p><ul>{(['data','fit','errors','environment']as const).map(key=><li key={key}>{t(`lab.reflect.${key}`)}</li>)}</ul></>;
+ }
+}
 function HubbleLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:HubbleLabProgress;onNavigate:(destination:LabDestination)=>void}){
  function go(destination:LabDestination){dialogRef.current?.close();onNavigate(destination);}
+ const item=hubblePhaseItem(progress.next);
  return <dialog ref={dialogRef} className="hubble-lab-dialog" aria-labelledby="hubble-lab-heading" aria-describedby="hubble-lab-intro">
   <div className="lab-heading"><div><div className="eyebrow">{t('lab.eyebrow')}</div><h2 id="hubble-lab-heading">{t('lab.title')}</h2></div><button className="secondary-button" autoFocus onClick={()=>dialogRef.current?.close()}>{t('lab.close')}</button></div>
   <p id="hubble-lab-intro">{t('lab.intro')}</p><details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('lab.introOptions')}</p></details>
-  <section className="lab-progress" aria-labelledby="lab-progress-heading"><h3 id="lab-progress-heading">{t('lab.progress')}</h3><p data-testid="lab-progress-counts" role="status">{t('lab.counts',{archived:progress.archived,measured:progress.measured,rows:progress.inHubble,total:progress.total})}</p><p data-testid="lab-original-coverage">{t('lab.coverage',{supported:progress.total,original:progress.original})}</p><p data-testid="lab-next">{progress.next==='interpret'?t('lab.next.interpretSupported',{supported:progress.total,original:progress.original}):t(`lab.next.${progress.next}`)}</p>{progress.duplicateTargets&&<p className="lab-recovery">{t('lab.duplicate')}</p>}<button className="secondary-button" onClick={()=>go(progress.next==='acquire'?'galaxy-exposure':progress.next==='measure'?'spectrum':'hubble')}>{t('lab.continue')}</button><details className="lab-progress-help"><summary>{t('lab.progressMeaning')}</summary><p>{t('lab.progressHelp')}</p></details></section>
+  <section className="lab-progress" aria-labelledby="lab-progress-heading"><h3 id="lab-progress-heading">{t('lab.progress')}</h3><p data-testid="lab-progress-counts" role="status">{t('lab.counts',{archived:progress.archived,measured:progress.measured,rows:progress.inHubble,total:progress.total})}</p><p data-testid="lab-original-coverage">{t('lab.coverage',{supported:progress.total,original:progress.original})}</p><p data-testid="lab-next">{hubbleNextText(progress)}</p>{progress.duplicateTargets&&<p className="lab-recovery">{t('lab.duplicate')}</p>}<button className="secondary-button" onClick={()=>go(hubblePhaseDestination(progress.next))}>{t('lab.continue')}</button><details className="lab-progress-help"><summary>{t('lab.progressMeaning')}</summary><p>{t('lab.progressHelp')}</p></details></section>
   <ol className="lab-steps">
-   <li><h3>{t('lab.acquireTitle')}</h3><p>{t('lab.acquireHelp')}</p><p>{t('lab.acquisitionTime')}</p><button className="secondary-button" onClick={()=>go('galaxy-exposure')}>{t('lab.goExposure')}</button></li>
-   <li><h3>{t('lab.measureTitle')}</h3><p>{t('lab.measureHelp')}</p><p>{t('lab.stepHelp')}</p><button className="secondary-button" onClick={()=>go('spectrum')}>{t('lab.goAnalyzer')}</button></li>
-   <li><h3>{t('lab.hubbleTitle')}</h3><p>{t('lab.hubbleHelp')}</p><p>{t('lab.recipeHelp')}</p><button className="secondary-button" onClick={()=>go('hubble')}>{t('lab.goHubble')}</button></li>
-   <li><h3>{t('lab.saveTitle')}</h3><p>{t('lab.saveHelp')}</p><p>{t('lab.resultsHelp')}</p><p>{t('lab.sspHelp')}</p></li>
-   <li><h3>{t('lab.interpretTitle')}</h3><p>{t('lab.interpretHelp')}</p><ul>{(['data','fit','errors','environment']as const).map(key=><li key={key}>{t(`lab.reflect.${key}`)}</li>)}</ul></li>
+   <li data-next={item==='acquire'||undefined}><h3>{t('lab.acquireTitle')}</h3>{hubbleItemBody('acquire')}<button className="secondary-button" onClick={()=>go('galaxy-exposure')}>{t('lab.goExposure')}</button></li>
+   <li data-next={item==='measure'||undefined}><h3>{t('lab.measureTitle')}</h3>{hubbleItemBody('measure')}<button className="secondary-button" onClick={()=>go('spectrum')}>{t('lab.goAnalyzer')}</button></li>
+   <li data-next={item==='hubble'||undefined}><h3>{t('lab.hubbleTitle')}</h3>{hubbleItemBody('hubble')}<button className="secondary-button" onClick={()=>go('hubble')}>{t('lab.goHubble')}</button></li>
+   <li><h3>{t('lab.saveTitle')}</h3>{hubbleItemBody('save')}</li>
+   <li data-next={item==='interpret'||undefined}><h3>{t('lab.interpretTitle')}</h3>{hubbleItemBody('interpret')}</li>
   </ol>
   <section aria-labelledby="lab-targets-heading"><h3 id="lab-targets-heading">{t('lab.targets')}</h3><p>{t('lab.referencesHelp')}</p><ul className="lab-targets">{progress.targets.map(p=>{const identity=galaxyIdentity(p.id),reference=galaxyDistanceReference(p.id);return <li key={p.id} data-testid={`lab-target-${p.id}`}><h4>{p.id} · {identity.label}</h4><dl>{(['archived','measured','inHubble']as const).map(key=><div key={key}><dt>{t(`lab.status.${key}`)}</dt><dd>{t(p[key]?'lab.yes':'lab.no')}</dd></div>)}</dl><p>{t('lab.magnitude',{value:formatNumber(reference.apparentV,{minimumFractionDigits:1,maximumFractionDigits:1}),source:reference.source})}</p></li>;})}</ul></section>
   <details className="lab-troubleshooting"><summary>{t('lab.troubleshooting')}</summary><dl>{(['start','noisy','rows','repeat','files','limits']as const).map(key=><div key={key}><dt>{t(`lab.problem.${key}`)}</dt><dd>{t(`lab.recover.${key}`)}</dd></div>)}</dl></details>

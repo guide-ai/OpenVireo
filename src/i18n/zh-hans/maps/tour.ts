@@ -11,7 +11,7 @@ export const TOUR_ZH_HANS:Translation<typeof TOUR_EN>=Object.freeze({
   sections:Object.freeze({title:'所有页面都在菜单里',
    text:'页面按分区归类：光学和射电天文台、分析工具、结果和文件。点击分区名称即可展开或收起。在手机上，菜单位于“菜单”按钮后面。'}),
   guides:Object.freeze({title:'要做实验？先看它的指南',
-   text:'每个实验都有一份指南，列出每一步，勾选你已完成的内容，并带你前往正确的页面。'}),
+   text:'每个实验都有一份指南，列出每一步，勾选你已完成的内容，并带你前往正确的页面。关闭指南后，当前步骤会留在页面底部。'}),
   observatory:Object.freeze({title:'或者自由探索天空',
    text:'在“天文台”页面：打开圆顶，选择一个天体，并让望远镜指向它。然后开启跟踪，再使用一台仪器。'}),
   save:Object.freeze({title:'把你的工作保存为文件',

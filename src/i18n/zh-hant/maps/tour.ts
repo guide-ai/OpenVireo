@@ -11,7 +11,7 @@ export const TOUR_ZH_HANT:Translation<typeof TOUR_EN>=Object.freeze({
   sections:Object.freeze({title:'所有頁面都在選單裡',
    text:'頁面依分區歸類：光學和電波天文台、分析工具、結果和檔案。按一下分區名稱即可展開或收合。在手機上，選單收在「選單」按鈕後面。'}),
   guides:Object.freeze({title:'要做實驗？先看它的指南',
-   text:'每個實驗都有一份指南，列出每一步，勾選你已完成的內容，並帶你前往正確的頁面。'}),
+   text:'每個實驗都有一份指南，列出每一步，勾選你已完成的內容，並帶你前往正確的頁面。關閉指南後，目前的步驟會留在頁面底部。'}),
   observatory:Object.freeze({title:'或者自由探索天空',
    text:'在「天文台」頁面：開啟圓頂，選擇一個天體，並讓望遠鏡指向它。然後開啟追蹤，再使用一台儀器。'}),
   save:Object.freeze({title:'把你的工作儲存為檔案',

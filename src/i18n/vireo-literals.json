@@ -588,13 +588,6 @@
   "reason": "identifier: the guide's step ids; each step's text is a catalog key (lssLab.step.*, lssLab.help.*)"
  },
  {
-  "file": "src/LssLabGuide.tsx",
-  "kind": "original",
-  "value": "LSS_LAB_REPEAT_RECORDS",
-  "count": 1,
-  "reason": "identifier: a record count in the repeat step's text"
- },
- {
   "file": "src/LssSurvey.tsx",
   "kind": "original",
   "value": "LSS_FIELD_FILES[f.field-1].records",

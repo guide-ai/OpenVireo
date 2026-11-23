@@ -2,6 +2,7 @@ import {useCallback,useEffect,useId,useLayoutEffect,useRef,useState} from 'react
 import {createPortal} from 'react-dom';
 import {TOUR,TOUR_SEEN_KEY} from '../help/tour';
 import {placeTourCard,spotBox,type Box,type Placement} from '../help/tourPlacement';
+import {clippedBox,viewSize,visibleTarget} from '../help/spot';
 import {t,uiDirection} from '../i18n';
 import './site-tour.css';
 
@@ -23,18 +24,6 @@ export function scheduleFirstVisitTour(start:()=>void,delay=700,ran?:()=>void):(
   start();
  },delay);
  return()=>{window.clearTimeout(timer);stop();};
-}
-
-function visibleTarget(selectors:readonly string[]):Element|null{
- for(const s of selectors){const el=document.querySelector(s);if(el){const r=el.getBoundingClientRect();if(r.width>0&&r.height>0)return el;}}
- return null;
-}
-/** The visible window, without a classic scrollbar, so no outline or card goes under it. */
-function viewSize(){const d=document.documentElement;return {width:d.clientWidth||window.innerWidth,height:d.clientHeight||window.innerHeight};}
-/** The target's box, clipped to the window, so a tall part (the sidebar menu) is outlined only where it is on screen. */
-function clippedBox(el:Element,view:{width:number;height:number}):Box|null{
- const r=el.getBoundingClientRect(),left=Math.max(r.left,0),top=Math.max(r.top,0),right=Math.min(r.right,view.width),bottom=Math.min(r.bottom,view.height);
- return right>left&&bottom>top?{left,top,width:right-left,height:bottom-top}:null;
 }
 
 /** The first-visit tour (Front Onboarding [W]): a modal window that steps through TOUR, outlining the part of the page each step

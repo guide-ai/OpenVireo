@@ -32,7 +32,8 @@ html[data-print-scope=cluster-hr] .cluster-print-root::backdrop{display:none}
 html[data-print-scope=cluster-hr] .cluster-print-chrome{display:none!important}
 html[data-print-scope=cluster-hr] .cluster-print-report{border:0!important;max-height:none!important;overflow:visible!important}
 }
-.cluster-member-window{position:fixed;inset-inline-end:16px;bottom:16px;z-index:40;width:min(26rem,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface-raised);color:var(--ov-text);padding:var(--ov-space-2) var(--ov-space-3);box-shadow:0 8px 24px rgb(0 0 0 / .25)}
+/* Front GUIDE-COMPANION: above the guide companion strip while it is shown (--ov-companion-height, GuideCompanion.tsx). */
+.cluster-member-window{position:fixed;inset-inline-end:16px;bottom:calc(16px + var(--ov-companion-height,0px));z-index:40;width:min(26rem,calc(100vw - 32px));max-height:calc(100vh - 32px - var(--ov-companion-height,0px));overflow:auto;border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface-raised);color:var(--ov-text);padding:var(--ov-space-2) var(--ov-space-3);box-shadow:0 8px 24px rgb(0 0 0 / .25)}
 .cluster-member-window h3{margin:0 0 var(--ov-space-1);font-size:var(--ov-text-md)}
 .cluster-member-window h3:focus-visible{outline:2px solid var(--ov-focus);outline-offset:2px}
 .cluster-member-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:var(--ov-space-1) var(--ov-space-3)}
