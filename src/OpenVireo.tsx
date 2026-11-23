@@ -1010,7 +1010,8 @@ export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={
     if(activeGuide===null)return;
     if(activeGuide==='cluster-hr'){
      if(view!=='cluster-database')navigate('cluster-database');
-     requestAnimationFrame(()=>{const d=document.querySelector<HTMLDialogElement>('[data-testid="cluster-lab-dialog"]');if(d&&!d.open)d.showModal();});
+     // After this click, once React has shown the cluster database (its guide's window lives there).
+     window.setTimeout(()=>{const d=document.querySelector<HTMLDialogElement>('[data-testid="cluster-lab-dialog"]');if(d&&!d.open)d.showModal();},0);
      return;
     }
     const d={hubble:labGuide,'large-scale-structure':lssGuide,'object-x':objectXGuide,pulsars:pulsarGuide,pleiades:pleiadesGuide,'stellar-classification':classificationGuide}[activeGuide].current;

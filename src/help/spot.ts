@@ -55,25 +55,43 @@ function readCandidate(el:Element):CandidateState{
  const hidden=el.closest('[hidden]')!==null,visible=!hidden&&boxed(el);
  return {hidden,disabled:el.matches(':disabled')||el.closest('[aria-disabled="true"]')!==null,visible,collapsed:!hidden&&!visible&&closedDetails(el).length>0};
 }
-/** The control of a guide step on the current page: the chosen candidate, with any closed `<details>` around it opened (as the
- * hot-list and tracking shortcuts of the shell do). Null when no candidate is on the page yet. */
-export function findGuideTarget(selectors:readonly string[]):Element|null{
+/** The control of a guide step on the current page (the chosen candidate) and whether it is enabled; null when no candidate
+ * is on the page yet. Changes nothing. */
+export function findGuideTarget(selectors:readonly string[]):{el:Element;enabled:boolean}|null{
  const el=chooseCandidate(selectors.map(s=>[...document.querySelectorAll(s)]),readCandidate);
- if(!el)return null;
- for(const d of closedDetails(el))d.open=true;
- return boxed(el)?el:null;
+ return el?{el,enabled:!readCandidate(el).disabled}:null;
 }
+/** Shows a found control: opens any closed `<details>` around it (as the hot-list and tracking shortcuts of the shell do).
+ * False when it still has no box. */
+export function revealGuideTarget(el:Element):boolean{
+ for(const d of closedDetails(el))d.open=true;
+ return boxed(el);
+}
+/** How long Show me where prefers an enabled control over a disabled one that is already on the page: a page that has just
+ * been shown often enables its first control a moment later (a list that is still loading). */
+export const ENABLED_GRACE_MS=1500;
 /** Waits for a guide step's control (a route that is still loading, a page that is still rendering): tries now, then on every
- * change of the document until `timeout` ms. `cancelled` ends the wait early. Resolves with the element, or null. */
-export function waitForGuideTarget(selectors:readonly string[],timeout:number,cancelled:()=>boolean):Promise<Element|null>{
+ * change of the document until `timeout` ms. An enabled control ends the wait at once; a disabled one is taken only after
+ * `grace` ms without an enabled one. `cancelled` ends the wait early. Resolves with the element (shown, see
+ * revealGuideTarget), or null. */
+export function waitForGuideTarget(selectors:readonly string[],timeout:number,cancelled:()=>boolean,grace=ENABLED_GRACE_MS):Promise<Element|null>{
  return new Promise(resolve=>{
-  const now=findGuideTarget(selectors);
-  if(now||timeout<=0){resolve(now);return;}
-  let done=false;
-  const finish=(el:Element|null)=>{if(done)return;done=true;observer.disconnect();window.clearTimeout(timer);resolve(el);};
-  const observer=new MutationObserver(()=>{if(cancelled()){finish(null);return;}const el=findGuideTarget(selectors);if(el)finish(el);});
-  const timer=window.setTimeout(()=>finish(cancelled()?null:findGuideTarget(selectors)),timeout);
+  const started=performance.now();
+  let done=false,observer:MutationObserver|null=null,timer=0,graceTimer=0;
+  const finish=(el:Element|null)=>{if(done)return;done=true;observer?.disconnect();window.clearTimeout(timer);window.clearTimeout(graceTimer);resolve(el&&revealGuideTarget(el)?el:null);};
+  /** `last`: the wait is over, so whatever is there is taken. */
+  const attempt=(last:boolean)=>{
+   if(done)return;
+   if(cancelled()){finish(null);return;}
+   const found=findGuideTarget(selectors);
+   if(found&&(found.enabled||last||performance.now()-started>=grace))finish(found.el);else if(last)finish(null);
+  };
+  attempt(timeout<=0);
+  if(done)return;
+  observer=new MutationObserver(()=>attempt(false));
   observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','disabled','open','aria-disabled']});
+  timer=window.setTimeout(()=>attempt(true),timeout);
+  if(grace<timeout)graceTimer=window.setTimeout(()=>attempt(false),grace);
  });
 }
 /** Moves focus to a guide step's control: the element itself when it takes focus, else the first control inside it. */

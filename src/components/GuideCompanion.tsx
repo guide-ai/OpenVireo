@@ -30,9 +30,16 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
  /** Opens the guide's window again; a stable callback. */onFull:()=>void;/** Removes the strip; a stable callback. */onHide:()=>void}){
  const C=SHELL.companion,now=companionNow(progress),content=companionContent(progress),selectors=guideTargets(now.lab,content.target);
  const [details,setDetails]=useState(false),[missing,setMissing]=useState(false),[spot,setSpot]=useState<Element|null>(null),[box,setBox]=useState<Box|null>(null);
- const strip=useRef<HTMLElement>(null),run=useRef(0),id=useId(),step=`${now.lab}/${content.target}`;
- // A new step (or another guide) ends a search in progress, its outline and its note.
- useEffect(()=>{setMissing(false);setSpot(null);return()=>{run.current++;};},[step]);
+ const strip=useRef<HTMLElement>(null),run=useRef(0),lost=useRef(false),id=useId(),step=`${now.lab}/${content.target}`;
+ // A new step (or another guide) ends a search in progress, its outline and its note. When Show me where had moved the focus
+ // to a control that the page then disabled or removed (the step it belonged to is done), the focus is nowhere: it comes back
+ // to the strip, which now shows the next step.
+ useEffect(()=>{
+  setMissing(false);setSpot(null);
+  if(lost.current&&document.activeElement===document.body)strip.current?.querySelector<HTMLElement>('button')?.focus({preventScroll:true});
+  lost.current=false;
+  return()=>{run.current++;};
+ },[step]);
  useEffect(()=>{
   const el=strip.current,root=document.documentElement;
   if(!el||typeof ResizeObserver==='undefined')return;
@@ -45,13 +52,14 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
  useEffect(()=>{
   if(!spot){setBox(null);return;}
   let frame=0;
-  const measure=()=>{const view=viewSize(),clip=spot.isConnected?clippedBox(spot,view):null;setBox(clip?spotBox(clip,view):null);};
+  const measure=()=>{const view=viewSize(),clip=spot.isConnected?clippedBox(spot,view):null,next=clip?spotBox(clip,view):null;setBox(old=>sameData(old,next)?old:next);};
   const again=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(measure);},clear=()=>setSpot(null);
   measure();
-  const timer=window.setTimeout(clear,SPOT_MS);
+  // The page can still move under the outline without a scroll (a part that finishes loading above the control).
+  const timer=window.setTimeout(clear,SPOT_MS),settle=window.setInterval(measure,250);
   window.addEventListener('resize',again);window.addEventListener('scroll',again,true);
   window.addEventListener('pointerdown',clear,true);window.addEventListener('keydown',clear,true);
-  return()=>{cancelAnimationFrame(frame);window.clearTimeout(timer);window.removeEventListener('resize',again);window.removeEventListener('scroll',again,true);
+  return()=>{cancelAnimationFrame(frame);window.clearTimeout(timer);window.clearInterval(settle);window.removeEventListener('resize',again);window.removeEventListener('scroll',again,true);
    window.removeEventListener('pointerdown',clear,true);window.removeEventListener('keydown',clear,true);};
  },[spot]);
  function show(){
@@ -61,7 +69,16 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
   window.setTimeout(()=>{void waitForGuideTarget(selectors,SHOW_WAIT_MS,()=>run.current!==token).then(el=>{
    if(run.current!==token)return;
    if(!el){setMissing(true);return;}
-   el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});focusGuideTarget(el);setSpot(el);
+   // One more turn: a page that has just been shown focuses its own heading in an effect of that render (and scrolls to it);
+   // the step's control takes the scroll and the focus after that.
+   window.setTimeout(()=>{
+    if(run.current!==token)return;
+    if(!el.isConnected){setMissing(true);return;}
+    el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});focusGuideTarget(el);setSpot(el);
+    // Whether that focus is later lost to nowhere (the page disabled or removed the control), read when the step changes.
+    const focused=document.activeElement;lost.current=false;
+    if(focused&&focused!==document.body)focused.addEventListener('focusout',()=>{window.setTimeout(()=>{lost.current=document.activeElement===document.body;},0);},{once:true});
+   },0);
   });},0);
  }
  return <aside ref={strip} className="guide-companion" aria-label={C.label} inert={inert} data-testid="guide-companion" data-lab={now.lab} data-step={now.step} data-all-done={now.allDone||undefined} data-i18n-shell="">
