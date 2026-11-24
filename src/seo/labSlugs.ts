@@ -5,6 +5,10 @@ export type LabSlug=typeof LAB_SLUGS[number];
 
 const SLUGS=new Set<string>(LAB_SLUGS);
 
+/** Front GUIDE-COMPANION (Restart exercise): the address that opens `lab`'s guide on a fresh load of the page shown at `href`:
+ * the same page and query (a `?lang=` preview stays), with the hash `#lab=<slug>`. */
+export function labRestartHref(href:string,lab:LabSlug):string{const url=new URL(href);url.hash=`lab=${lab}`;return url.href;}
+
 /** The lab a `#lab=<slug>` address names, or null for any other hash. */
 export function labFromHash(hash:string):LabSlug|null{
  const m=/^#lab=([a-z-]+)$/.exec(hash);

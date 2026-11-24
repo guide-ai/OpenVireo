@@ -9,7 +9,10 @@ export const APP_SHELL_HI:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
  toolsMenu:'मेनू',
  skipToContent:'सीधे सामग्री पर जाएँ',
  pageBar:Object.freeze({label:'जाँच, भाषा और सहायता',more:'अधिक',moreName:'अधिक जाँच क्रियाएँ'}),
- companion:Object.freeze({label:'गाइड का मौजूदा चरण',stepOf:(n:number,total:number)=>`चरण ${n} / ${total}`,actions:'गाइड की क्रियाएँ',show:'स्थान दिखाएँ',details:'चरण का विवरण',full:'पूरा गाइड',hide:'छिपाएँ',hideName:'छिपाएँ: यह गाइड',notYet:'वह नियंत्रण अभी स्क्रीन पर नहीं है; पहले की कोई क्रिया करने के बाद दिखाई देगा। आप सही पेज पर हैं।',allDone:'सभी चरण पूरे हो गए हैं।'}),
+ companion:Object.freeze({label:'गाइड का मौजूदा चरण',stepOf:(n:number,total:number)=>`चरण ${n} / ${total}`,actions:'गाइड की क्रियाएँ',show:'स्थान दिखाएँ',details:'चरण का विवरण',full:'पूरा गाइड',hide:'छिपाएँ',hideName:'छिपाएँ: यह गाइड',notYet:'वह नियंत्रण अभी स्क्रीन पर नहीं है; पहले की कोई क्रिया करने के बाद दिखाई देगा। आप सही पेज पर हैं।',allDone:'सभी चरण पूरे हो गए हैं।',
+  restart:'प्रयोग फिर से शुरू करें',restartTitle:'यह प्रयोग फिर से शुरू करें?',restartWhat:'साइट दोबारा लोड होगी और यह गाइड अपने पहले चरण पर खुलेगा।',
+  restartLost:'जो कुछ आपने सहेजा नहीं है वह खो जाएगा: इस प्रयोग का काम और इस टैब के हर दूसरे टूल का काम।',
+  restartSave:'उसे रखने के लिए रद्द करें और पहले “जाँच सहेजें” चुनें।',restartConfirm:'फिर से शुरू करें',restartCancel:'रद्द करें'}),
  recovery:Object.freeze({
   updatedTitle:'OpenVireo का नया संस्करण प्रकाशित हुआ है',
   updated:'साइट का यह हिस्सा लोड नहीं हो सका, क्योंकि यह पेज खुला होने के दौरान साइट अपडेट हो गई।',

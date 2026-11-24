@@ -9,7 +9,10 @@ export const APP_SHELL_PT:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
  toolsMenu:'Menu',// the phone menu button; "Ferramentas" does not fit beside the brand and Help at 320 px
  skipToContent:'Pular para o conteúdo',
  pageBar:Object.freeze({label:'Investigação, idioma e ajuda',more:'Mais',moreName:'Mais ações da investigação'}),
- companion:Object.freeze({label:'Etapa atual do guia',stepOf:(n:number,total:number)=>`Etapa ${n} de ${total}`,actions:'Ações do guia',show:'Mostrar onde fica',details:'Detalhes da etapa',full:'Guia completo',hide:'Ocultar',hideName:'Ocultar este guia',notYet:'Esse controle ainda não está na tela; ele aparece depois de uma ação anterior. Esta é a página certa.',allDone:'Todas as etapas estão concluídas.'}),
+ companion:Object.freeze({label:'Etapa atual do guia',stepOf:(n:number,total:number)=>`Etapa ${n} de ${total}`,actions:'Ações do guia',show:'Mostrar onde fica',details:'Detalhes da etapa',full:'Guia completo',hide:'Ocultar',hideName:'Ocultar este guia',notYet:'Esse controle ainda não está na tela; ele aparece depois de uma ação anterior. Esta é a página certa.',allDone:'Todas as etapas estão concluídas.',
+  restart:'Reiniciar exercício',restartTitle:'Reiniciar este exercício?',restartWhat:'O site é carregado de novo e este guia abre na primeira etapa.',
+  restartLost:'Tudo o que você não salvou se perde: o trabalho deste exercício e o de qualquer outra ferramenta nesta aba.',
+  restartSave:'Para manter esse trabalho, cancele e escolha primeiro Salvar investigação.',restartConfirm:'Reiniciar',restartCancel:'Cancelar'}),
  recovery:Object.freeze({
   updatedTitle:'Uma nova versão do OpenVireo foi publicada',
   updated:'Esta parte do site não pôde ser carregada porque o site foi atualizado enquanto esta página estava aberta.',

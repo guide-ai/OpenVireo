@@ -28,7 +28,8 @@ had to remember the step, find the page and find the control. The companion keep
   guides, which have none), and Step details is the guide's own step body. Each guide exports them
   (`hubbleNextText`/`hubbleItemBody`, `lssStepHelp`, `pulsarNextText`/`pulsarStepBody`, `pleiadesStepBody`,
   `classificationStepBody`, `ClusterLabGuideText.tsx`) and `src/components/guideCompanionContent.tsx` puts them together. The
-  only strings of the strip itself are `companion` in `src/components/AppShellMessages.ts` (ten, in ten languages).
+  only strings of the strip itself are `companion` in `src/components/AppShellMessages.ts` (seventeen, in ten languages: ten of the strip and the seven of Restart
+  exercise).
 - **Steps done many times show their count.** The Hubble, LSS, Object X and Pleiades guides have steps that take one action
   per galaxy, record, image or star. The strip shows the guide's own counts line beside "Step n of m" (`hubbleCountsText`,
   `lssCountsText`, Object X's `counts`, the Pleiades coverage line), so the work is seen to count while the step stays. The Hubble guide also goes one galaxy at a time
@@ -117,6 +118,43 @@ of the page shown before the strip goes. Escape closes Step details.
 The LSS guide's wedge step now leads to the survey page until something is plotted (`lssStepDestination`): "Plot my records in
 the wedge" is a button of that page. Once records are plotted it leads to the wedge.
 
+## Restart exercise
+
+User request, 2026-11-23: "we need a button to restart the exercise". The strip has a fifth action, **Restart exercise**,
+between Full guide and Hide.
+
+- It asks first. The confirmation (`RestartConfirm` in `components/GuideCompanion.tsx`, a modal `<dialog>` in the body) says
+  what happens (the site loads again and this guide opens at its first step), what is lost (everything not saved: the work of
+  this exercise and of every other tool in the tab) and how to keep it (cancel and choose Save investigation, named as the page
+  bar names it in that language). The focus starts on **Cancel**; Escape cancels; after either, the focus is back on the
+  strip's button and nothing changed.
+- **Restart** loads the site again at `labRestartHref(location.href, lab)` (`src/seo/labSlugs.ts`): the same address (path and
+  query, so a `?lang=` preview stays) with the hash `#lab=<slug>`, which opens that guide's window at load exactly as a /labs/
+  link does, over the page such a link opens (the observatory; the cluster database for the cluster guide), not the page the
+  student was on. The address is set with `history.replaceState` (no extra history entry, and no `hashchange`, which would
+  change the route of the page behind while the new one loads) and then `location.reload()`, since a change of hash alone
+  does not load the page. Once Restart is pressed both answers are disabled.
+- Why a reload and not a reset of the exercise's state: an exercise's work is spread over many tools (the observatory, the
+  instruments, the analysers, the results editors, the clock) whose state the site holds in memory, and each guide reads
+  several of them. A fresh load is the one state every tool is known to start from; clearing them one by one would be a new
+  rule per tool that could leave an exercise half reset. The cost is that the other tools in the tab start again too, which
+  the confirmation says.
+- What a reload keeps is what the site already keeps in the browser (the list checked for the language dialog,
+  `LanguageChoiceMessages.ts`): the language, "View VIREO's own texts in English", the theme, the open sidebar sections, the
+  tour-seen mark, the ? help key, Demonstration Mode if the instructor chose to remember it, and the confirmed Observation
+  results notebook with its deletion-recovery copy (a results editor's, read by no guide's progress). Instructor mode without
+  Demonstration Mode, and the instructor's options, go back to their defaults. So the confirmation's "everything you have not
+  saved is lost" errs on the safe side. Nothing new is stored, and no file is written.
+- An independent review (Opus, high effort, 2026-11-23: approve after small fixes) found no stored state that brings a guide's
+  progress back and no first-load window in front of the guide, and three low defects, all fixed: `location.replace` fired the
+  app's `hashchange` handler before the reload; the focus did not return to the button after a mouse click where the browser
+  does not focus buttons on click (Safari, Firefox on macOS; the tests run Chromium, so this one is by reading); and Escape
+  in the confirmation also closed Step details (React delivers a portal's keys to the strip). It also changed five strings
+  (Hindi «खो जाएगा» as the language dialog says, Russian «перезагрузится», Indonesian «semua alat lain», and the two Chinese
+  "what happens" sentences). Not done, by choice: a Save investigation button inside the confirmation, as the language
+  dialog has (the confirmation points to the page bar's button instead).
+- It grades nothing and shows no answer: the restarted guide is the same guide at its first step.
+
 ## Layout and accessibility
 
 - Fixed 8 px above the bottom of the window, as wide as the page bar; beside the fixed sidebar from 1100 px up. One row from
@@ -137,10 +175,16 @@ the wedge" is a button of that page. Once records are plotted it leads to the we
 - `src/core/guideCompanion.test.ts`: the current step of the seven guides, their skip rules and marks that go back.
 - `src/help/spot.test.ts`: which candidate is outlined.
 - `src/help/guideTargets.test.ts`: every step has a target, every selector exists in the source and is on the page its step
-  goes to, the steps whose page differs from the guide's button, and the strings' rules in every language.
-- `tests/guide-companion.spec.ts`: the strip's life (appears, follows the work, the four actions, Escape, Hide and where the
+  goes to, the steps whose page differs from the guide's button, and the strings' rules in every language (Restart exercise:
+  every string present and translated, the confirmation names that language's Save investigation, and the confirming answer
+  uses the button's own words).
+- `tests/guide-companion.spec.ts`: the strip's life (appears, follows the work, its actions, Escape, Hide and where the
   focus goes), the first step of every guide with Show me where, steps in the middle of the LSS, cluster and pulsar exercises, a
   missing control, the page bar's menus over the strip, layout at 1280, 800 and 375 px, print, inert, Spanish and right to left.
+  Restart exercise: Cancel and Escape keep the work and return the focus, Escape leaves Step details open, the keyboard opens
+  it, Restart is a fresh load (a mark set on the window is gone, and the tab's history has no new entry) with the guide's
+  window open, no step done and the survey page empty; and it keeps a `?lang=` preview.
+- `src/seo/pages.test.ts`: the restart address (`labRestartHref`) for every lab, read back by `labFromHash`.
 - `tests/hubble-guide.spec.ts`: Show me where in the middle of the Hubble exercise (the galaxy selector once a galaxy is
   archived; the recipe selector inside the closed Hubble card; Add saved measurements while there are no rows).
 - The cycles: `core/objectXLab.test.ts`, `core/pleiadesLab.test.ts` and `core/guideCompanion.test.ts` (the rules), and Show me

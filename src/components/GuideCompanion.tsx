@@ -1,6 +1,7 @@
-import {memo,useEffect,useId,useRef,useState,type KeyboardEvent} from 'react';
+import {memo,useEffect,useId,useRef,useState,type KeyboardEvent,type RefObject} from 'react';
 import {createPortal} from 'react-dom';
 import {companionNow,type CompanionProgress} from '../core/guideCompanion';
+import {labRestartHref,type LabSlug} from '../seo/labSlugs';
 import {guideTargets} from '../help/guideTargets';
 import {clippedBox,findGuideTarget,focusGuideTarget,revealGuideTarget,viewSize,waitForGuideTarget} from '../help/spot';
 import {spotBox,type Box} from '../help/tourPlacement';
@@ -8,6 +9,7 @@ import {sameData} from '../renderStability';
 import {APP_SHELL_MESSAGES as SHELL} from './AppShellMessages';
 import {companionContent} from './guideCompanionContent';
 import {companionPlace} from './guideCompanionRoute';
+import '../observatory/observatory-dialogs.css';
 import './guide-companion.css';
 
 /** How long Show me where waits for the step's control (a page that is still loading). */
@@ -17,9 +19,40 @@ export const SPOT_MS=6000;
 /** Space between a control and its outline: less than the tour's, which outlines whole parts of the page. */
 const SPOT_PAD=6;
 
+/** Restart exercise [W] (user request, 2026-11-23): the confirmation, then a fresh load of the site with the guide's own
+ * `#lab=<slug>` address, which opens that guide at its first step as a /labs/ link does. Nothing is cleared piece by piece:
+ * a reload is the one state every tool starts from, and what a reload keeps (language, theme, the recovered observation
+ * notebook) is what the site already keeps. The work in the tab is lost, so the answer the focus starts on is Cancel, and
+ * Escape cancels; the dialog is in the body, outside the strip's own scrolling box.
+ * Review (2026-11-23): the address is set with `history.replaceState`, which fires no `hashchange` (the page behind would
+ * otherwise change route while the new one loads); once Restart is pressed both answers are off; and the focus is given back
+ * to the strip's button by hand where the browser did not focus it on the click (Safari, Firefox on macOS). */
+function RestartConfirm({lab,opener,onClose}:{lab:LabSlug;opener:RefObject<HTMLButtonElement|null>;onClose:()=>void}){
+ const id=useId(),ref=useRef<HTMLDialogElement>(null),cancel=useRef<HTMLButtonElement>(null),[going,setGoing]=useState(false),C=SHELL.companion;
+ useEffect(()=>{const el=ref.current;if(el&&!el.open){el.showModal();cancel.current?.focus();}},[]);
+ // Closed before it unmounts, so the focus returns to the strip's button.
+ const close=()=>{
+  if(going)return;
+  ref.current?.close();
+  const a=document.activeElement;if(!a||a===document.body||ref.current?.contains(a))opener.current?.focus({preventScroll:true});
+  onClose();
+ };
+ const restart=()=>{setGoing(true);history.replaceState(history.state,'',labRestartHref(location.href,lab));location.reload();};
+ return createPortal(<dialog ref={ref} className="ob-dialog guide-companion-restart" aria-labelledby={`${id}-t`} aria-describedby={`${id}-what ${id}-lost ${id}-save`} data-testid="guide-companion-restart-confirm" data-i18n-shell="" onCancel={e=>{e.preventDefault();close();}}>
+  <h2 id={`${id}-t`}>{C.restartTitle}</h2>
+  <p id={`${id}-what`}>{C.restartWhat}</p>
+  <p id={`${id}-lost`}><strong>{C.restartLost}</strong></p>
+  <p id={`${id}-save`}>{C.restartSave}</p>
+  <div className="ob-actions">
+   <button type="button" className="primary-button" data-testid="guide-companion-restart-go" disabled={going} onClick={restart}>{C.restartConfirm}</button>
+   <button ref={cancel} type="button" className="secondary-button" data-testid="guide-companion-restart-cancel" disabled={going} onClick={close}>{C.restartCancel}</button>
+  </div>
+ </dialog>,document.body);
+}
+
 /** Front GUIDE-COMPANION [W] (user decision, 2026-11-23): the strip that keeps the current step of the guide in use on screen
  * after its window is closed, at the bottom of every page. It shows the guide's own "Next:" line (core/guideCompanion.ts over
- * the guide's progress, recomputed on every render, so it moves on by itself as the student works) and four actions: Show me
+ * the guide's progress, recomputed on every render, so it moves on by itself as the student works) and five actions (Restart exercise is described at RestartConfirm): Show me
  * where goes to the step's page (`onGo`, the guide's own destination), then scrolls to the step's control, focuses it and
  * outlines it without dimming or blocking the page; Step details shows what the guide says under the step; Full guide opens
  * the guide's window again; Hide removes the strip until a guide is opened again. Nothing is stored and nothing is judged: no
@@ -32,7 +65,8 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
  /** Goes to the page of the current step (the shell's own guide destinations); a stable callback. */onGo:()=>void;
  /** Opens the guide's window again; a stable callback. */onFull:()=>void;/** Removes the strip; a stable callback. */onHide:()=>void}){
  const C=SHELL.companion,now=companionNow(progress),content=companionContent(progress),selectors=guideTargets(now.lab,content.target);
- const [details,setDetails]=useState(false),[missing,setMissing]=useState(false),[spot,setSpot]=useState<Element|null>(null),[box,setBox]=useState<Box|null>(null);
+ const restartButton=useRef<HTMLButtonElement>(null);
+ const [details,setDetails]=useState(false),[restart,setRestart]=useState(false),[missing,setMissing]=useState(false),[spot,setSpot]=useState<Element|null>(null),[box,setBox]=useState<Box|null>(null);
  const strip=useRef<HTMLElement>(null),run=useRef(0),lost=useRef(false),searching=useRef(false),held=useRef<{token:number;el:Element}|null>(null),id=useId(),step=`${now.lab}/${content.target}`;
  // A new step (or another guide) ends a search in progress, its outline and its note. If the page itself moved the guide on
  // while Show me where was still looking (the classification page loads its first practice when it is shown) and the student
@@ -129,6 +163,8 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
  // Escape closes Step details; a focus that was inside them goes to their button.
  function keyDown(event:KeyboardEvent<HTMLElement>){
   if(event.key!=='Escape'||!details)return;
+  // Only the strip's own keys: React also delivers here the keys of the restart confirmation, which is drawn in the body.
+  if(!(event.target instanceof Node)||!event.currentTarget.contains(event.target))return;
   if(event.target instanceof Element&&event.target.closest('.guide-companion-details'))event.currentTarget.querySelector<HTMLElement>('[aria-expanded]')?.focus({preventScroll:true});
   setDetails(false);
  }
@@ -144,9 +180,11 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
     {selectors.length>0&&<button type="button" className="primary-button" data-testid="guide-companion-show" onClick={show}>{C.show}</button>}
     <button type="button" className="secondary-button" aria-expanded={details} aria-controls={details?`${id}-d`:undefined} data-testid="guide-companion-details-toggle" onClick={()=>setDetails(v=>!v)}>{C.details}</button>
     <button type="button" className="secondary-button" data-testid="guide-companion-full" onClick={onFull}>{C.full}</button>
+    <button type="button" className="text-button" ref={restartButton} aria-haspopup="dialog" data-testid="guide-companion-restart" onClick={()=>setRestart(true)}>{C.restart}</button>
     <button type="button" className="text-button" aria-label={C.hideName} data-testid="guide-companion-hide" onClick={hide}>{C.hide}</button>
    </div>
   </div>
+  {restart&&<RestartConfirm lab={now.lab} opener={restartButton} onClose={()=>setRestart(false)}/>}
   {box&&createPortal(<div className="guide-companion-spot" data-testid="guide-companion-spot" aria-hidden="true" style={{left:box.left,top:box.top,width:box.width,height:box.height}}/>,document.body)}
  </aside>;
 }

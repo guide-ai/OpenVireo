@@ -20,7 +20,7 @@ async function show(page:Page){
 }
 const box=async(page:Page,testId:string)=>(await id(page,testId).boundingBox())!;
 
-test('the strip appears when a guide\'s window is closed, follows the work, and its four actions do what they say',async({page})=>{
+test('the strip appears when a guide\'s window is closed, follows the work, and Show me where, Step details, Full guide and Hide do what they say',async({page})=>{
  await page.goto('/#observatory');
  await expect(page.locator('h1:visible').first()).toBeVisible({timeout:20_000});
  await expect(strip(page)).toHaveCount(0);
@@ -231,6 +231,54 @@ test('the strip is not printed, and is inert while a window of the page is modal
  await expect(strip(page)).toHaveAttribute('inert','');
  await page.keyboard.press('Escape');
  await expect(strip(page)).not.toHaveAttribute('inert');
+});
+
+test('Restart exercise asks first, Cancel and Escape keep the work, and Restart loads the site again with the guide at its first step',async({page})=>{
+ await openGuide(page,'large-scale-structure');await closeGuide(page);await show(page);
+ await page.getByLabel('Survey field',{exact:true}).selectOption('1');await id(page,'lss-load-list').click();
+ await expect(strip(page)).toHaveAttribute('data-step','observe',{timeout:30_000});
+ const restart=id(page,'guide-companion-restart'),confirm=id(page,'guide-companion-restart-confirm');
+ await expect(restart).toHaveText('Restart exercise');await expect(confirm).toHaveCount(0);
+ // The confirmation says what is lost and how to keep it, and starts on Cancel.
+ await restart.click();await expect(confirm).toBeVisible();await expect(confirm).toHaveAccessibleName('Restart this exercise?');
+ await expect(confirm).toContainText('Everything you have not saved is lost');await expect(confirm).toContainText('Save investigation');
+ await expect(id(page,'guide-companion-restart-cancel')).toBeFocused();
+ // Cancel: nothing changed, and the focus is back on the strip's button.
+ await id(page,'guide-companion-restart-cancel').click();await expect(confirm).toHaveCount(0);await expect(restart).toBeFocused();
+ await expect(strip(page)).toHaveAttribute('data-step','observe');await expect(id(page,'lss-rows')).toBeVisible();
+ // Escape answers Cancel too, and closes only the confirmation: Step details stays open. The keyboard opens it as the mouse does.
+ await id(page,'guide-companion-details-toggle').click();await expect(id(page,'guide-companion-details')).toBeVisible();
+ await restart.focus();await page.keyboard.press('Enter');await expect(confirm).toBeVisible();await page.keyboard.press('Escape');await expect(confirm).toHaveCount(0);await expect(restart).toBeFocused();
+ await expect(id(page,'guide-companion-details')).toBeVisible();await expect(strip(page)).toHaveAttribute('data-step','observe');
+ // Restart: a fresh load (the mark set on this window is gone) with the same guide's window open and no step done.
+ await page.evaluate(()=>{(window as unknown as {beforeRestart?:boolean}).beforeRestart=true;});
+ const entries=await page.evaluate(()=>history.length);
+ await restart.click();await id(page,'guide-companion-restart-go').click();
+ await expect(guideWindow(page)).toBeVisible({timeout:30_000});
+ expect(await page.evaluate(()=>(window as unknown as {beforeRestart?:boolean}).beforeRestart)).toBeUndefined();
+ // No entry is added to the tab's history: Back does not return to a copy of the lost work.
+ expect(await page.evaluate(()=>history.length)).toBe(entries);
+ await expect(page.getByRole('dialog',{name:'Mapping large-scale structure'})).toBeVisible();
+ for(const s of ['load','observe'])await expect(id(page,`lss-lab-step-${s}`)).toHaveAttribute('data-done','false');
+ await closeGuide(page);
+ await expect(strip(page)).toHaveAttribute('data-lab','large-scale-structure');await expect(strip(page)).toHaveAttribute('data-step','load');
+ await expect(id(page,'guide-companion-step')).toHaveText('Step 1 of 7');
+ // The survey page itself starts again: no list is loaded.
+ await show(page);await expect(page.getByLabel('Survey field',{exact:true})).toBeVisible();await expect(id(page,'lss-rows')).toHaveCount(0);
+});
+
+test('Restart exercise keeps the language of the page: the confirmation is translated and the reloaded guide is still in Spanish',async({page})=>{
+ await openGuide(page,'pulsars','?lang=es-419');await closeGuide(page);
+ await expect(id(page,'guide-companion-restart')).toHaveText('Reiniciar ejercicio');
+ await id(page,'guide-companion-restart').click();
+ const confirm=id(page,'guide-companion-restart-confirm');
+ await expect(confirm).toHaveAccessibleName('¿Reiniciar este ejercicio?');await expect(confirm).toContainText('Guardar investigación');
+ await expect(id(page,'guide-companion-restart-cancel')).toHaveText('Cancelar');
+ await id(page,'guide-companion-restart-go').click();
+ await expect(guideWindow(page)).toBeVisible({timeout:30_000});
+ expect(new URL(page.url()).searchParams.get('lang')).toBe('es-419');
+ await closeGuide(page);
+ await expect(strip(page)).toHaveAccessibleName('Paso actual de la guía');await expect(id(page,'guide-companion-step')).toHaveText('Paso 1 de 9');
 });
 
 test('in Spanish the strip, its actions and the guide\'s line are translated',async({page})=>{
