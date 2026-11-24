@@ -16,7 +16,9 @@ export type AppShellMessageCatalog=Readonly<{
   * names its region; `stepOf` follows the guide's name; `show`, `details`, `full` and `hide` are its buttons (`hide` must start
   * `hideName`, its accessible name, WCAG 2.5.3); `notYet` is shown when Show me where finds no control on screen; `allDone` when
   * a guide without a closing line of its own (LSS, Object X) has every step done. */
- companion:Readonly<{label:string;stepOf:(n:number,total:number)=>string;actions:string;show:string;details:string;full:string;hide:string;hideName:string;notYet:string;allDone:string}>;
+ companion:Readonly<{label:string;stepOf:(n:number,total:number)=>string;actions:string;show:string;details:string;full:string;hide:string;hideName:string;notYet:string;allDone:string;
+  /** Restart exercise: the button, then its confirmation (title, what happens, what is lost, how to keep it, the two answers). */
+  restart:string;restartTitle:string;restartWhat:string;restartLost:string;restartSave:string;restartConfirm:string;restartCancel:string}>;
  /** Front REL1 review 1 M1 [W]: a part of the site that cannot load or stopped with an error (src/components/LazyBoundary.tsx). */
  recovery:Readonly<{updatedTitle:string;updated:string;errorTitle:string;error:string;kept:string;saveFirst:string;saveHow:string;save:string;reload:string}>;
 }>;
@@ -29,7 +31,10 @@ export const APP_SHELL_MESSAGES_EN:AppShellMessageCatalog=Object.freeze({
  skipToContent:'Skip to content',
  pageBar:Object.freeze({label:'Investigation, language and help',more:'More',moreName:'More investigation actions'}),
  companion:Object.freeze({label:'Current step of the guide',stepOf:(n:number,total:number)=>`Step ${n} of ${total}`,actions:'Guide actions',show:'Show me where',details:'Step details',full:'Full guide',hide:'Hide',hideName:'Hide this guide',
-  notYet:'That control is not on screen yet; it appears once an earlier action is done. You are on the right page.',allDone:'Every step is done.'}),
+  notYet:'That control is not on screen yet; it appears once an earlier action is done. You are on the right page.',allDone:'Every step is done.',
+  restart:'Restart exercise',restartTitle:'Restart this exercise?',restartWhat:'The site loads again and this guide opens at its first step.',
+  restartLost:'Everything you have not saved is lost: the work of this exercise and of every other tool in this tab.',
+  restartSave:'To keep it, cancel and choose Save investigation first.',restartConfirm:'Restart',restartCancel:'Cancel'}),
  recovery:Object.freeze({
   updatedTitle:'A new version of OpenVireo was published',
   updated:'This part of the site could not be loaded because the site was updated while this page was open.',

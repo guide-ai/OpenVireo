@@ -159,4 +159,18 @@ describe('companion strings',()=>{
    for(const text of [m.companion.label,m.companion.actions,m.companion.show,m.companion.details,m.companion.full,m.companion.notYet,m.companion.allDone])expect(text.trim().length).toBeGreaterThan(0);
   }
  });
+ it('Restart exercise: every language has the button and its confirmation, names its own Save investigation, and tells Restart from Cancel',()=>{
+  const all=[APP_SHELL_MESSAGES_EN,...Object.values(maps).flatMap(m=>Object.values(m))] as (typeof APP_SHELL_MESSAGES_EN)[];
+  const KEYS=['restart','restartTitle','restartWhat','restartLost','restartSave','restartConfirm','restartCancel'] as const;
+  for(const m of all){
+   const c=m.companion;
+   for(const key of KEYS)expect(c[key].trim().length,key).toBeGreaterThan(0);
+   // The way to keep the work is the page bar's button, by the name it has in that language.
+   expect(c.restartSave,c.restartSave).toContain(m.recovery.save);
+   expect(c.restartConfirm).not.toBe(c.restartCancel);
+   // The button and the confirming answer say the same thing: every word of the answer is in the button.
+   expect(c.restartConfirm.split(/\s+/).every(word=>c.restart.includes(word)),`${c.restart} / ${c.restartConfirm}`).toBe(true);
+   if(m!==APP_SHELL_MESSAGES_EN)for(const key of KEYS)expect(c[key],key).not.toBe(APP_SHELL_MESSAGES_EN.companion[key]);
+  }
+ });
 });

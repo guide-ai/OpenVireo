@@ -2,6 +2,7 @@
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {LABS,LAB_SLUGS,SITE_URL,labFromHash,labUrl} from './labs';
+import {labRestartHref} from './labSlugs';
 import {SEO_LANGUAGES,pathOf} from './languages';
 import en from '../i18n/en.json' with {type:'json'};
 import es from '../i18n/es/es.json' with {type:'json'};
@@ -61,6 +62,11 @@ describe('#lab= links',()=>{
  it('name a known lab exactly',()=>{
   for(const l of LABS)expect(labFromHash(`#lab=${l.slug}`)).toBe(l.slug);
   for(const h of ['','#lab=','#lab=nope','#lab=hubble/x','#observatory','lab=hubble','#LAB=hubble'])expect(labFromHash(h)).toBeNull();
+  // Front GUIDE-COMPANION, Restart exercise: the same page and query with the lab's own hash, which labFromHash reads back.
+  expect(labRestartHref('https://openvireo.space/#photometer','pleiades')).toBe('https://openvireo.space/#lab=pleiades');
+  expect(labRestartHref('http://127.0.0.1:5173/?lang=es-419#lss-survey','large-scale-structure')).toBe('http://127.0.0.1:5173/?lang=es-419#lab=large-scale-structure');
+  expect(labRestartHref('https://openvireo.space/','hubble')).toBe('https://openvireo.space/#lab=hubble');
+  for(const l of LABS)expect(labFromHash(new URL(labRestartHref('https://openvireo.space/?lang=fr#object-x',l.slug)).hash)).toBe(l.slug);
  });
 });
 

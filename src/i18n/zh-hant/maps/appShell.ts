@@ -9,7 +9,10 @@ export const APP_SHELL_ZH_HANT:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.
  toolsMenu:'選單',
  skipToContent:'跳到主要內容',
  pageBar:Object.freeze({label:'探究、語言和說明',more:'更多',moreName:'更多探究操作'}),
- companion:Object.freeze({label:'指南的目前步驟',stepOf:(n:number,total:number)=>`第${n}步，共${total}步`,actions:'指南操作',show:'指出位置',details:'步驟詳情',full:'完整指南',hide:'隱藏',hideName:'隱藏此指南',notYet:'該控制項尚未出現在畫面上；要先完成前面的某個操作才會出現。這是正確的頁面。',allDone:'所有步驟都已完成。'}),
+ companion:Object.freeze({label:'指南的目前步驟',stepOf:(n:number,total:number)=>`第${n}步，共${total}步`,actions:'指南操作',show:'指出位置',details:'步驟詳情',full:'完整指南',hide:'隱藏',hideName:'隱藏此指南',notYet:'該控制項尚未出現在畫面上；要先完成前面的某個操作才會出現。這是正確的頁面。',allDone:'所有步驟都已完成。',
+  restart:'重新開始實驗',restartTitle:'要重新開始這個實驗嗎？',restartWhat:'網站會重新載入，並在第一步開啟本指南。',
+  restartLost:'所有尚未儲存的內容都會遺失：這個實驗的工作，以及此分頁中其他工具的工作。',
+  restartSave:'如需保留，請先取消，再選擇「儲存探究」。',restartConfirm:'重新開始',restartCancel:'取消'}),
  recovery:Object.freeze({
   updatedTitle:'OpenVireo已發布新版本',
   updated:'此頁面開啟期間網站已更新，因此網站的這一部分無法載入。',

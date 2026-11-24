@@ -38,4 +38,6 @@ body:has(dialog.hubble-lab-dialog[open]) .guide-companion{display:none}
    It never dims the page or takes a click. `outline`, so it stays visible in forced colours; physical left/top (viewport
    coordinates from the control's own box). */
 .guide-companion-spot{position:fixed;z-index:19;border-radius:var(--ov-radius-md);outline:3px solid var(--ov-accent);box-shadow:0 0 0 6px color-mix(in srgb,var(--ov-accent) 25%,transparent);pointer-events:none}
-@media print{.guide-companion,.guide-companion-spot{display:none!important}body:has(.guide-companion){padding-block-end:0}}
+/* Restart exercise: its confirmation is an .ob-dialog; on a phone the two answers are stacked and both captions are centred. */
+.guide-companion-restart .ob-actions button{justify-content:center;text-align:center}
+@media print{.guide-companion,.guide-companion-spot,.guide-companion-restart{display:none!important}body:has(.guide-companion){padding-block-end:0}}
