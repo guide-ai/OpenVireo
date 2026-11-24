@@ -14,6 +14,8 @@ export type ShellIntent=
  |Readonly<{kind:'restore';file:File}>
  |Readonly<{kind:'instructor'}>
  |Readonly<{kind:'tour'}>
+ /** Front NEWCOMER NC1: Help › Take a first look. */
+ |Readonly<{kind:'first-look'}>
  /** A hash change (Back, Forward, an edited address) to a page other than the welcome: the app reads the address itself. */
  |Readonly<{kind:'address'}>;
 

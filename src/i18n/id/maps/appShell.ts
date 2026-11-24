@@ -13,6 +13,9 @@ export const APP_SHELL_ID:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
   restart:'Mulai ulang praktikum',restartTitle:'Mulai ulang praktikum ini?',restartWhat:'Situs dimuat ulang dan panduan ini terbuka pada langkah pertamanya.',
   restartLost:'Semua yang belum Anda simpan akan hilang: pekerjaan praktikum ini dan pekerjaan semua alat lain di tab ini.',
   restartSave:'Untuk mempertahankannya, batalkan lalu pilih Simpan investigasi terlebih dahulu.',restartConfirm:'Mulai ulang',restartCancel:'Batal'}),
+ firstLook:Object.freeze({name:'Tinjauan pertama',dome:'Buka kubah',point:'Pilih M82 dan arahkan teleskop ke sana',look:'Lihat objek itu melalui teleskop',
+  spectrum:'Buka spektrumnya',spectrumDetail:'Hanya sebagian objek yang memiliki spektrum di pustaka VIREO; M82 memilikinya. Itu adalah spektrum pustaka asli VIREO, bukan pengamatan baru.',
+  closing:'Anda sudah melakukan tinjauan pertama. Pilih praktikum untuk melangkah lebih jauh.',start:'Ikuti panduan (sekitar 3 menit)',help:'Lakukan tinjauan pertama'}),
  recovery:Object.freeze({
   updatedTitle:'Versi baru OpenVireo telah dirilis',
   updated:'Bagian situs ini tidak dapat dimuat karena situs diperbarui saat halaman ini terbuka.',

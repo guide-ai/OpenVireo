@@ -65,6 +65,8 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
  /** Goes to the page of the current step (the shell's own guide destinations); a stable callback. */onGo:()=>void;
  /** Opens the guide's window again; a stable callback. */onFull:()=>void;/** Removes the strip; a stable callback. */onHide:()=>void}){
  const C=SHELL.companion,now=companionNow(progress),content=companionContent(progress),selectors=guideTargets(now.lab,content.target);
+ /** The lab of a guide with a window and an exercise; null for the first look. */
+ const lab:LabSlug|null=now.lab==='first-look'?null:now.lab;
  const restartButton=useRef<HTMLButtonElement>(null);
  const [details,setDetails]=useState(false),[restart,setRestart]=useState(false),[missing,setMissing]=useState(false),[spot,setSpot]=useState<Element|null>(null),[box,setBox]=useState<Box|null>(null);
  const strip=useRef<HTMLElement>(null),run=useRef(0),lost=useRef(false),searching=useRef(false),held=useRef<{token:number;el:Element}|null>(null),id=useId(),step=`${now.lab}/${content.target}`;
@@ -179,12 +181,13 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
    <div className="guide-companion-actions" role="group" aria-label={C.actions}>
     {selectors.length>0&&<button type="button" className="primary-button" data-testid="guide-companion-show" onClick={show}>{C.show}</button>}
     <button type="button" className="secondary-button" aria-expanded={details} aria-controls={details?`${id}-d`:undefined} data-testid="guide-companion-details-toggle" onClick={()=>setDetails(v=>!v)}>{C.details}</button>
-    <button type="button" className="secondary-button" data-testid="guide-companion-full" onClick={onFull}>{C.full}</button>
-    <button type="button" className="text-button" ref={restartButton} aria-haspopup="dialog" data-testid="guide-companion-restart" onClick={()=>setRestart(true)}>{C.restart}</button>
+    {/* The first look (Front NEWCOMER NC1) has no window and no exercise: no Full guide and no Restart exercise. */}
+    {lab&&<button type="button" className="secondary-button" data-testid="guide-companion-full" onClick={onFull}>{C.full}</button>}
+    {lab&&<button type="button" className="text-button" ref={restartButton} aria-haspopup="dialog" data-testid="guide-companion-restart" onClick={()=>setRestart(true)}>{C.restart}</button>}
     <button type="button" className="text-button" aria-label={C.hideName} data-testid="guide-companion-hide" onClick={hide}>{C.hide}</button>
    </div>
   </div>
-  {restart&&<RestartConfirm lab={now.lab} opener={restartButton} onClose={()=>setRestart(false)}/>}
+  {restart&&lab&&<RestartConfirm lab={lab} opener={restartButton} onClose={()=>setRestart(false)}/>}
   {box&&createPortal(<div className="guide-companion-spot" data-testid="guide-companion-spot" aria-hidden="true" style={{left:box.left,top:box.top,width:box.width,height:box.height}}/>,document.body)}
  </aside>;
 }

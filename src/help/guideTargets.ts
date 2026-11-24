@@ -6,7 +6,8 @@
  * spectrum is already archived, a survey row already recorded), so a control the student has finished with is not outlined
  * again. guideTargets.test.ts checks that each name exists in the source and is on the step's page
  * (components/guideCompanionRoute.ts). Pure data: no text, no DOM. New web presentation, not a CLEA resource. */
-import type {LabSlug} from '../seo/labSlugs';
+import type {CompanionGuide} from '../core/guideCompanion';
+import {FIRST_LOOK_TARGET_ID} from '../core/firstLook';
 
 const id=(name:string)=>`[data-testid="${name}"]`;
 /** Save investigation, in the page bar of every page. */
@@ -25,7 +26,7 @@ const LSS_CYCLE=[id('lss-record-z'),'#lss-shift','#lss-step',id('lss-acq-pause')
 /** Pointing the telescope at the Object X coordinates, in the observatory. */
 const OBJECT_X_POINT=[id('dome-open'),id('point-coordinates'),id('camera-control')];
 
-export const GUIDE_TARGETS:Readonly<Record<LabSlug,Readonly<Record<string,readonly string[]>>>>=Object.freeze({
+export const GUIDE_TARGETS:Readonly<Record<CompanionGuide,Readonly<Record<string,readonly string[]>>>>=Object.freeze({
  // Keys are the phases of core/hubbleLab.ts.
  hubble:Object.freeze({
   // Once the chosen galaxy is archived its exposure buttons stay enabled; the next action is choosing another galaxy.
@@ -112,6 +113,19 @@ export const GUIDE_TARGETS:Readonly<Record<LabSlug,Readonly<Record<string,readon
   distance:['#pleiades-modulus'],
   save:[SAVE],
  }),
+ // Front NEWCOMER NC1: the first look (core/firstLook.ts), in the observatory. Its markers are `id`s, never data-testids (the
+ // script walks name a known layout problem by its nearest data-testid, tests/fixtures/rtlKnown.ts).
+ 'first-look':Object.freeze({
+  dome:[id('dome-open')],
+  // Point telescope once the suggested object is the one selected (the button publishes the selected object's id); before
+  // that, the picker. Pointing at another object also completes the step.
+  point:[`#point-target[data-target="${FIRST_LOOK_TARGET_ID}"]`,'#target'],
+  look:['#to-telescope'],
+  // Open spectrum analyzer is there only for an object with a library spectrum; otherwise the picker, to choose one that has.
+  spectrum:['#open-analyzer','#target'],
+  // The closing line: the lab list of the welcome.
+  done:['#home-labs'],
+ }),
 });
 /** The selectors of a step, or none for a step the table does not know. */
-export const guideTargets=(lab:LabSlug,step:string):readonly string[]=>GUIDE_TARGETS[lab][step]??[];
+export const guideTargets=(lab:CompanionGuide,step:string):readonly string[]=>GUIDE_TARGETS[lab][step]??[];

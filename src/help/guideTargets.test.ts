@@ -9,12 +9,15 @@ import {CLASSIFICATION_LAB_STEPS} from '../core/classificationLab';
 import {CLUSTER_LAB_STEPS} from '../core/clusterLab';
 import {PULSAR_LAB_STEPS} from '../core/pulsarLab';
 import {PLEIADES_LAB_STEPS} from '../core/pleiadesLab';
+import {FIRST_LOOK_STEPS} from '../core/firstLook';
 import {APP_SHELL_MESSAGES_EN} from '../components/AppShellMessages';
 import {companionPlace} from '../components/guideCompanionRoute';
-import {companionTarget,type CompanionProgress} from '../core/guideCompanion';
+import {companionTarget,type CompanionGuide,type CompanionProgress} from '../core/guideCompanion';
 import type {Route} from '../components/routePages';
 
 const SRC=path.resolve(import.meta.dirname,'..');
+/** Every guide the companion can show: the seven labs and the first look. */
+const GUIDES:readonly CompanionGuide[]=[...LAB_SLUGS,'first-look'];
 const files=(dir:string):string[]=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?files(path.join(dir,e.name)):/\.tsx$/.test(e.name)?[path.join(dir,e.name)]:[]);
 const sources=files(SRC).map(f=>[path.relative(SRC,f).split(path.sep).join('/'),readFileSync(f,'utf8')] as const);
 const source=sources.map(([,text])=>text).join('\n');
@@ -31,6 +34,8 @@ const BUILT:Readonly<Record<string,string>>={
 /** The steps the companion can show for each guide: its list, plus the closing state that still has something to point at
  * and the keys of a cycle inside a step (core/guideCompanion.ts companionTarget). */
 const STEPS:Readonly<Record<string,readonly string[]>>={
+ // Front NEWCOMER NC1: the first look's closing line points at the welcome's lab list.
+ 'first-look':[...FIRST_LOOK_STEPS,'done'],
  hubble:['acquire','measure','dataset','recipe','inputs','interpret'],
  'large-scale-structure':LSS_LAB_STEPS,
  'object-x':[...OBJECT_X_LAB_STEPS,'image-copy','image-point','image-any'],
@@ -42,8 +47,8 @@ const STEPS:Readonly<Record<string,readonly string[]>>={
 
 describe('guide targets (Show me where)',()=>{
  it('every step of every guide has at least one target, and the table has no step the guides do not have',()=>{
-  expect(Object.keys(GUIDE_TARGETS).sort()).toEqual([...LAB_SLUGS].sort());
-  for(const lab of LAB_SLUGS){
+  expect(Object.keys(GUIDE_TARGETS).sort()).toEqual([...LAB_SLUGS,'first-look'].sort());
+  for(const lab of GUIDES){
    expect(Object.keys(GUIDE_TARGETS[lab]).sort(),lab).toEqual([...STEPS[lab]].sort());
    for(const step of STEPS[lab])expect(guideTargets(lab,step).length,`${lab}/${step}`).toBeGreaterThan(0);
   }
@@ -54,7 +59,7 @@ describe('guide targets (Show me where)',()=>{
  });
  it('every selector names an id or a test id that exists in the source',()=>{
   const names=new Set<string>();
-  for(const lab of LAB_SLUGS)for(const selectors of Object.values(GUIDE_TARGETS[lab]))for(const selector of selectors){
+  for(const lab of GUIDES)for(const selectors of Object.values(GUIDE_TARGETS[lab]))for(const selector of selectors){
    const found=[...selector.matchAll(/\[data-testid="([^"]+)"\]|#([a-z][a-z0-9-]*)|\[(data-htl-exercise)="[^"]+"\]/g)];
    expect(found.length,selector).toBeGreaterThan(0);
    for(const m of found)names.add(m[1]?`testid:${m[1]}`:m[2]?`id:${m[2]}`:`attr:${m[3]}`);
@@ -79,8 +84,11 @@ const FILE_ROUTE:Readonly<Record<string,Route>>={
  'components/RadioControlPanel.tsx':'radio-control','components/RadioTelescopeRoute.tsx':'radio-control','components/RadioPulsarParameters.tsx':'radio-control','components/RadioReceiverWindows.tsx':'radio-control',
  'components/PulsarAnalysis.tsx':'pulsar-analysis',
  'ObjectXLab.tsx':'object-x','ObjectXMeasure.tsx':'object-x',
+ 'TargetPicker.tsx':'observatory','home/Welcome.tsx':'home',
 };
-const SHELL_ROUTE:Readonly<Record<string,Route>>={'id:acquisition-galaxy':'galaxy-exposure','testid:galaxy-exposure-page':'galaxy-exposure','testid:dome-open':'observatory','testid:point-coordinates':'observatory','testid:htl-details':'observatory','attr:data-htl-exercise':'observatory'};
+const SHELL_ROUTE:Readonly<Record<string,Route>>={'id:acquisition-galaxy':'galaxy-exposure','testid:galaxy-exposure-page':'galaxy-exposure','testid:dome-open':'observatory','testid:point-coordinates':'observatory','testid:htl-details':'observatory','attr:data-htl-exercise':'observatory',
+ // Front NEWCOMER NC1: the first look's markers in the observatory's target and reference cards.
+ 'id:point-target':'observatory','id:to-telescope':'observatory','id:open-analyzer':'observatory'};
 /** Save investigation is in the page bar of every page. */
 const EVERYWHERE='testid:investigation-save';
 function routeOf(name:string):Route|undefined{
@@ -112,7 +120,7 @@ const statesOf=(lab:string,key:string):readonly CompanionProgress[]=>(CYCLE_STAT
 describe('guide targets are on the page of their step',()=>{
  it('every control a step points at is on the page Show me where goes to; a step with no page points only at Save investigation',()=>{
   const wrong:string[]=[];
-  for(const lab of LAB_SLUGS)for(const [key,selectors] of Object.entries(GUIDE_TARGETS[lab]))for(const state of statesOf(lab,key)){
+  for(const lab of GUIDES)for(const [key,selectors] of Object.entries(GUIDE_TARGETS[lab]))for(const state of statesOf(lab,key)){
    // The state really leads to this key: the table below is checked against the rule, not against itself.
    if(companionTarget(state)!==key)wrong.push(`${lab}/${key}: the state ${JSON.stringify(state.progress)} uses the key ${companionTarget(state)}`);
    const place=companionPlace(state);
@@ -134,6 +142,12 @@ describe('guide targets are on the page of their step',()=>{
    for(const imageAction of ['point','expose','any'])expect(companionPlace(at('object-x',next,{},{imageAction}))).toEqual({route:'observatory'});
   }
   expect(companionPlace(at('object-x','done'))).toBeNull();
+ });
+ it('the first look stays in the observatory, and its closing line goes to the welcome\'s lab list',()=>{
+  for(const next of FIRST_LOOK_STEPS)expect(companionPlace(at('first-look',next))).toEqual({route:'observatory'});
+  expect(companionPlace(at('first-look','done'))).toEqual({route:'home'});
+  // Point telescope only once M82 is the selected object; the picker before that.
+  expect(GUIDE_TARGETS['first-look'].point).toEqual(['#point-target[data-target="NGC3034"]','#target']);
  });
  it('the Hubble workspace steps go to the spectrum page, the LSS wedge step to the survey until records are plotted, and the Pleiades list step opens the hot list',()=>{
   for(const phase of ['dataset','recipe','inputs','interpret','measure'])expect(companionPlace(at('hubble',phase))).toEqual({route:'spectrum'});
@@ -157,6 +171,18 @@ describe('companion strings',()=>{
    const counter=m.companion.stepOf(3,9);
    expect(counter,counter).toMatch(/3.*9/);
    for(const text of [m.companion.label,m.companion.actions,m.companion.show,m.companion.details,m.companion.full,m.companion.notYet,m.companion.allDone])expect(text.trim().length).toBeGreaterThan(0);
+  }
+ });
+ it('First look: every language has its nine strings, the pointing line names M82 and the detail names VIREO\'s library',()=>{
+  const all=[APP_SHELL_MESSAGES_EN,...Object.values(maps).flatMap(m=>Object.values(m))] as (typeof APP_SHELL_MESSAGES_EN)[];
+  const KEYS=['name','dome','point','look','spectrum','spectrumDetail','closing','start','help'] as const;
+  for(const m of all){
+   const f=m.firstLook;
+   for(const key of KEYS)expect(f[key].trim().length,key).toBeGreaterThan(0);
+   expect(f.point).toContain('M82');expect(f.spectrumDetail).toContain('M82');expect(f.spectrumDetail).toContain('VIREO');
+   // The start button gives the rough time with a digit 3, never a figure the visitor must convert.
+   expect(f.start).toMatch(/3/);
+   if(m!==APP_SHELL_MESSAGES_EN)for(const key of KEYS)expect(f[key],key).not.toBe(APP_SHELL_MESSAGES_EN.firstLook[key]);
   }
  });
  it('Restart exercise: every language has the button and its confirmation, names its own Save investigation, and tells Restart from Cancel',()=>{

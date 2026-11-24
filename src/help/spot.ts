@@ -94,9 +94,11 @@ export function waitForGuideTarget(selectors:readonly string[],timeout:number,ca
   if(grace<timeout)graceTimer=window.setTimeout(()=>attempt(false),grace);
  });
 }
-/** Moves focus to a guide step's control: the element itself when it takes focus, else the first control inside it. */
+/** Moves focus to a guide step's control: the element itself when it takes focus, else the first control inside it, else the
+ * element itself when it is made focusable by script only (`tabIndex=-1`: a heading such as the welcome's lab list, which the
+ * first look's closing line points at). */
 export function focusGuideTarget(el:Element){
  const focusable='button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,a[href],[tabindex]:not([tabindex="-1"])';
- const target=el.matches(focusable)?el:el.querySelector(focusable);
+ const target=el.matches(focusable)?el:el.querySelector(focusable)??(el.getAttribute('tabindex')==='-1'?el:null);
  if(target instanceof HTMLElement||target instanceof SVGElement)target.focus({preventScroll:true});
 }

@@ -13,6 +13,9 @@ export const APP_SHELL_JA:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
   restart:'実習をやり直す',restartTitle:'この実習をやり直しますか？',restartWhat:'サイトを読み込み直し、このガイドを最初の手順から開きます。',
   restartLost:'保存していない内容はすべて失われます。この実習の作業も、このタブでのほかのツールの作業も失われます。',
   restartSave:'残しておくには、キャンセルして先に「調査を保存」を選んでください。',restartConfirm:'やり直す',restartCancel:'キャンセル'}),
+ firstLook:Object.freeze({name:'まず見てみる',dome:'ドームを開く',point:'M82を選び、望遠鏡を向ける',look:'望遠鏡ビューで見る',
+  spectrum:'スペクトルを開く',spectrumDetail:'VIREOのライブラリにスペクトルがある天体は一部だけで、M82にはあります。これはVIREOの元のライブラリのスペクトルで、新しい観測ではありません。',
+  closing:'ひととおり見ました。さらに進むには、実習を選んでください。',start:'ガイドを開始（約3分）',help:'まず見てみる'}),
  recovery:Object.freeze({
   updatedTitle:'OpenVireoの新しいバージョンが公開されました',
   updated:'このページを開いている間にサイトが更新されたため、この部分を読み込めませんでした。',

@@ -40,7 +40,7 @@ function WelcomeShell({loading,failed,onNeed}:{loading:boolean;failed:Readonly<{
    actions={<InvestigationActions busy={false} onSave={save} onRestore={file=>onNeed({kind:'restore',file})} onCancel={ignore}/>}
    // Review 1, finding 4: nothing is on screen to save before the app is loaded, so the reload dialog offers no Save here.
    language={selectorShown(uiLanguage())?<LanguageSelectSlot/>:null}
-   help={<HelpMenu kind="main" onSiteAbout={()=>about.current?.showModal()} onTour={()=>onNeed({kind:'tour'})}/>}/>;
+   help={<HelpMenu kind="main" onSiteAbout={()=>about.current?.showModal()} onTour={()=>onNeed({kind:'tour'})} onFirstLook={()=>onNeed({kind:'first-look'})}/>}/>;
   return {header,pageBar,openGuide,explore:()=>onNeed({kind:'navigate',route:'observatory'})};
  },[onNeed]);
  const status=failed?<RouteErrorBoundary><Failed error={failed.error}/></RouteErrorBoundary>

@@ -10,6 +10,11 @@ import {CLASSIFICATION_LAB_STEPS,type ClassificationLabProgress} from './classif
 import {CLUSTER_LAB_STEPS,type ClusterLabProgress} from './clusterLab';
 import {PULSAR_LAB_STEPS,type PulsarLabProgress} from './pulsarLab';
 import {PLEIADES_LAB_STEPS,type PleiadesLabProgress} from './pleiadesLab';
+import {FIRST_LOOK_STEPS,type FirstLookProgress} from './firstLook';
+
+/** The guides the strip can show: the seven labs' guides and the first look (core/firstLook.ts, Front NEWCOMER NC1), a guide
+ * without a window of its own. */
+export type CompanionGuide=LabSlug|'first-look';
 
 /** One guide's progress, tagged with its lab. */
 export type CompanionProgress=
@@ -19,10 +24,11 @@ export type CompanionProgress=
  |Readonly<{lab:'stellar-classification';progress:ClassificationLabProgress}>
  |Readonly<{lab:'cluster-hr';progress:ClusterLabProgress}>
  |Readonly<{lab:'pulsars';progress:PulsarLabProgress}>
- |Readonly<{lab:'pleiades';progress:PleiadesLabProgress}>;
+ |Readonly<{lab:'pleiades';progress:PleiadesLabProgress}>
+ |Readonly<{lab:'first-look';progress:FirstLookProgress}>;
 
 export type CompanionNow=Readonly<{
- lab:LabSlug;
+ lab:CompanionGuide;
  /** The guide's own id of the current step (Hubble: its phase). */
  step:string;
  /** 1-based position of the current step in the guide's list. */
@@ -37,7 +43,7 @@ export type CompanionNow=Readonly<{
 export const HUBBLE_GUIDE_ITEMS=5;
 const HUBBLE_ITEM:Readonly<Record<HubbleLabProgress['next'],number>>=Object.freeze({acquire:1,measure:2,dataset:3,recipe:3,inputs:3,interpret:5});
 
-const at=<S extends string>(lab:LabSlug,steps:readonly S[],next:S|'done'|'preserve',closing:S|'done'|'preserve'):CompanionNow=>{
+const at=<S extends string>(lab:CompanionGuide,steps:readonly S[],next:S|'done'|'preserve',closing:S|'done'|'preserve'):CompanionNow=>{
  const index=steps.indexOf(next as S);
  return Object.freeze({lab,step:next,index:index<0?steps.length:index+1,total:steps.length,allDone:next===closing});
 };
@@ -51,6 +57,7 @@ export function companionNow(p:CompanionProgress):CompanionNow{
   case 'cluster-hr':return at(p.lab,CLUSTER_LAB_STEPS,p.progress.next,'preserve');
   case 'pulsars':return at(p.lab,PULSAR_LAB_STEPS,p.progress.next,'save');
   case 'pleiades':return at(p.lab,PLEIADES_LAB_STEPS,p.progress.next,'save');
+  case 'first-look':return at(p.lab,FIRST_LOOK_STEPS,p.progress.next,'done');
  }
 }
 

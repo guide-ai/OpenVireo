@@ -31,5 +31,7 @@ export function companionPlace(p:CompanionProgress):CompanionPlace|null{
    // 'observations' is a link of the guide's window, never a step's destination.
    return next==='save'||d==='observations'?null:d==='hotlist'?{route:'observatory',hotList:true}:{route:d};
   }
+  // Front NEWCOMER NC1: every step of the first look is in the observatory; its closing line points at the welcome's lab list.
+  case 'first-look':return {route:p.progress.next==='done'?'home':'observatory'};
  }
 }

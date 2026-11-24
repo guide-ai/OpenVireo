@@ -19,6 +19,11 @@ export type AppShellMessageCatalog=Readonly<{
  companion:Readonly<{label:string;stepOf:(n:number,total:number)=>string;actions:string;show:string;details:string;full:string;hide:string;hideName:string;notYet:string;allDone:string;
   /** Restart exercise: the button, then its confirmation (title, what happens, what is lost, how to keep it, the two answers). */
   restart:string;restartTitle:string;restartWhat:string;restartLost:string;restartSave:string;restartConfirm:string;restartCancel:string}>;
+ /** Front NEWCOMER NC1 [W]: the first look (core/firstLook.ts), shown by the companion strip. `name` is its name in the strip;
+  * `dome`, `point`, `look` and `spectrum` are its four steps' lines (only `point` names M82, the suggested object);
+  * `spectrumDetail` is the last step's Step details (the other three reuse the observatory band's `sky.step1Help..3Help`);
+  * `closing` is the line once it is done; `start` is the button under the observatory band and `help` the Help menu item. */
+ firstLook:Readonly<{name:string;dome:string;point:string;look:string;spectrum:string;spectrumDetail:string;closing:string;start:string;help:string}>;
  /** Front REL1 review 1 M1 [W]: a part of the site that cannot load or stopped with an error (src/components/LazyBoundary.tsx). */
  recovery:Readonly<{updatedTitle:string;updated:string;errorTitle:string;error:string;kept:string;saveFirst:string;saveHow:string;save:string;reload:string}>;
 }>;
@@ -35,6 +40,9 @@ export const APP_SHELL_MESSAGES_EN:AppShellMessageCatalog=Object.freeze({
   restart:'Restart exercise',restartTitle:'Restart this exercise?',restartWhat:'The site loads again and this guide opens at its first step.',
   restartLost:'Everything you have not saved is lost: the work of this exercise and of every other tool in this tab.',
   restartSave:'To keep it, cancel and choose Save investigation first.',restartConfirm:'Restart',restartCancel:'Cancel'}),
+ firstLook:Object.freeze({name:'First look',dome:'Open the dome',point:'Choose M82 and point the telescope at it',look:'Look at it through the telescope',
+  spectrum:'Open its spectrum',spectrumDetail:'Only some objects have a spectrum in VIREO\'s library; M82 has one. It is VIREO\'s original library spectrum, not a new observation.',
+  closing:'You have taken a first look. Choose a lab to go further.',start:'Guide me (about 3 min)',help:'Take a first look'}),
  recovery:Object.freeze({
   updatedTitle:'A new version of OpenVireo was published',
   updated:'This part of the site could not be loaded because the site was updated while this page was open.',

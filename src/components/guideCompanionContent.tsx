@@ -56,6 +56,17 @@ export function companionContent(p:CompanionProgress):CompanionContent{
    const next=p.progress.next;
    return {name:t('pulsarLab.nav'),line:pulsarNextText(p.progress),details:pulsarStepBody(next,p.progress,false),target,closing:false};
   }
+  // Front NEWCOMER NC1: the first look has no window; three of its details are the observatory band's own help lines.
+  case 'first-look':{
+   const next=p.progress.next,F=SHELL.firstLook;
+   switch(next){
+    case 'dome':return {name:F.name,line:F.dome,details:<p>{t('sky.step1Help')}</p>,target,closing:false};
+    case 'point':return {name:F.name,line:F.point,details:<p>{t('sky.step2Help')}</p>,target,closing:false};
+    case 'look':return {name:F.name,line:F.look,details:<p>{t('sky.step3Help')}</p>,target,closing:false};
+    case 'spectrum':return {name:F.name,line:F.spectrum,details:<p>{F.spectrumDetail}</p>,target,closing:false};
+    case 'done':return {name:F.name,line:F.closing,details:<p>{t('home.labsHint')}</p>,target,closing:true};
+   }
+  }
   case 'pleiades':{const next=p.progress.next;return {name:t('pleiadesLab.nav'),line:t(`pleiadesLab.next.${next}`),details:pleiadesStepBody(next,false),target,closing:false,counts:t('pleiadesLab.coverage',{count:p.progress.colorTargets,total:p.progress.sampleTargets})};}
  }
 }

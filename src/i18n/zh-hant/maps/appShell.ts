@@ -13,6 +13,9 @@ export const APP_SHELL_ZH_HANT:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.
   restart:'重新開始實驗',restartTitle:'要重新開始這個實驗嗎？',restartWhat:'網站會重新載入，並在第一步開啟本指南。',
   restartLost:'所有尚未儲存的內容都會遺失：這個實驗的工作，以及此分頁中其他工具的工作。',
   restartSave:'如需保留，請先取消，再選擇「儲存探究」。',restartConfirm:'重新開始',restartCancel:'取消'}),
+ firstLook:Object.freeze({name:'初步觀察',dome:'開啟圓頂',point:'選擇M82，並將望遠鏡指向它',look:'在望遠鏡檢視中查看它',
+  spectrum:'開啟它的光譜',spectrumDetail:'VIREO資源庫中只有部分天體有光譜；M82有。這是VIREO原版資源庫中的光譜，不是新的觀測。',
+  closing:'你已完成初步觀察。選擇一個實驗，繼續深入。',start:'跟著指南走（約3分鐘）',help:'進行初步觀察'}),
  recovery:Object.freeze({
   updatedTitle:'OpenVireo已發布新版本',
   updated:'此頁面開啟期間網站已更新，因此網站的這一部分無法載入。',

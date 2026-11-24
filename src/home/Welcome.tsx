@@ -27,7 +27,7 @@ function Welcome({openGuide,onExplore}:{openGuide:Readonly<Record<LabSlug,()=>vo
    <li>{t('home.factInstall')}</li><li>{t('home.factFree')}</li><li>{t('home.factFaithful')}</li>
   </ul>
   <p className="home-explore"><button type="button" className="home-explore-button" onClick={onExplore}>{t('home.explore')} <span aria-hidden="true">→</span></button><span>{t('home.exploreHint')}</span></p>
-  <h2 className="home-labs-heading" id="home-labs">{t('home.labsHeading')}</h2>
+  <h2 className="home-labs-heading" id="home-labs" tabIndex={-1}>{t('home.labsHeading')}</h2>
   <p className="home-labs-hint">{t('home.labsHint')}</p>
   <ul className="home-labs" aria-labelledby="home-labs">
    {cards().map(c=><li key={c.slug}><button type="button" className="home-lab" data-lab={c.slug} aria-labelledby={`home-lab-${c.slug}`} aria-describedby={`home-lab-${c.slug}-summary`} onClick={openGuide[c.slug]}>

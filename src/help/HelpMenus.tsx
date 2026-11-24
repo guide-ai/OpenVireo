@@ -12,6 +12,7 @@ import WebHelpDialog from './WebHelpDialog';
 import {helpKeyBlocked} from './helpShortcut';
 import {PROJECT_LINKS,PROJECT_REPO_URL,currentPage,newIssueUrl} from './projectLinks';
 import {useMenuDismiss} from '../components/useMenuDismiss';
+import {APP_SHELL_MESSAGES as SHELL} from '../components/AppShellMessages';
 import '../observatory/field-info.css';
 import './help.css';
 
@@ -42,7 +43,8 @@ type Menu='help'|'websites'|null;
  * Windows program, so the menu holds OpenVireo's own help (Help topics…, WebHelpDialog; also opened by the "?" key anywhere
  * outside a text field or a modal window, unless the visitor turned it off: helpShortcut.ts), the first-visit tour (`onTour`), Websites and the site's About page (`onSiteAbout`, Front REL1, which
  * also shows VIREO's About box). VIREO's main-window help (VIRMnHlp) and About... are not offered (user decision, 2026-11-08). */
-export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout,onTour}:{kind:'main'|'radio';disabled?:boolean;disabledReason?:string;onSiteAbout?:()=>void;onTour?:()=>void}){
+export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout,onTour,onFirstLook}:{kind:'main'|'radio';disabled?:boolean;disabledReason?:string;onSiteAbout?:()=>void;onTour?:()=>void;
+ /** Front NEWCOMER NC1: Take a first look (core/firstLook.ts), beside the tour. */onFirstLook?:()=>void}){
  const id=useId(),[menu,setMenu]=useState<Menu>(null),[topics,setTopics]=useState(0),[about,setAbout]=useState(false),[webHelp,setWebHelp]=useState(false);
  const trigger=useRef<HTMLButtonElement>(null),root=useRef<HTMLDivElement>(null),closeMenu=useCallback(()=>setMenu(null),[]);
  // Front HEADER: the main menu sits beside the page bar's More menu; a press or a focus outside it closes it (the radio lab's is unchanged).
@@ -69,6 +71,7 @@ export function HelpMenu({kind,disabled=false,disabledReason,onSiteAbout,onTour}
    {kind==='main'&&<>
     <button type="button" data-testid="main-help-web" aria-keyshortcuts={M.shortcutKey} onClick={()=>{setMenu(null);setWebHelp(true);}}>{M.webTopics}<span className="help-menu-key" aria-hidden="true">{M.shortcutKey}</span></button>
     {onTour&&<button type="button" data-testid="main-help-tour" onClick={()=>{setMenu(null);onTour();}}>{M.tour}</button>}
+    {onFirstLook&&<button type="button" id="main-help-first-look" onClick={()=>{setMenu(null);onFirstLook();}}>{SHELL.firstLook.help}</button>}
     <button type="button" aria-expanded={menu==='websites'} data-testid="main-help-websites" onClick={()=>setMenu(m=>m==='websites'?'help':'websites')}>{vireo(menuCaptionText(MAIN_HELP_MENU.websites))} ›</button>
     {menu==='websites'&&<div role="group" aria-label={vireo(menuCaptionText(MAIN_HELP_MENU.websites))} className="fi-submenu">
      {HELP_WEBSITES.map(w=>w.web
