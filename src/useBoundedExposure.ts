@@ -51,6 +51,9 @@ export function useBoundedExposure({engine,active,fieldMatches,onActivate,onStar
   return()=>{clearInterval(handle);if(epoch.current===id){epoch.current++;timer.current=null;}};
  },[active,fieldMatches,armed,running,busy,configurationAvailable,tickMs]);
  useEffect(()=>{const hide=()=>{if(document.visibilityState==='hidden'&&current.current?.exposure.phase==='running'){stop();setNotice(t('skyExposure.pausedWhileThisTabWasHidden'));}};document.addEventListener('visibilitychange',hide);return()=>{document.removeEventListener('visibilitychange',hide);stopClock();generation.current++;};},[]);
+ /** Both activation buttons land here; the first also points the telescope (`onActivate`). Activating an activated journal
+  * changes nothing (activateJournal), so the pages turn "Activate current tracked pointing" off while `armed` (user report,
+  * 2026-11-23: it stayed enabled and primary after activation and did nothing; Start is then the next action). */
  function activate(useCurrent=false){setError('');try{if(!configurationAvailable||useCurrent&&!available.current)throw new JournalError('phase');const next=engine.activate(current.current??engine.create(parseSkySeed(seed)));if(!useCurrent)onActivate();commit(next);setNotice(engine.activated);}catch(e){setError(message(e));}}
  function start(){setError('');try{if(route==='exercise'&&parameterRefusal){setError(parameterRefusal);return;}if(!available.current||!current.current)throw new JournalError('phase');const next=engine.start(current.current);if(onStart&&!onStart())throw new JournalError('phase');commit(next);setNotice(engine.started);}catch(e){setError(message(e));}}
  function save(kind:'csv'|'json'){setError('');try{const s=stop();if(!s)return;download(kind==='csv'?engine.csv(s):engine.serialize(s),`${engine.basename}.${kind}`,kind==='csv'?'text/csv;charset=utf-8':'application/json');setNotice(t('exposureIO.saved'));}catch(e){setError(message(e));}}
