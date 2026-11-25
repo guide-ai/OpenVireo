@@ -16,6 +16,9 @@ had to remember the step, find the page and find the control. The companion keep
 - **Full guide** opens the guide's window again.
 - The strip moves on by itself as the student works.
 
+Front NEWCOMER (2026-11-24) adds an eighth guide without a window, the first look ("First look" below), and makes the strip's
+line the step's plain title ("Plain step titles and More detail"); `docs/NEWCOMER.md` maps that front.
+
 ## Rules it keeps
 
 - **No rule of its own.** The current step is each guide's `next`, from the same pure progress function the guide's ticks use
