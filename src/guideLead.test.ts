@@ -49,21 +49,30 @@ const why=(dir:string,lab:LabSlug)=>{const key=WHY[lab];return key?catalog(dir)[
  * dispersion measure and its causes (pulsarLab.data.*, the delay formula: a spinning neutron star, electrons and gas between the
  * stars); the classification guide's temperature sequence; the Pleiades and cluster guides' distance and age outcomes (light-years,
  * parsecs, a young or old cluster, its turnoff). An alphabetic entry matches at the start of a word (a prefix unless it ends with
- * `$`, a whole word); a CJK entry anywhere. Object X: the five kind names of the language (OBJECT_X_LAB.kinds). */
+ * `$`, a whole word), or anywhere inside a word when it starts with `*` (so «unevenly», «неравномерно», «inégalement» and «असमान»
+ * are caught with their positive forms); a CJK entry anywhere. NC4 review (N3) added the growth and clumping stems. Object X: the five kind names of the language (OBJECT_X_LAB.kinds). */
 const RESULT:Readonly<Record<Exclude<LabSlug,'object-x'|'cluster-hr'>,Readonly<Record<string,readonly string[]>>>>={
  hubble:{
-  en:['expan','faster','proportion','linear','slope'],es:['expan','más rápid','proporcion','lineal','pendiente'],
-  'pt-br':['expan','mais rápid','proporcion','linear','inclinação'],fr:['expansion','plus vite','plus rapide','proportionn','linéaire','pente'],
-  id:['mengembang','ekspansi','lebih cepat','sebanding','proporsional','linear','linier','kemiringan'],
-  hi:['फैल','प्रसार','अधिक तेज़','आनुपातिक','रैखिक','ढलान'],ja:['膨張','速く','比例','直線','傾き'],
-  'zh-hans':['膨胀','更快','正比','线性','斜率'],'zh-hant':['膨脹','更快','正比','線性','斜率'],ru:['расшир','быстрее','пропорциональн','линейн','наклон'],
+  en:['expan','faster','proportion','linear','slope','increas','grow','farther','more quickly'],
+  es:['expan','más rápid','más deprisa','proporcion','lineal','pendiente','aument','crec','más lej'],
+  'pt-br':['expan','mais rápid','mais depressa','proporcion','linear','inclinação','aument','cresc','mais long'],
+  fr:['expansion','plus vite','plus rapide','proportionn','linéaire','pente','augment','croît','croiss','plus loin','plus lointain'],
+  id:['mengembang','ekspansi','lebih cepat','sebanding','proporsional','linear','linier','kemiringan','bertambah','meningkat','makin','semakin','lebih jauh'],
+  hi:['फैल','प्रसार','अधिक तेज़','आनुपातिक','रैखिक','ढलान','बढ़','अधिक दूर','ज़्यादा दूर'],ja:['膨張','速く','比例','直線','傾き','増','ほど速','ほど遠'],
+  'zh-hans':['膨胀','更快','正比','线性','斜率','增','越远','越快'],'zh-hant':['膨脹','更快','正比','線性','斜率','增','越遠','越快'],
+  ru:['расшир','быстрее','пропорциональн','линейн','наклон','увелич','раст$','растёт','растут','возраста','дальше'],
  },
  'large-scale-structure':{
-  en:['wall','void','filament','crowd','evenly','cosmic web','bubble'],es:['muralla','pared','vacío','filament','agrup','uniforme','red cósmica','burbuja'],
-  'pt-br':['muralha','parede','vazio','filament','aglomer','uniforme','teia cósmica','bolha'],fr:['mur$','murs$','vide','filament','amas','uniformément','toile cosmique','bulle'],
-  id:['dinding','kosong','filamen','berkerumun','merata','jaring kosmik','gelembung'],hi:['दीवार','रिक्त','तंतु','झुंड','समान रूप','ब्रह्मांडीय जाल'],
-  ja:['壁','空洞','ボイド','フィラメント','密集','一様','網の目','泡'],'zh-hans':['墙','空洞','巨洞','纤维','聚集','均匀','宇宙网','泡'],
-  'zh-hant':['牆','空洞','巨洞','纖維','聚集','均勻','宇宙網','泡'],ru:['стен','пуст','войд','волокн','нит$','нити$','равномерн','паутин','пузыр'],
+  en:['wall','void','filament','crowd','*evenly','cosmic web','bubble','clump','cluster','sheet','empty','*uneven'],
+  es:['muralla','pared','vacío','vacía','filament','agrup','*uniforme','red cósmica','burbuja','grumo','cúmul','lámina','desigual'],
+  'pt-br':['muralha','parede','vazio','vazia','filament','aglomer','*uniforme','teia cósmica','bolha','grumo','lâmina','desigual'],
+  fr:['mur$','murs$','vide','filament','amas','*uniformément','*inégal','toile cosmique','bulle','grumeau','feuillet','regroup'],
+  id:['dinding','kosong','filamen','berkerumun','*merata','jaring kosmik','gelembung','gumpal','gugus','lembaran','mengelompok'],
+  hi:['दीवार','रिक्त','तंतु','झुंड','*समान रूप','*असमान','ब्रह्मांडीय जाल','गुच्छ','परत','खाली'],
+  ja:['壁','空洞','ボイド','フィラメント','密集','一様','網の目','泡','塊','集団','群れ','シート','空っぽ','偏り','偏って'],
+  'zh-hans':['墙','空洞','巨洞','纤维','聚集','均匀','宇宙网','泡','团块','成团','星系团','片状','空的'],
+  'zh-hant':['牆','空洞','巨洞','纖維','聚集','均勻','宇宙網','泡','團塊','成團','星系團','片狀','空的'],
+  ru:['стен','пуст','войд','волокн','нит$','нити$','*равномерн','паутин','пузыр','сгущ','скоплен','слои','слой','комк'],
  },
  'stellar-classification':{
   en:['temperature','hotter','cooler','hot$','cool$'],es:['temperatura','caliente','fría','frío'],'pt-br':['temperatura','quente','fria','frio'],
@@ -91,8 +100,8 @@ const stems=(dir:string,lab:LabSlug):readonly string[]=>{
  return RESULT[lab==='cluster-hr'?'pleiades':lab][dir]!;
 };
 const matcher=(dir:string,stem:string)=>{
- const whole=stem.endsWith('$'),body=whole?stem.slice(0,-1):stem;
- return CJK.has(dir)?new RegExp(body,'u'):new RegExp(`(?<![\\p{L}\\p{M}])${body}${whole?'(?![\\p{L}\\p{M}])':''}`,'iu');
+ const inside=stem.startsWith('*'),whole=stem.endsWith('$'),body=stem.slice(inside?1:0,whole?-1:undefined);
+ return CJK.has(dir)?new RegExp(body,'u'):new RegExp(`${inside?'':'(?<![\\p{L}\\p{M}])'}${body}${whole?'(?![\\p{L}\\p{M}])':''}`,'iu');
 };
 const statesResult=(dir:string,lab:LabSlug,text:string)=>stems(dir,lab).filter(stem=>matcher(dir,stem).test(text));
 
@@ -128,14 +137,24 @@ describe('Front NEWCOMER NC4: the why-lines ask, and never answer',()=>{
   expect(statesResult('ru','stellar-classification','Чем горячее звезда?')).toEqual(['горяч']);
   expect(statesResult('fr','object-x','Est-ce un astéroïde ?')).toEqual(['astéroïde']);
   expect(statesResult('en','pleiades','Is it bold?')).toEqual([]);
+  // NC4 review (N3): growth, clumping and negated forms.
+  expect(statesResult('en','hubble','Farther galaxies recede more quickly: speed increases with distance.')).toEqual(['increas','farther','more quickly']);
+  expect(statesResult('en','large-scale-structure','Galaxies are spread unevenly, in clumps and sheets around empty regions.')).toEqual(['*evenly','clump','sheet','empty','*uneven']);
+  expect(statesResult('ru','large-scale-structure','Галактики распределены неравномерно.')).toEqual(['*равномерн']);
+  expect(statesResult('fr','large-scale-structure','Les galaxies sont réparties inégalement.')).toEqual(['*inégal']);
+  expect(statesResult('hi','large-scale-structure','आकाशगंगाएँ असमान रूप से फैली हैं।')).toContain('*असमान');
+  expect(statesResult('es','hubble','La velocidad aumenta con la distancia.')).toEqual(['aument']);
+  expect(statesResult('zh-hans','hubble','速度随距离增大。')).toEqual(['增']);
+  expect(statesResult('ja','hubble','速度は距離とともに増えます。')).toEqual(['増']);
  });
 });
 
 describe('Front NEWCOMER NC4: What next',()=>{
- it('every lab suggests another lab, and every lab is suggested',()=>{
+ // NC4 review (N6): Stellar classification, the Start-here lab (plan Q6), is where a visitor begins, so no lab suggests it.
+ it('every lab suggests another lab; every lab but Stellar classification, the Start-here lab, is suggested',()=>{
   expect(Object.keys(LAB_NEXT).sort()).toEqual([...LAB_SLUGS].sort());
   for(const lab of LAB_SLUGS){expect(LAB_SLUGS).toContain(LAB_NEXT[lab]);expect(LAB_NEXT[lab],lab).not.toBe(lab);}
-  expect(new Set(Object.values(LAB_NEXT)).size).toBeGreaterThanOrEqual(6);
+  expect(new Set(Object.values(LAB_NEXT))).toEqual(new Set(LAB_SLUGS.filter(lab=>lab!=='stellar-classification')));
   expect(LAB_NEXT.pleiades).toBe('cluster-hr');
  });
  for(const dir of DIRS)it(`${dir}: the three What next strings exist and keep {lab}`,()=>{

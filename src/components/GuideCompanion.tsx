@@ -70,7 +70,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide,onNext}:{progress:Com
  const C=SHELL.companion,now=companionNow(progress),content=companionContent(progress),selectors=guideTargets(now.lab,content.target);
  /** The lab of a guide with a window and an exercise; null for the first look. */
  const lab:LabSlug|null=now.lab==='first-look'?null:now.lab;
- const restartButton=useRef<HTMLButtonElement>(null);
+ const restartButton=useRef<HTMLButtonElement>(null),detailsButton=useRef<HTMLButtonElement>(null);
  const [details,setDetails]=useState(false),[restart,setRestart]=useState(false),[missing,setMissing]=useState(false),[spot,setSpot]=useState<Element|null>(null),[box,setBox]=useState<Box|null>(null);
  const strip=useRef<HTMLElement>(null),run=useRef(0),lost=useRef(false),searching=useRef(false),held=useRef<{token:number;el:Element}|null>(null),id=useId(),step=`${now.lab}/${content.target}`;
  // A new step (or another guide) ends a search in progress, its outline and its note. If the page itself moved the guide on
@@ -166,6 +166,9 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide,onNext}:{progress:Com
   const heading=[...document.querySelectorAll<HTMLElement>('h1[tabindex="-1"]')].find(h=>h.closest('[hidden]')===null&&h.getClientRects().length>0);
   heading?.focus({preventScroll:true});onHide();
  }
+ // Front NEWCOMER NC4 review (N4): What next's button lives in Step details, which close here; the focus first moves to the Step
+ // details button, which stays, so the new guide window gives the focus back there when it closes (not to <body>).
+ function openNext(next:LabSlug){detailsButton.current?.focus({preventScroll:true});setDetails(false);onNext(next);}
  // Escape closes Step details; a focus that was inside them goes to their button.
  function keyDown(event:KeyboardEvent<HTMLElement>){
   if(event.key!=='Escape'||!details)return;
@@ -175,7 +178,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide,onNext}:{progress:Com
   setDetails(false);
  }
  return <aside ref={strip} className="guide-companion" aria-label={C.label} inert={inert} onKeyDown={keyDown} data-testid="guide-companion" data-lab={now.lab} data-step={now.step} data-target={content.target} data-route={companionPlace(progress)?.route} data-all-done={now.allDone||undefined} data-i18n-shell="">
-  {details&&<div className="guide-companion-details" id={`${id}-d`} role="group" aria-label={C.details} data-testid="guide-companion-details">{content.details}{/* Front NEWCOMER NC4: the closing state's Step details end with the guide's What next; its counts are already in the strip. */}{now.allDone&&lab&&whatNext(`${id}-n`,lab,onNext)}</div>}
+  {details&&<div className="guide-companion-details" id={`${id}-d`} role="group" aria-label={C.details} data-testid="guide-companion-details">{content.details}{/* Front NEWCOMER NC4: the closing state's Step details end with the guide's What next; its counts are already in the strip. */}{now.allDone&&lab&&whatNext(`${id}-n`,lab,openNext)}</div>}
   <div className="guide-companion-row">
    <div className="guide-companion-text">
     <p className="guide-companion-place"><strong data-testid="guide-companion-lab">{content.name}</strong>{!content.closing&&<>{' '}<span data-testid="guide-companion-step">{C.stepOf(now.index,now.total)}</span></>}{content.counts&&<span data-testid="guide-companion-counts">{content.counts}</span>}</p>
@@ -184,7 +187,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide,onNext}:{progress:Com
    </div>
    <div className="guide-companion-actions" role="group" aria-label={C.actions}>
     {selectors.length>0&&<button type="button" className="primary-button" data-testid="guide-companion-show" onClick={show}>{C.show}</button>}
-    <button type="button" className="secondary-button" aria-expanded={details} aria-controls={details?`${id}-d`:undefined} data-testid="guide-companion-details-toggle" onClick={()=>setDetails(v=>!v)}>{C.details}</button>
+    <button type="button" className="secondary-button" aria-expanded={details} aria-controls={details?`${id}-d`:undefined} ref={detailsButton} data-testid="guide-companion-details-toggle" onClick={()=>setDetails(v=>!v)}>{C.details}</button>
     {/* The first look (Front NEWCOMER NC1) has no window and no exercise: no Full guide and no Restart exercise. */}
     {lab&&<button type="button" className="secondary-button" data-testid="guide-companion-full" onClick={onFull}>{C.full}</button>}
     {lab&&<button type="button" className="text-button" ref={restartButton} aria-haspopup="dialog" data-testid="guide-companion-restart" onClick={()=>setRestart(true)}>{C.restart}</button>}

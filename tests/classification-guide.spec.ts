@@ -46,9 +46,11 @@ test('guided journey: verified practice, atlas comparison, line table, wide EW, 
  const stripNext=strip.locator('.lab-what-next');await expect(stripNext).toContainText('What next');await expect(stripNext).toContainText('A lab to try next: Pleiades photometry.');
  await stripNext.getByRole('button',{name:'Open its guide',exact:true}).click();await expect(pleiades).toBeVisible();await expect(pleiades.getByRole('button',{name:'Close Pleiades lab guide',exact:true})).toBeFocused();
  await expect(pleiades).toHaveAccessibleDescription(JSON.parse(readFileSync(new URL('../src/i18n/en.json',import.meta.url),'utf8'))['pleiadesLab.why']);await expect(pleiades.locator('.lab-what-next')).toHaveCount(0);
- await page.keyboard.press('Escape');await expect(pleiades).not.toBeVisible();
+ // NC4 review (N4): the window gives the focus back to the strip's Step details button, not to <body>.
+ await page.keyboard.press('Escape');await expect(pleiades).not.toBeVisible();await expect(strip.getByTestId('guide-companion-details-toggle')).toBeFocused();await expect(strip.getByTestId('guide-companion-details')).toHaveCount(0);
  await openGuide(page);const windowNext=guide(page).getByRole('region',{name:'What next',exact:true});await expect(windowNext).toContainText('4 of 4 steps done');await expect(windowNext).toContainText('A lab to try next: Pleiades photometry.');
  await windowNext.getByRole('button',{name:'Open its guide',exact:true}).click();await expect(guide(page)).not.toBeVisible();await expect(pleiades).toBeVisible();await expect(strip).toHaveAttribute('data-lab','pleiades');
+ await page.keyboard.press('Escape');await expect(pleiades).not.toBeVisible();expect(await page.evaluate(()=>document.activeElement!==document.body&&document.activeElement!==null)).toBe(true);
  expect(errors).toEqual([]);
 });
 

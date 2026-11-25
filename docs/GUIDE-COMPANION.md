@@ -329,7 +329,7 @@ M1 and m7, answer Q14):
   description (`aria-describedby="<guide>-why"`; the id moved from the intro, review m7). The former intro paragraph is the first
   research note (Research notes, which the pulsar and Object X windows gain), before the Options and adaptation notes. NC6 adds
   the time and level line under the why-line and NC5 the version choice; neither is in NC4.
-- **The Hubble and LSS home cards** were reworded the same way (Q14): «Measure how fast galaxies are moving away and how far away
+- **The Hubble and LSS home cards** were reworded the same way (Q14): «Measure how fast galaxies are moving and how far away
   they are, then compare the two.» and «Measure the redshifts of many galaxies across a strip of sky and map where they lie.»
   (they said «…then work out how fast the universe expands» and «…map the cosmic web», plan F11). `homeBoot` mirrors them.
 - **What next** (`whatNext` in `src/guideLead.tsx`), once the guide's counted steps are all done (the same closing states as
@@ -342,7 +342,8 @@ M1 and m7, answer Q14):
   window opens with the focus on its close button and the strip follows the new guide. In the window it sits right after the
   step list (Hubble before Targets, progress and original V references, classification and Pleiades before Troubleshooting,
   pulsars before Three kinds of data, cluster after Keep your work, LSS after its questions, Object X before Return). The strip's Step details end
-  with the same section in the closing state, without the recap (its counts are already in the strip). One new tab stop. It
+  with the same section in the closing state, without the recap (its counts are already in the strip). Its button first moves the
+  focus to the strip's Step details button and closes Step details (review N4), so the new window gives the focus back there. One new tab stop. It
   shows no answer, expected value or grade and stores nothing. The counts line is computed once per window (`counts`) for the
   progress block and the recap, so five `*_STEPS.length` receipts of `src/i18n/vireo-literals.json` left the JSX and were removed;
   `src/i18n/coverage.test.ts` counts `src/guideLead.tsx` (152 files).
@@ -352,8 +353,10 @@ M1 and m7, answer Q14):
   classification temperature, hotter, cooler; Pleiades and cluster light-years, parsecs, young, old, turnoff, millions; pulsars
   neutron, electron, gas, spin, dispersion, plasma, interstellar; Object X the language's five kind names from
   `OBJECT_X_LAB.kinds`), with a self-check that the old home summaries and textbook answers are caught; the Hubble and LSS home
-  cards against the same lists; `LAB_NEXT` (every lab suggests another lab); each window's why-line as description, the former
-  intro as the first research note and What next only in the closing state. `tests/classification-guide.spec.ts`: a finished
+  cards against the same lists; `LAB_NEXT` (every lab suggests another lab; Stellar classification, the Start-here lab, is suggested by none, on purpose); each window's why-line as description, the former
+  intro as the first research note and What next only in the closing state. Review N3 widened the lists (growth: increasing,
+  growing, farther, more quickly; clumping: clumps, clusters, sheets, empty regions, uneven) and lets an entry starting with `*`
+  match inside a word, so negated forms (unevenly, «неравномерно», «inégalement», «असमान») are caught. `tests/classification-guide.spec.ts`: a finished
   classification shows What next in the strip's Step details and in the window, and each button opens the Pleiades window,
   described by its why-line.
 
