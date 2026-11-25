@@ -307,8 +307,9 @@ M2, M5, M7 and m7):
   step, title, status and button outside it, the summary's name; every body test id still rendered; the strip's line per guide
   and state; Step details starting with the "Next:" line; `withoutStepNumber` on ten catalogs; the print helper);
   `tests/guide-companion.spec.ts` (the line is the title; Step details start with the "Next:" line; print of an open guide window
-  opens and restores its details, and in Chromium the PDF's own text, read by `tests/fixtures/pdfText.ts`, holds folded passages
-  of the last pulsar steps, the Hubble Save your work item and the cluster guide's last step and limits, and not the page behind); the walks open every More detail before their checks through
+  opens and restores its details, and under print media after `beforeprint` neither the window nor an ancestor clips it, folded passages
+  of the last pulsar steps, the Hubble Save your work item and the cluster guide's last step and limits are rendered, and the page
+  behind is not; a first version read the text out of `page.pdf()`, which CI's fonts defeated); the walks open every More detail before their checks through
   `tests/fixtures/moreDetail.ts` `openAllMoreDetail`. The print test runs in Chromium (`page.pdf()` fires both events) and passed
   with `--browser=firefox` (the two events dispatched); WebKit could not start on the implementer's machine (missing system
   libraries). A summary named by its step's title is also found by `getByLabel(<title>)`: `tests/object-x-path.spec.ts` and
