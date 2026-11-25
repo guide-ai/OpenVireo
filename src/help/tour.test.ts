@@ -1,5 +1,6 @@
 import {describe,expect,it} from 'vitest';
-import {TOUR} from './tour';
+import {TOUR,TOUR_EN,TOUR_TARGETS} from './tour';
+import {APP_SHELL_MESSAGES_EN} from '../components/AppShellMessages';
 import {placeTourCard,spotBox,SPOT_PAD,SPOT_RING} from './tourPlacement';
 
 const card={width:320,height:200};
@@ -8,7 +9,32 @@ describe('Front Onboarding: tour data and card placement',()=>{
   expect(new Set(TOUR.steps.map(s=>s.id)).size).toBe(TOUR.steps.length);
   for(const s of TOUR.steps){expect(s.title.length).toBeGreaterThan(5);expect(s.text.length).toBeGreaterThan(20);}
   expect(TOUR.steps.filter(s=>s.targets.length===0).map(s=>s.id)).toEqual(['welcome']);
-  expect(TOUR.progress(2,6)).toBe('Step 2 of 6');
+  expect(TOUR.progress(2,4)).toBe('Step 2 of 4');
+ });
+ it('Front NEWCOMER NC2: four steps, ending on how to start; the last points at the guides\' section, or on a phone at the Menu button',()=>{
+  expect(TOUR.steps.map(s=>s.id)).toEqual(['welcome','save','help','start']);
+  expect(TOUR_TARGETS.at(-1)?.targets).toEqual(['[data-nav-group="guides"]','.tools-toggle']);
+  expect(TOUR.firstLook).toBe('Take a first look (about 3 min)');expect(TOUR.chooseLab).toBe('Choose a lab');
+ });
+ // F10 of the plan: the phone menu button reads "Menu" (appShell toolsMenu), so the last step names it by that label, in every
+ // language; the first-look choice gives its rough time with the digit 3, as the first look's own button does.
+ const tours=import.meta.glob<Record<string,typeof TOUR_EN>>('../i18n/*/maps/tour.ts',{eager:true});
+ const shells=import.meta.glob<Record<string,typeof APP_SHELL_MESSAGES_EN>>('../i18n/*/maps/appShell.ts',{eager:true});
+ it('every language names the phone menu button as it reads, and has its own question and two choices',()=>{
+  const pairs:[string,typeof TOUR_EN,typeof APP_SHELL_MESSAGES_EN][]=[['en',TOUR_EN,APP_SHELL_MESSAGES_EN]];
+  for(const [file,mod] of Object.entries(tours)){
+   const lang=file.split('/')[2],shell=shells[`../i18n/${lang}/maps/appShell.ts`];
+   pairs.push([lang,Object.values(mod)[0],Object.values(shell)[0]]);
+  }
+  expect(pairs.length).toBe(10);
+  for(const [lang,tour,shell] of pairs){
+   expect(tour.steps.start.text,lang).toContain(shell.toolsMenu);
+   expect(tour.firstLook,lang).toMatch(/3/);
+   expect(Object.keys(tour.steps),lang).toEqual(['welcome','save','help','start']);
+   for(const text of [tour.steps.start.title,tour.steps.start.text,tour.firstLook,tour.chooseLab])expect(text.trim().length,lang).toBeGreaterThan(0);
+   if(lang!=='en')for(const text of [tour.steps.start.title,tour.steps.start.text,tour.firstLook,tour.chooseLab] as const)
+    expect([TOUR_EN.steps.start.title,TOUR_EN.steps.start.text,TOUR_EN.firstLook,TOUR_EN.chooseLab],lang).not.toContain(text);
+  }
  });
  it('centres without a target; on phones docks at the bottom, or at the top when the target is low',()=>{
   expect(placeTourCard(null,card,{width:1280,height:800})).toEqual({left:480,top:300,side:'center'});

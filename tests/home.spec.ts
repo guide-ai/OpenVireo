@@ -95,7 +95,7 @@ test('the first-visit tour waits for the exploration page: not on the welcome, t
  await page.goto('/');await expect(h1(page)).toBeVisible({timeout:15000});
  await page.waitForTimeout(1500);await expect(page.getByTestId('site-tour')).toHaveCount(0);
  await welcome(page).getByRole('button',{name:en['home.explore'],exact:true}).click();
- await expect(page.getByTestId('site-tour')).toBeVisible();await expect(page.getByTestId('site-tour')).toContainText('Step 1 of 6');
+ await expect(page.getByTestId('site-tour')).toBeVisible();await expect(page.getByTestId('site-tour')).toContainText('Step 1 of 4');
  // Every step's part is on the exploration page.
  for(const sel of ['.portal-header nav','[data-nav-group="guides"]','.first-steps','[data-testid="investigation-actions"]','.page-bar .help-trigger'])await expect(page.locator(sel).first()).toBeVisible();
 });
@@ -130,8 +130,13 @@ test('Help replays the tour from the welcome, and Report a problem names the wel
  expect(body).toContain('#home');expect(body).not.toContain('#observatory');
  await expect(page.getByTestId('project-report')).toHaveAttribute('href',/%23home/);
  await page.getByTestId('main-help-tour').click();
- const tour=page.getByTestId('site-tour');await expect(tour).toBeVisible();await expect(tour).toContainText('Step 1 of 6');
+ const tour=page.getByTestId('site-tour');await expect(tour).toBeVisible();await expect(tour).toContainText('Step 1 of 4');
  await page.keyboard.press('Escape');await expect(tour).toHaveCount(0);await expect(h1(page)).toBeVisible();
+ // Front NEWCOMER NC2: Choose a lab on the welcome itself stays there and puts the focus on the lab list.
+ await page.getByTestId('main-help-menu').click();await page.getByTestId('main-help-tour').click();await expect(tour).toBeVisible();
+ for(let i=0;i<3;i++)await page.getByTestId('site-tour-next').click();
+ await page.getByRole('button',{name:'Choose a lab',exact:true}).click();await expect(tour).toHaveCount(0);
+ await expect(page).toHaveURL(/\/(#home)?$/);await expect(page.locator('#home-labs')).toBeFocused();await expect(page.locator('#home-labs')).toBeInViewport();
  // Leaving the welcome takes the mark off the brand link.
  await welcome(page).getByRole('button',{name:en['home.explore'],exact:true}).click();
  await expect(page.locator('.portal-brand')).not.toHaveAttribute('aria-current','page');

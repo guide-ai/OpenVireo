@@ -12,7 +12,6 @@ import {contextLocale,langQuery} from './fixtures/language';
 // hot lists with Load exercise list (PLEIADES.HTL) focused.
 const button=(p:Page,name:string)=>p.getByRole('button',{name,exact:true});
 const skyH1=(page:Page)=>page.getByRole('heading',{level:1,name:'Start with the sky.',exact:true});
-const asVisitor=(page:Page)=>page.addInitScript(()=>{Object.defineProperty(Navigator.prototype,'webdriver',{configurable:true,get:()=>false});});
 const trackButton=(page:Page)=>page.getByTestId('running-clock-track-button');
 
 for(const [width,height] of [[1440,900],[375,812]] as const){
@@ -98,19 +97,6 @@ test('a "turn tracking on" message offers Show tracking control, which opens the
  await page.locator('.ms-card').getByTestId('tracking-shortcut').click();
  await expect(details).toHaveAttribute('open','');await expect(trackButton(page)).toBeFocused();
  expect(errors).toEqual([]);
-});
-
-test('the first-visit tour\'s observatory step offers Show tracking control, which ends the tour at the tracking button',async({page})=>{
- await asVisitor(page);
- await page.goto('/#observatory');await expect(skyH1(page)).toBeVisible({timeout:30000});
- const tour=page.getByTestId('site-tour');await expect(tour).toBeVisible();
- await expect(page.getByTestId('site-tour-tracking')).toHaveCount(0);
- for(let i=0;i<3;i++)await page.getByTestId('site-tour-next').click();
- await expect(tour).toHaveAttribute('data-step','observatory');
- await page.getByTestId('site-tour-tracking').click();
- await expect(tour).toHaveCount(0);
- await expect(page.getByTestId('running-clock-details')).toHaveAttribute('open','');await expect(trackButton(page)).toBeFocused();
- expect(await page.evaluate(()=>localStorage.getItem('openvireo.tour.v1'))).toBe('done');
 });
 
 test('the Pleiades guide\'s first step opens Original hot lists on the observatory with Load exercise list focused',async({page})=>{

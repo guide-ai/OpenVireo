@@ -3,7 +3,7 @@ import {createPortal} from 'react-dom';
 import {TOUR,TOUR_SEEN_KEY} from '../help/tour';
 import {placeTourCard,spotBox,type Box,type Placement} from '../help/tourPlacement';
 import {clippedBox,viewSize,visibleTarget} from '../help/spot';
-import {t,uiDirection} from '../i18n';
+import {uiDirection} from '../i18n';
 import './site-tour.css';
 
 /** Whether this browser has finished or skipped the tour (a per-viewer convenience; unreadable storage counts as not seen). */
@@ -29,9 +29,11 @@ export function scheduleFirstVisitTour(start:()=>void,delay=700,ran?:()=>void):(
 /** The first-visit tour (Front Onboarding [W]): a modal window that steps through TOUR, outlining the part of the page each step
  * is about and dimming the rest. Escape or Skip ends it; finishing or skipping marks it seen, so it does not start again by
  * itself. Rendered at the document root, outside the header. */
-/** Front LAUNCH-1: `onTracking`, when given, adds "Show tracking control" to the observatory step (its text asks to turn tracking
- * on); it ends the tour like Skip and hands over to the shell, which opens the clock bar and focuses Turn tracking on/off. */
-export default function SiteTour({onClose,onTracking}:{onClose:()=>void;onTracking?:()=>void}){
+/** Front NEWCOMER NC2: the last step asks how the visitor would like to start. `onFirstLook` (Take a first look) and
+ * `onChooseLab` (Choose a lab), when given, are its two choices; each ends the tour like Start exploring (marked seen, the modal
+ * closed first) and hands over to the shell, which starts the first look or shows the welcome's lab list. (LAUNCH-1's "Show
+ * tracking control" went with the observatory step.) */
+export default function SiteTour({onClose,onFirstLook,onChooseLab}:{onClose:()=>void;onFirstLook?:()=>void;onChooseLab?:()=>void}){
  const dialog=useRef<HTMLDialogElement>(null),card=useRef<HTMLDivElement>(null),done=useRef(false),id=useId();
  const [index,setIndex]=useState(0),[box,setBox]=useState<Box|null>(null),[place,setPlace]=useState<Placement|null>(null);
  const steps=TOUR.steps,step=steps[index],last=index===steps.length-1;
@@ -69,11 +71,16 @@ export default function SiteTour({onClose,onTracking}:{onClose:()=>void;onTracki
    <p className="site-tour-progress" id={`${id}-p`}>{TOUR.progress(index+1,steps.length)}</p>
    <h2 id={`${id}-t`}>{step.title}</h2>
    <p id={`${id}-d`}>{step.text}</p>
-   {step.id==='observatory'&&onTracking&&<button type="button" className="text-button site-tour-tracking" data-testid="site-tour-tracking" onClick={()=>finish(onTracking)}>{t('runningClock.shortcut')}</button>}
+   {/* Ids, not data-testids: the script walks name known layout problems by the nearest data-testid (tests/fixtures/rtlKnown.ts). */}
+   {step.id==='start'&&(onFirstLook||onChooseLab)&&<div className="site-tour-choices">
+    {onFirstLook&&<button type="button" className="primary-button" id="site-tour-first-look" onClick={()=>finish(onFirstLook)}>{TOUR.firstLook}</button>}
+    {onChooseLab&&<button type="button" className="secondary-button" id="site-tour-choose-lab" onClick={()=>finish(onChooseLab)}>{TOUR.chooseLab}</button>}
+   </div>}
    <div className="site-tour-actions">
     {!last&&<button type="button" className="text-button site-tour-skip" data-testid="site-tour-skip" onClick={()=>finish()}>{TOUR.skip}</button>}
     {index>0&&<button type="button" className="secondary-button" data-testid="site-tour-back" onClick={()=>setIndex(i=>i-1)}>{TOUR.back}</button>}
-    <button type="button" className="primary-button" data-testid="site-tour-next" onClick={last?()=>finish():()=>setIndex(i=>i+1)}>{last?TOUR.done:TOUR.next}</button>
+    {/* On the last step the two choices above carry the weight; Start exploring is its plain close. */}
+    <button type="button" className={last&&(onFirstLook||onChooseLab)?'text-button site-tour-done':'primary-button'} data-testid="site-tour-next" onClick={last?()=>finish():()=>setIndex(i=>i+1)}>{last?TOUR.done:TOUR.next}</button>
    </div>
   </div>
  </dialog>,document.body);

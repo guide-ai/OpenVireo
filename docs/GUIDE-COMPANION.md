@@ -164,14 +164,15 @@ shows no Full guide and no Restart exercise for it.
 
 - **Where it starts.** «Guide me (about 3 min)», a compact link-style button in the observatory heading, just above its
   three-step band, on the line of "What works in this version ↗" (shown while the first look is not in use), and Help › «Take a
-  first look», beside the tour (also on the light welcome shell, as the `first-look` intent of `src/home/appGate.ts`). The plan put
+  first look», beside the tour (also on the light welcome shell, as the `first-look` intent of `src/home/appGate.ts`), and since
+  NC2 the tour's last step, «Take a first look (about 3 min)» (below, "The tour's last step"). The plan put
   it under the band; there, and later on a row of its own, it pushed the dome cover's Open dome off the first screen of a phone
   and of a 1440 × 780 laptop in the longer languages. Now it adds no height: from 1300 px it sits beside the subtitle at the
   heading's bottom end, from 1051 px under "What works…" at the heading's top end beside the title, and below that on the same
   line as "What works…", the two wrapping to two lines only when they do not fit; on a phone (≤ 520 px) the heading's eyebrow is
   then visually hidden as its subtitle already was (both stay for assistive technology), which pays for that wrap.
   `tests/first-look.spec.ts` guards Open dome on the first screen at 375 × 667 and 390 × 664 in seven languages and the
-  heading's height at 1280 × 720; `tests/launch-landing.spec.ts` keeps its 1440 × 780 and 375 × 700 guards. Both openers call the
+  heading's height at 1280 × 720; `tests/launch-landing.spec.ts` keeps its 1440 × 780 and 375 × 700 guards. Every opener calls the
   shell's `companion.firstLook`: the observatory, the strip, and `guideOpened`, so the first-visit tour does not start over it
   (its timer checks it again when it fires). On the observatory the focus then goes to the strip's Show me where (the pressed
   button goes away, or the Help menu closes); from another page the observatory's heading takes it. Opening a lab guide replaces
@@ -212,6 +213,37 @@ shows no Full guide and no Restart exercise for it.
   M82's spectrum is held back 3 s, outlining Open spectrum analyzer until it is enabled; a scroll of the page not pulled back while
   the lab-list heading is outlined (the strip no longer treats an outlined heading as a heading that took the focus away); the
   first-screen guards; Spanish at 375 px; right to left).
+
+## The tour's last step
+
+Front NEWCOMER, sub-front NC2 (user decision, 2026-11-24; plan §2.2). The first-visit tour (`src/help/tour.ts`,
+`src/components/SiteTour.tsx`) has four steps instead of six: welcome, save your work, Help (their texts unchanged) and a new last
+step, «How would you like to start?». The sections, guides and observatory steps are gone, and with the observatory step
+LAUNCH-1's "Show tracking control" in the tour (the observatory's own tracking shortcuts stay).
+
+- **The question.** «Take a three-minute first look at the sky, or choose one of the seven labs; each lab has a guide that stays
+  with you. Every page is in the menu; on a phone it is behind the Menu button.» The phone clause of the old sections step is
+  kept and names the phone button as it reads («Menu», `appShell.toolsMenu`; the old text said "Tools", plan F10);
+  `src/help/tour.test.ts` checks in all ten languages that the text contains that language's `toolsMenu`. The step outlines the
+  sidebar's Exercise guides section, or on a phone (where the section is behind the closed menu) the Menu button.
+- **Two choices and a plain close.** «Take a first look (about 3 min)» (primary) ends the tour and calls `companion.firstLook`,
+  exactly as Guide me and Help › Take a first look do: on the observatory the focus goes to the strip's Show me where; from the
+  welcome the observatory's heading takes it. «Choose a lab» (secondary) ends the tour, goes to the welcome if needed
+  (`companion.chooseLab`), scrolls to its lab list and puts the focus on the list's heading (`#home-labs`, `tabIndex=-1`, named by
+  «The seven labs»). «Start exploring» stays as the last step's close, now a link-style button under the two choices, and
+  gives the focus back to Help as before. There is no Skip on the last step (as before); Back, Escape and Skip on the earlier
+  steps work as before. Each way out marks the tour seen (the existing `openvireo.tour.v1`; nothing new is stored), and Help ›
+  Take the tour takes it again.
+- **Keyboard order on the last card:** the card (focused on arrival), Take a first look, Choose a lab, Back, Start exploring.
+- **Layout.** The two choices are full-width buttons one under the other inside the card (long languages wrap inside the
+  button, never past the card), above the Back / Start exploring row; placement is `placeTourCard`'s, so it mirrors under a
+  right-to-left page (`tests/scripts/rtl-css.scripts.ts` checks the card left of the sidebar's outline on this step).
+- **Markers are `id`s** (`site-tour-first-look`, `site-tour-choose-lab`), never `data-testid`s (`tests/fixtures/rtlKnown.ts`).
+- **Tests:** `src/help/tour.test.ts` (the four steps, the last one's targets, the ten languages); `tests/onboarding.spec.ts` (Step
+  1 of 4, every outline, the question and its two named buttons, the tab order, Take a first look → the strip on Open the dome
+  with Show me where focused, Choose a lab by keyboard → the lab list focused and on screen, the phone card and its Menu outline,
+  Choose a lab at 375 px); `tests/home.spec.ts` (Choose a lab from the welcome itself); `tests/i18n/shell.spec.ts` (the last
+  step's texts in every language).
 
 ## Layout and accessibility
 

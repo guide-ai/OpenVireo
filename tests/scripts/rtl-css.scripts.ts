@@ -115,20 +115,21 @@ test('qps-rtl at 1440 px: the sidebar, page bar and its menu mirror; the tour ca
  // (After its .15 s transition.)
  await expect.poll(()=>toggle.locator('.nav-group-chevron').evaluate(e=>getComputedStyle(e).transform)).toBe('matrix(0, 1, -1, 0, 0, 0)');
  await toggle.click();
- // The tour (the site skips it in automated browsers: present as a visitor, as tests/onboarding.spec.ts does): the sections step
- // outlines the sidebar, and the card goes on the target's inline-end side, its left.
+ // The tour (the site skips it in automated browsers: present as a visitor, as tests/onboarding.spec.ts does): its last step
+ // (Front NEWCOMER NC2) outlines the guides' section of the sidebar, and the card goes on the target's inline-end side, its left.
  await page.addInitScript(()=>{Object.defineProperty(Navigator.prototype,'webdriver',{configurable:true,get:()=>false});});
  await load(page,'qps-rtl','observatory');
  await expect(id(page,'site-tour')).toBeVisible({timeout:15_000});
- await id(page,'site-tour-next').click();await expect(id(page,'site-tour')).toHaveAttribute('data-step','sections');
+ for(let i=0;i<3;i++)await id(page,'site-tour-next').click();
+ await expect(id(page,'site-tour')).toHaveAttribute('data-step','start');
  const card=id(page,'site-tour-card');
  await expect(card).toHaveAttribute('data-side','left');
  // (The outline moves with a .2 s transition.)
  await expect.poll(async()=>{const c=await box(page,'[data-testid=site-tour-card]'),spot=await box(page,'[data-testid=site-tour-spot]');return c.right<=spot.left&&spot.right>1400;}).toBe(true);
- // Skip comes first in reading order, at the right; Next last, at the left (the row may wrap with the longer text).
- const skip=await box(page,'[data-testid=site-tour-skip]'),next=await box(page,'[data-testid=site-tour-next]'),row=await box(page,'.site-tour-actions');
+ // Back comes first in reading order, at the right; Start exploring last, at the left (the row may wrap with the longer text).
+ const back=await box(page,'[data-testid=site-tour-back]'),next=await box(page,'[data-testid=site-tour-next]'),row=await box(page,'.site-tour-actions');
  // The row packs toward its end, the left (justify-content:flex-end), as English packs toward the right.
- expect(Math.abs(next.left-row.left)).toBeLessThan(1);expect(skip.left).toBeGreaterThan(next.left);expect(skip.right).toBeGreaterThan(next.right);
+ expect(Math.abs(next.left-row.left)).toBeLessThan(1);expect(back.left).toBeGreaterThan(next.left);expect(back.right).toBeGreaterThan(next.right);
 });
 
 test('qps-rtl: a form\'s popup menu opens from the pointer toward the inline end; a dialog\'s close button is at its left',async({page})=>{

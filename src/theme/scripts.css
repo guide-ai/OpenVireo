@@ -136,6 +136,7 @@ svg.ob-spectrum-print-body:is(:lang(ja),:lang(zh),:lang(hi)){font-family:Courier
 .ob-menu .secondary-button:is(:lang(ja),:lang(zh),:lang(hi)),
 .site-tour-actions .primary-button:is(:lang(ja),:lang(zh),:lang(hi)),
 .site-tour-actions .secondary-button:is(:lang(ja),:lang(zh),:lang(hi)),
+.site-tour-choices button:is(:lang(ja),:lang(zh),:lang(hi)),
 .guide-companion-actions button:is(:lang(ja),:lang(zh),:lang(hi)),
 .radio-control .antenna-dialog .primary-button:is(:lang(ja),:lang(zh),:lang(hi)),
 .radio-control .antenna-dialog .secondary-button:is(:lang(ja),:lang(zh),:lang(hi)){line-height:1.5}

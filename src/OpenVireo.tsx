@@ -1029,6 +1029,12 @@ export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={
     // the strip's Show me where once it is shown, not to nowhere. Elsewhere the page's own heading takes it.
     window.setTimeout(()=>document.querySelector<HTMLElement>('[data-testid="guide-companion-show"]')?.focus({preventScroll:true}),0);
    },
+   // Front NEWCOMER NC2: the tour's Choose a lab: the welcome, scrolled to its lab list, whose heading takes the focus (after
+   // the welcome's own h1 has taken it on a route change).
+   chooseLab:()=>{
+    if(view!=='home')navigate('home');
+    window.setTimeout(()=>{const heading=document.getElementById('home-labs');heading?.scrollIntoView?.({block:'start'});heading?.focus({preventScroll:true});},0);
+   },
   });
   // Front HOME: the tour starts the first time the visitor reaches the exploration page, not on the welcome, and never once a guide
   // was opened in this load (firstVisit.ts). Leaving before its timer runs (or React's development double effect) cancels it and
@@ -1083,7 +1089,7 @@ export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={
   const pageBar=useMemo(()=><PageBar view={view} inert={hostInert} busy={projectBusy} notice={projectNotice} error={projectError} actions={investigationActions} language={languageSelect} help={helpMenu}/>,[view,hostInert,projectBusy,projectNotice,projectError,investigationActions,languageSelect,helpMenu]);
   const [languageFailed]=useState(languageFailure);
   const areaTextFailed=useSyncExternalStore(subscribeAreaFailures,areaFailed);
-  return <TrackingShortcutContext.Provider value={stable.revealTracking}><RecoveryContext.Provider value={recovery}><TestModeContext.Provider value={testMode}><VireoOptionsContext.Provider value={vireoOptions}><ObservationListContext.Provider value={observationListAccess}><ObservationListValue.Provider value={observationList}>{header}{pageBar}{/* ES1 review 1 C1: the Spanish chunk could not be used. */languageFailed&&failureNotice('language-failure','language',languageFailed)}{/* Front ES-SPLIT: a route area's text could not be used; that part stays English. */areaTextFailed&&failureNotice('area-failure','area',uiLanguage())}{tour&&<SiteTour onClose={()=>{setTour(false);requestAnimationFrame(()=>document.querySelector<HTMLElement>('[data-testid="main-help-menu"]')?.focus());}} onTracking={()=>{setTour(false);stable.revealTracking();}}/>}
+  return <TrackingShortcutContext.Provider value={stable.revealTracking}><RecoveryContext.Provider value={recovery}><TestModeContext.Provider value={testMode}><VireoOptionsContext.Provider value={vireoOptions}><ObservationListContext.Provider value={observationListAccess}><ObservationListValue.Provider value={observationList}>{header}{pageBar}{/* ES1 review 1 C1: the Spanish chunk could not be used. */languageFailed&&failureNotice('language-failure','language',languageFailed)}{/* Front ES-SPLIT: a route area's text could not be used; that part stays English. */areaTextFailed&&failureNotice('area-failure','area',uiLanguage())}{tour&&<SiteTour onClose={()=>{setTour(false);requestAnimationFrame(()=>document.querySelector<HTMLElement>('[data-testid="main-help-menu"]')?.focus());}} onFirstLook={()=>{setTour(false);companion.firstLook();}} onChooseLab={()=>{setTour(false);companion.chooseLab();}}/>}
   {instructorGate.open&&<InstructorModeBanner demonstrationMode={demonstrationMode} onLeave={stable.leaveInstructor} inert={hostInert} leaveRef={instructorLeave}/>}{instructorAsk&&<InstructorModeConfirm onAnswer={stable.answerInstructor}/>}{scopeBoxes[0]&&<ScopeAccessBox key={scopeBoxes[0].id} box={scopeBoxes[0].box} opener={scopeBoxes[0].opener} onAnswer={answerScopeBox}/>}
   <HubbleLabGuide dialogRef={labGuide} progress={labProgress} onNavigate={stable.hubbleGuide}/>
   <PulsarLabGuide dialogRef={pulsarGuide} progress={pulsarProgress} onNavigate={stable.navigate}/>

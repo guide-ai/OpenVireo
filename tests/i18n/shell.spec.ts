@@ -122,9 +122,14 @@ for(const L of translatedFor('shell'))test.describe(()=>{test.use({locale:contex
   // The issue text stays English (docs/I18N.md F5): only the route name and the fixed English headings.
   expect(decodeURIComponent((await id(page,'main-help-report').getAttribute('href'))!)).toContain('What happened?');
   await id(page,'main-help-tour').click();
-  const card=id(page,'site-tour-card');await expect(card).toHaveAccessibleName(`${M.tour.progress(1,6)} ${M.tour.steps.welcome.title}`);
+  const card=id(page,'site-tour-card');await expect(card).toHaveAccessibleName(`${M.tour.progress(1,4)} ${M.tour.steps.welcome.title}`);
   await expect(id(page,'site-tour-next')).toHaveText(M.tour.next);await expect(id(page,'site-tour-skip')).toHaveText(M.tour.skip);
-  await id(page,'site-tour-next').click();await expect(card).toContainText(M.tour.steps.sections.title);
+  await id(page,'site-tour-next').click();await expect(card).toContainText(M.tour.steps.save.title);
+  // Front NEWCOMER NC2: the last step's question and its two choices.
+  await id(page,'site-tour-next').click();await id(page,'site-tour-next').click();await expect(card).toContainText(M.tour.steps.start.title);
+  await expect(page.locator('#site-tour-first-look')).toHaveText(M.tour.firstLook);await expect(page.locator('#site-tour-choose-lab')).toHaveText(M.tour.chooseLab);
+  await expect(id(page,'site-tour-next')).toHaveText(M.tour.done);
+  await id(page,'site-tour-back').click();
   await id(page,'site-tour-skip').click();await expect(id(page,'site-tour')).toHaveCount(0);
   await id(page,'instructor-mode-open').click();
   const confirm=id(page,'instructor-mode-confirm');await expect(confirm).toContainText(C['instructorMode.confirm.title']);
