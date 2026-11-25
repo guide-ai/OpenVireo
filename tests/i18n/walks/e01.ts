@@ -5,7 +5,6 @@ import {langQuery} from '../../fixtures/language';
 import en from '../../../src/i18n/en.json' with {type:'json'};
 import {type LanguageText} from '../languageText';
 import {isPseudo,pseudoName,htmlLangOf,type Pseudo,pseudoStart} from '../../fixtures/pseudoNames';
-import {openAllMoreDetail} from '../../fixtures/moreDetail';
 
 // Front SC12 (docs/I18N.md): the walk of tests/i18n/e01.spec.ts and the helpers it needs, moved here unchanged in behaviour so
 // tests/scripts/walks.scripts.ts can run it under the script pseudo-locales; the spec's header describes it.
@@ -97,7 +96,7 @@ export const tool=async(page:Page,lang:Lang,key:string)=>{
 
 /** The walk through E01. Each step leaves the screen in the state its texts are read in. */
 export const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=[
- ['Hubble lab guide',async(page,lang)=>{await tool(page,lang,'lab.nav');const guide=page.locator('dialog[aria-labelledby=hubble-lab-heading]');await expect(guide).toBeVisible();await openAll(guide);await openAllMoreDetail(page);}],
+ ['Hubble lab guide',async(page,lang)=>{await tool(page,lang,'lab.nav');const guide=page.locator('dialog[aria-labelledby=hubble-lab-heading]');await expect(guide).toBeVisible();await openAll(guide);}],
  ['galaxy exposure',async(page,lang)=>{const guide=page.locator('dialog[aria-labelledby=hubble-lab-heading]');await button(guide,lang,'lab.goExposure').click();await expect(guide).toBeHidden();
   await page.getByLabel(N(lang,'galaxyExposure.targetSelector')).selectOption('36747');await openAll(page.locator('body'));}],
  ['galaxy exposure running',async(page,lang)=>{await button(page,lang,'galaxyExposure.activate').click();await button(page,lang,'galaxyExposure.start').click();await page.clock.runFor(1000);

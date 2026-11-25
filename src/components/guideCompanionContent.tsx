@@ -17,8 +17,8 @@ import {APP_SHELL_MESSAGES as SHELL} from './AppShellMessages';
  * written twice.
  * Front NEWCOMER NC3 (plan §2.3, review M5): the line is the current step's plain title in all seven guides (the classification
  * guide's «n · » number left out, since the strip says «Step n of m»), and Step details opens with the guide's "Next:" line, then
- * what the guide says under the step. Two warning states keep their "Next:" line as the line (Hubble's dataset, pulsars' setup
- * with Tracking off), and every closing state keeps its own line (the guide's closing "Next:" line, or companion.allDone). */
+ * what the guide says under the step. Three warning states keep their "Next:" line as the line (Hubble's dataset, pulsars' setup
+ * with Tracking off, Pleiades' sample with its telescope constraint), and every closing state keeps its own line (the guide's closing "Next:" line, or companion.allDone). */
 export type CompanionContent=Readonly<{
  /** The guide's name, as in the Exercise guides menu. */
  name:string;
@@ -85,7 +85,9 @@ export function companionContent(p:CompanionProgress):CompanionContent{
   }
   case 'pleiades':{
    const next=p.progress.next,body=pleiadesStepBody(next,false),counts=t('pleiadesLab.coverage',{count:p.progress.colorTargets,total:p.progress.sampleTargets});
-   return next==='save'?{name:t('pleiadesLab.nav'),line:t('pleiadesLab.next.save'),details:body,target,closing:false,counts}
+   // The sample step's "Next:" line is a warning (only the 0.4m telescope reaches every admitted star), and save is the closing
+   // state: both keep their line (NC3 review N2).
+   return next==='save'||next==='sample'?{name:t('pleiadesLab.nav'),line:t(`pleiadesLab.next.${next}`),details:body,target,closing:false,counts}
     :{name:t('pleiadesLab.nav'),line:pleiadesStepTitle(next),details:withNext(t(`pleiadesLab.next.${next}`),body),target,closing:false,counts};
   }
  }

@@ -49,11 +49,10 @@ function PleiadesLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<H
    <p data-testid="pleiades-lab-counts" role="status">{t('pleiadesLab.counts',{done:doneCount,total:PLEIADES_LAB_COUNTED_STEPS.length})}</p>
    <p data-testid="pleiades-lab-coverage">{t('pleiadesLab.coverage',{count:progress.colorTargets,total:progress.sampleTargets})}</p>
    <p className="pulsar-lab-next" data-testid="pleiades-lab-next" data-next={progress.next}>{t(`pleiadesLab.next.${progress.next}`)}</p>
+   <p className="lab-recovery" data-testid="pleiades-lab-e05">{t('pleiadesLab.e05')}</p>
    <button className="secondary-button" data-testid="pleiades-lab-observations" onClick={()=>go('observations')}>{t('pleiadesLab.goObservations')}</button>
    <button className="secondary-button" data-testid="pleiades-lab-continue" onClick={()=>go(STEP_DESTINATION[progress.next])}>{t('pleiadesLab.continue')}</button>
-   <details className="lab-progress-help"><summary>{t('pleiadesLab.progressMeaning')}</summary><p>{t('pleiadesLab.progressHelp')}</p>
-    {/* Front NEWCOMER NC3: the note on the next exercise (E05) is part of what the progress means. */}
-    <p className="lab-recovery" data-testid="pleiades-lab-e05">{t('pleiadesLab.e05')}</p></details>
+   <details className="lab-progress-help"><summary>{t('pleiadesLab.progressMeaning')}</summary><p>{t('pleiadesLab.progressHelp')}</p></details>
   </section>
   <ol className="lab-steps pulsar-lab-steps pleiades-lab-steps">
    {PLEIADES_LAB_STEPS.map(step=><li key={step} data-testid={`pleiades-lab-step-${step}`} data-done={progress.done[step]} data-next={progress.next===step||undefined} data-counted={step!=='save'}>

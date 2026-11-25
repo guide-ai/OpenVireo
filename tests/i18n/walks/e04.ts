@@ -6,7 +6,6 @@ import en from '../../../src/i18n/en.json' with {type:'json'};
 import {PLEIADES_ADMITTED_ROWS} from '../../../src/core/pleiadesHotList';
 import {type LanguageText} from '../languageText';
 import {isPseudo,pseudoName,htmlLangOf,type Pseudo} from '../../fixtures/pseudoNames';
-import {openAllMoreDetail} from '../../fixtures/moreDetail';
 
 // Front SC12 (docs/I18N.md): the walk of tests/i18n/e04.spec.ts and the helpers it needs, moved here unchanged in behaviour so
 // tests/scripts/walks.scripts.ts can run it under the script pseudo-locales; the spec's header describes it.
@@ -108,7 +107,7 @@ export const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<voi
   const dome=page.getByRole('button',{name:new RegExp(N(lang,'sky.open').source.replace(/\$$/,'').concat(' ↗$'))});if(await dome.isVisible())await dome.click();
   await page.getByRole('heading',{name:N(lang,'htl.title')}).click();await button(page,lang,'htl.exerciseLoad').click();await expect(page.locator('#htl-rows option')).toHaveCount(24);
   await page.locator('#htl-rows').selectOption('0');await button(page,lang,'htl.point').click();await expect(id(page,'pleiades-point-card')).toHaveAttribute('data-admitted','true',{timeout:20_000});}],
- ['Pleiades guide',async(page,lang)=>{await tool(page,lang,'pleiadesLab.nav');const guide=id(page,'pleiades-lab-dialog');await expect(guide).toBeVisible();await openAll(guide);await openAllMoreDetail(page);}],
+ ['Pleiades guide',async(page,lang)=>{await tool(page,lang,'pleiadesLab.nav');const guide=id(page,'pleiades-lab-dialog');await expect(guide).toBeVisible();await openAll(guide);}],
  ['photometer',async(page,lang)=>{await id(page,'pleiades-lab-close').click();await button(id(page,'pleiades-point-card'),lang,'pleiadesPoint.open').click();
   await expect(page.getByRole('heading',{name:N(lang,'ph.title')})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await openAll(main(page));}],
  ['activated',async(page,lang)=>{await button(main(page),lang,'ph.activate').click();await expect(id(page,'photo-phase')).toHaveText(N(lang,'ph.ready'));

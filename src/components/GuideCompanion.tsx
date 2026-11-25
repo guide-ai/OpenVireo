@@ -51,8 +51,9 @@ function RestartConfirm({lab,opener,onClose}:{lab:LabSlug;opener:RefObject<HTMLB
 }
 
 /** Front GUIDE-COMPANION [W] (user decision, 2026-11-23): the strip that keeps the current step of the guide in use on screen
- * after its window is closed, at the bottom of every page. It shows the guide's own "Next:" line (core/guideCompanion.ts over
- * the guide's progress, recomputed on every render, so it moves on by itself as the student works) and five actions (Restart exercise is described at RestartConfirm): Show me
+ * after its window is closed, at the bottom of every page. It shows the current step's title (Front NEWCOMER NC3; a warning or
+ * closing state's own line, components/guideCompanionContent.tsx), from core/guideCompanion.ts over the guide's progress
+ * (recomputed on every render, so it moves on by itself as the student works) and five actions (Restart exercise is described at RestartConfirm): Show me
  * where goes to the step's page (`onGo`, the guide's own destination), then scrolls to the step's control, focuses it and
  * outlines it without dimming or blocking the page; Step details shows what the guide says under the step; Full guide opens
  * the guide's window again; Hide removes the strip until a guide is opened again. Nothing is stored and nothing is judged: no

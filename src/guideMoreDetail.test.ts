@@ -12,7 +12,7 @@ import ClassificationLabGuide from './ClassificationLabGuide';
 import ClusterLabGuide from './ClusterLabGuide';
 import PulsarLabGuide from './PulsarLabGuide';
 import PleiadesLabGuide from './PleiadesLabGuide';
-import {hubbleLabProgress} from './core/hubbleLab';
+import {hubbleLabProgress,type HubbleLabProgress} from './core/hubbleLab';
 import {EMPTY_HUBBLE} from './core/hubbleAnalysis';
 import {INITIAL_LSS_LAB_SUMMARY,LSS_LAB_STEPS,lssLabProgress} from './core/lssLab';
 import {INITIAL_OBJECT_X_LAB_SUMMARY,OBJECT_X_LAB_STEPS,objectXLabProgress} from './core/objectXLab';
@@ -77,6 +77,21 @@ describe('Front NEWCOMER NC3: plain step titles, detail folded under More detail
  });
 });
 
+describe('Front NEWCOMER NC3 review: texts kept where they explain something',()=>{
+ it('Hubble opens Save your work together with Interpret; it stays closed before',()=>{
+  const save=(next:HubbleLabProgress['next'])=>/<details class="lab-step-more" open=""><summary aria-labelledby="hubble-lab-step-save-more/.test(render(createElement(HubbleLabGuide,{dialogRef:ref,progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),next},onNavigate:noop})));
+  expect(save('acquire')).toBe(false);expect(save('inputs')).toBe(false);expect(save('interpret')).toBe(true);
+ });
+ it('the pulsar backup note is in the body of Save the investigation; the Pleiades E05 note is beside Data from Observations',()=>{
+  const pulsar=WINDOWS.find(w=>w[0]==='pulsars')![3]();
+  const step=steps(pulsar).find(li=>li.includes('data-testid="pulsar-lab-step-investigation"'))!;
+  expect(step.slice(step.indexOf('<details class="lab-step-more"'))).toContain('data-testid="pulsar-lab-backup"');
+  expect(/<section class="lab-progress"[\s\S]*?<\/section>/.exec(pulsar)![0]).not.toContain('pulsar-lab-backup');
+  const pleiades=WINDOWS.find(w=>w[0]==='pleiades')![3]();
+  expect(pleiades).toMatch(/<p class="lab-recovery" data-testid="pleiades-lab-e05">[^<]*<\/p><button [^>]*data-testid="pleiades-lab-observations"/);
+ });
+});
+
 describe('Front NEWCOMER NC3: the strip\'s line is the step title',()=>{
  const line=(p:CompanionProgress)=>companionContent(p).line;
  it('the step title in every guide, without the classification number; warning and closing states keep their own line',()=>{
@@ -93,6 +108,8 @@ describe('Front NEWCOMER NC3: the strip\'s line is the step title',()=>{
   expect(line({lab:'pulsars',progress:{...pulsarLabProgress({radio,analysis:EMPTY_PULSAR_MEASUREMENT_SUMMARY,captureRows:0}),next:'save'}})).toBe(E['pulsarLab.next.save']);
   expect(line({lab:'pleiades',progress:pleiadesLabProgress({list:false,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY})})).toBe(E['pleiadesLab.step.list.title']);
   expect(line({lab:'pleiades',progress:{...pleiadesLabProgress({list:false,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY}),next:'save'}})).toBe(E['pleiadesLab.next.save']);
+  // Review N2: the sample step's line is its telescope warning, not its title.
+  expect(line({lab:'pleiades',progress:{...pleiadesLabProgress({list:false,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY}),next:'sample'}})).toBe(E['pleiadesLab.next.sample']);
   expect(line({lab:'large-scale-structure',progress:lssLabProgress(INITIAL_LSS_LAB_SUMMARY)})).toBe(E['lssLab.step.load']);
  });
  it('Step details open with the guide\'s "Next:" line where the line is the title',()=>{

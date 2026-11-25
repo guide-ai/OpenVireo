@@ -6,7 +6,6 @@ import {HEADER,CONTROL,PLR} from '../../fixtures/pulsar-saved-rows-controls';
 import en from '../../../src/i18n/en.json' with {type:'json'};
 import {type LanguageText} from '../languageText';
 import {isPseudo,pseudoName,htmlLangOf,type Pseudo} from '../../fixtures/pseudoNames';
-import {openAllMoreDetail} from '../../fixtures/moreDetail';
 
 // Front SC12 (docs/I18N.md): the walk of tests/i18n/e06.spec.ts and the helpers it needs, moved here unchanged in behaviour so
 // tests/scripts/walks.scripts.ts can run it under the script pseudo-locales; the spec's header describes it.
@@ -93,7 +92,7 @@ export const native=(page:Page)=>id(page,'pulsar-native-dialog');
 /** The walk through E06. Each step leaves the screen in the state its texts are read in. */
 export const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=[
  ['route without data',async page=>{await expect(id(page,'pulsar-none')).toBeVisible();await openAll(main(page));}],
- ['pulsar guide',async(page,lang)=>{await tool(page,lang,'pulsarLab.nav');await expect(id(page,'pulsar-lab-dialog')).toBeVisible();await openAll(id(page,'pulsar-lab-dialog'));await openAllMoreDetail(page);}],
+ ['pulsar guide',async(page,lang)=>{await tool(page,lang,'pulsarLab.nav');await expect(id(page,'pulsar-lab-dialog')).toBeVisible();await openAll(id(page,'pulsar-lab-dialog'));}],
  ['guide closed',async page=>{await id(page,'pulsar-lab-close').click();await expect(id(page,'pulsar-lab-dialog')).toBeHidden();}],
  ['saved file candidate',async page=>{await id(page,'saved-rows-disclosure').locator('summary').first().click();await id(page,'saved-rows-file').setInputFiles(file('control.csv',CONTROL));await expect(id(page,'saved-rows-candidate')).toBeVisible();}],
  ['saved file in use',async page=>{await id(page,'saved-rows-use').click();await expect(id(page,'saved-rows-candidate')).toHaveCount(0);await id(page,'saved-rows-select-2').click();await expect(id(page,'saved-rows-selected')).toBeVisible();}],

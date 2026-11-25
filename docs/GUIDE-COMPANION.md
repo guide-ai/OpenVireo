@@ -273,32 +273,41 @@ M2, M5, M7 and m7):
 - **Each step of the seven guide windows shows its title, its status and its button**, and folds the rest of what the guide says
   under the step (body text, formulas, warnings) into a `<details class="lab-step-more">` «More detail» (`src/guideMoreDetail.tsx`
   `moreDetail` and `stepTitle`, plain functions: the windows render closed on every load and the render budget is unchanged).
-  The current step's More detail is open (`open={step===next}`), the others closed; nothing is deleted, only reordered (the
-  button now comes before the folded text). The summary's visible text is «More detail», and its name adds the step's title
+  The current step's More detail is open (`open={step===next}`), the others closed; Hubble's item 4, Save your work, which has
+  no mark, opens with item 5, Interpret (`next==='interpret'`), so its CSV and backup advice shows when the exercise ends.
+  Nothing is deleted, only reordered (the button now comes before the folded text). The summary's visible text is «More detail», and its name adds the step's title
   (`aria-labelledby="<id>-more <id>-title"`, «More detail Measure the period»), so the 50 summaries are told apart; the status
   beside the title stays out of that name. One new tab stop per step.
 - **The top of each window:** the classification guide's adaptation note joins the existing Research notes (Hubble, LSS,
-  cluster and Pleiades already kept theirs there); in the progress block, the pulsar guide's backup note and the Pleiades
-  guide's E05 note move into its «What does this progress mean?» disclosure. The intro paragraphs stay visible (the dialogs'
-  `aria-describedby` still points at them) until NC4 replaces them.
+  cluster and Pleiades already kept theirs there). The pulsar guide's backup note (how Save investigation and Restore work)
+  moves from the progress block into the body of its step Save the investigation (folded with it; review N1a). The Pleiades
+  guide's E05 note stays in the progress block, visible, beside the Data from Observations button it explains (review N1b).
+  The intro paragraphs stay visible (the dialogs' `aria-describedby` still points at them) until NC4 replaces them.
 - **Twelve titles were rewritten** in plain words (same keys, ten languages; docs/I18N.md "Plain step titles"): Hubble's five
   items, cluster HR trial and report, pulsars' delay, Pleiades measure, color and sample, and Object X's measure step.
 - **The strip's line is the step's title** in all seven guides (`companionContent`). The classification guide's «n · » number is
   left out in the strip only (`withoutStepNumber` in `src/core/guideCompanion.ts`, tested on the ten catalogs), since the strip
   says «Step n of m»; the window keeps it. Step details opens with the guide's "Next:" line, then the step's body. Kept as the
-  line: the two warning states (Hubble `dataset`, `lab.next.dataset`; pulsars `setup` with Tracking off,
-  `pulsarLab.next.tracking`) and every closing state (Hubble `lab.next.interpretSupported`, `pulsarLab.next.save`,
+  line: the three warning states (Hubble `dataset`, `lab.next.dataset`; pulsars `setup` with Tracking off,
+  `pulsarLab.next.tracking`; Pleiades `sample`, `pleiadesLab.next.sample`, which says that only the 0.4m telescope reaches every
+  admitted star, review N2) and every closing state (Hubble `lab.next.interpretSupported`, `pulsarLab.next.save`,
   `pleiadesLab.next.save`, `classLab.next.save`; LSS, Object X and cluster `companion.allDone`). This replaces the strip's
   "Next:" line of the GUIDE-COMPANION record.
-- **Print:** a guide window printed while it is open prints everything it says. `src/help/printDetails.ts`
-  (`installGuidePrintDetails`, installed once by the shell) opens every closed `<details>` of an open guide window on
-  `beforeprint` (More detail, Research notes, What does this progress mean?, Troubleshooting, Sources) and closes exactly those
-  again on `afterprint`. The strip itself is not printed, so its Step details need nothing.
+- **Print:** a guide window printed while it is open prints as the whole document, every step unfolded. Two parts:
+  `src/help/printDetails.ts` (`installGuidePrintDetails`, installed once by the shell) opens every closed `<details>` of an open
+  guide window on `beforeprint` (More detail, Research notes, the progress disclosure, Troubleshooting, Sources) and closes
+  exactly those again on `afterprint`; and an `@media print` rule in `src/hubble-lab.css` (review S1) hides the page behind the
+  window (every element that is not the window, inside it or an ancestor of it; the cluster guide sits inside `<main>`) and
+  takes away the window's screen height limit, scrolling, border and backdrop, so its content flows over as many pages as it
+  needs (before the rule, Chromium printed the top of the scrolling window on every page). A page printed with no guide window
+  open is unchanged. The strip itself is not printed, so its Step details need nothing. Checked by eye in the PDFs of all seven
+  guides (Chromium).
 - **Tests:** `src/guideMoreDetail.test.ts` (server render of each window: one More detail per step, open only on the current
   step, title, status and button outside it, the summary's name; every body test id still rendered; the strip's line per guide
   and state; Step details starting with the "Next:" line; `withoutStepNumber` on ten catalogs; the print helper);
   `tests/guide-companion.spec.ts` (the line is the title; Step details start with the "Next:" line; print of an open guide window
-  opens and restores its details); the walks open every More detail before their checks through
+  opens and restores its details, and in Chromium the PDF's own text, read by `tests/fixtures/pdfText.ts`, holds folded passages
+  of the last pulsar steps, the Hubble Save your work item and the cluster guide's last step and limits, and not the page behind); the walks open every More detail before their checks through
   `tests/fixtures/moreDetail.ts` `openAllMoreDetail`. The print test runs in Chromium (`page.pdf()` fires both events) and passed
   with `--browser=firefox` (the two events dispatched); WebKit could not start on the implementer's machine (missing system
   libraries). A summary named by its step's title is also found by `getByLabel(<title>)`: `tests/object-x-path.spec.ts` and

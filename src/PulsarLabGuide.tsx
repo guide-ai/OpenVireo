@@ -30,6 +30,8 @@ export function pulsarStepBody(step:PulsarLabStep,progress:PulsarLabProgress,ids
     {step==='period'&&<p data-testid={id('pulsar-lab-period-formula')}>{t('pulsarLab.step.period.formula')}</p>}
     {step==='delay'&&<><p data-testid={id('pulsar-lab-delay-formula')}><code>{t('pulsarLab.step.delay.formula')}</code></p><p>{t('pulsarLab.step.delay.source')}</p></>}
     {step==='investigation'&&<p className="lab-recovery" data-testid={id('pulsar-lab-investigation-note')} data-investigation={progress.investigation}>{t('pulsarLab.step.investigation.note')}</p>}
+    {/* Front NEWCOMER NC3 review (N1a): how Save investigation and Restore work belongs to the step that saves the investigation. */}
+    {step==='investigation'&&<p className="lab-recovery" data-testid={id('pulsar-lab-backup')} data-backup={progress.investigationBackup}>{t('pulsarLab.backup')}</p>}
     {step==='save'&&<p data-testid={id('pulsar-lab-save-optional')}>{t('pulsarLab.step.save.optional')}</p>}
  </>;
 }
@@ -57,9 +59,7 @@ function PulsarLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTM
     {pulsarNextText(progress)}</p>
    {progress.recordArmed&&<p className="lab-recovery" data-testid="pulsar-lab-armed">{t('pulsarLab.armed')}</p>}
    <button className="secondary-button" data-testid="pulsar-lab-continue" onClick={()=>go(STEP_DESTINATION[progress.next])}>{t('pulsarLab.continue')}</button>
-   <details className="lab-progress-help"><summary>{t('pulsarLab.progressMeaning')}</summary><p>{t('pulsarLab.progressHelp')}</p>
-    {/* Front NEWCOMER NC3: how a backup works is part of what the progress means, below the Next line and Continue. */}
-    <p className="lab-recovery" data-testid="pulsar-lab-backup" data-backup={progress.investigationBackup}>{t('pulsarLab.backup')}</p></details>
+   <details className="lab-progress-help"><summary>{t('pulsarLab.progressMeaning')}</summary><p>{t('pulsarLab.progressHelp')}</p></details>
   </section>
   <ol className="lab-steps pulsar-lab-steps">
    {PULSAR_LAB_STEPS.map(step=><li key={step} data-testid={`pulsar-lab-step-${step}`} data-done={progress.done[step]} data-next={progress.next===step||undefined}>

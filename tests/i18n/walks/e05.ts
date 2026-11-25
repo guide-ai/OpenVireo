@@ -6,7 +6,6 @@ import en from '../../../src/i18n/en.json' with {type:'json'};
 import comparison from '../../../data/photometry/cluster-comparison-contract.json' with {type:'json'};
 import {type LanguageText} from '../languageText';
 import {isPseudo,pseudoName,htmlLangOf,type Pseudo} from '../../fixtures/pseudoNames';
-import {openAllMoreDetail} from '../../fixtures/moreDetail';
 
 // Front SC12 (docs/I18N.md): the walk of tests/i18n/e05.spec.ts and the helpers it needs, moved here unchanged in behaviour so
 // tests/scripts/walks.scripts.ts can run it under the script pseudo-locales; the spec's header describes it.
@@ -109,7 +108,7 @@ export const DAT=Buffer.concat([{time:3,object:'HD 3',kind:0,v:12,b:12.25},{time
 export const BAD=Buffer.alloc(100);
 
 export const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=[
- ['cluster guide',async(page)=>{await expect(main(page).getByRole('heading',{level:1})).toBeVisible();await id(page,'cluster-lab-open').click();await expect(id(page,'cluster-lab-dialog')).toBeVisible();await openAll(id(page,'cluster-lab-dialog'));await openAllMoreDetail(page);}],
+ ['cluster guide',async(page)=>{await expect(main(page).getByRole('heading',{level:1})).toBeVisible();await id(page,'cluster-lab-open').click();await expect(id(page,'cluster-lab-dialog')).toBeVisible();await openAll(id(page,'cluster-lab-dialog'));}],
  ['lab before a dataset',async(page)=>{await id(page,'cluster-lab-close').click();await expect(id(page,'cluster-lab-dialog')).toBeHidden();}],
  ['dataset loaded',async(page,lang)=>{await page.locator('#cluster-database-choice').selectOption('m67');await button(main(page),lang,'db.load').click();await expect(id(page,'cluster-reference-count')).toBeVisible({timeout:30_000});}],
  ['point inspected',async(page)=>{const v=await page.locator('#cluster-point-choice option').nth(3).getAttribute('value');await page.locator('#cluster-point-choice').selectOption(v!);await expect(id(page,'cluster-selected-point')).toBeVisible();}],

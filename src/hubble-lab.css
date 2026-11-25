@@ -42,3 +42,14 @@
 .lab-step-more{margin-top:8px}
 .lab-step-more summary{font-size:var(--ov-text-sm);font-weight:500;min-height:24px;color:var(--ov-accent-text)}
 .lab-step-more[open]>summary{margin-bottom:4px}
+/* Front NEWCOMER NC3 review (S1): a guide window printed while it is open prints as the whole page. The page behind it is
+   hidden (every element that is not the window, inside it or an ancestor of it: the cluster guide sits inside <main>), and the
+   window loses its screen height limit and scrolling, so every step flows onto as many pages as it needs. help/printDetails.ts
+   opens its folded parts for the print. */
+@media print{
+ body:has(dialog.hubble-lab-dialog[open]) :not(dialog.hubble-lab-dialog[open],dialog.hubble-lab-dialog[open] *,:has(dialog.hubble-lab-dialog[open])){display:none!important}
+ body:has(dialog.hubble-lab-dialog[open]) :has(dialog.hubble-lab-dialog[open]){display:block!important;position:static!important;overflow:visible!important;height:auto!important;max-height:none!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;transform:none!important}
+ body:has(dialog.hubble-lab-dialog[open]){padding:0!important;margin:0!important}
+ dialog.hubble-lab-dialog[open]{position:static;inset:auto;width:auto;max-width:none;max-height:none;overflow:visible;margin:0;padding:0;border:0;border-radius:0;box-shadow:none;background:#fff;color:#000}
+ dialog.hubble-lab-dialog[open]::backdrop{display:none}
+}

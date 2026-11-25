@@ -1,5 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 import {clickHeaderTool} from './fixtures/header-tools';
+import {pdfHas,pdfText} from './fixtures/pdfText';
+import en from '../src/i18n/en.json' with {type:'json'};
 
 // Front GUIDE-COMPANION (user decision, 2026-11-23; plan analysis/front-plans/front-guide-companion.md): after a guide's window is
 // closed, its current step stays in a strip at the bottom of every page (components/GuideCompanion.tsx). Show me where goes to
@@ -225,6 +227,8 @@ for(const [width,height] of [[1280,800],[800,900],[375,740]] as const)test(`layo
 // Front NEWCOMER NC3 (review M7): a guide window printed while it is open prints its folded steps (and its other disclosures),
 // and afterwards exactly those fold again; a More detail the visitor opened stays open. Chromium prints for real (page.pdf fires
 // beforeprint and afterprint); Firefox and WebKit, run with --browser, receive the two events as the print dialog sends them.
+// Review S1: in Chromium the PDF's own text is read (tests/fixtures/pdfText.ts), so a folded step's text that the screen's
+// scrolling window would have cut off must really be on paper, and the page behind the window must not be.
 test('a guide window printed while open prints every folded step, and folds the same ones again afterwards',async({page,browserName})=>{
  await openGuide(page,'pulsars');
  const dialog=guideWindow(page),closed=()=>dialog.evaluate(d=>d.querySelectorAll('details:not([open])').length);
@@ -233,12 +237,27 @@ test('a guide window printed while open prints every folded step, and folds the 
  await channels.locator('summary').click();await expect(channels).toHaveAttribute('open','');
  expect(await closed()).toBe(folded-1);
  await page.evaluate(()=>{const w=window as unknown as {printedClosed:number};w.printedClosed=-1;addEventListener('beforeprint',()=>{w.printedClosed=document.querySelectorAll('dialog.hubble-lab-dialog[open] details:not([open])').length;});});
- if(browserName==='chromium')await page.pdf();
+ if(browserName==='chromium'){
+  const text=pdfText(await page.pdf());
+  // Steps 8 and 9 (folded, far below the window's screen height), the last section, and nothing of the page behind.
+  for(const passage of [en['pulsarLab.backup'],en['pulsarLab.step.save.optional'],en['pulsarLab.step.delay.formula'],en['pulsarLab.limits']])expect(pdfHas(text,passage),passage).toBe(true);
+  expect(pdfHas(text,en['sky.title'])).toBe(false);
+ }
  else await page.evaluate(()=>{dispatchEvent(new Event('beforeprint'));dispatchEvent(new Event('afterprint'));});
  expect(await page.evaluate(()=>(window as unknown as {printedClosed:number}).printedClosed)).toBe(0);
  expect(await closed()).toBe(folded-1);
  await expect(channels).toHaveAttribute('open','');
  await expect(id(page,'pulsar-lab-step-setup').locator('.lab-step-more')).toHaveAttribute('open','');
+});
+
+test('the printed Hubble guide holds its folded Save your work advice and its sources; the cluster guide, inside <main>, prints too',async({page,browserName})=>{
+ test.skip(browserName!=='chromium','page.pdf() is Chromium only');
+ await openGuide(page,'hubble');
+ const hubble=pdfText(await page.pdf());
+ for(const passage of [en['lab.saveHelp'],en['lab.sspHelp'],en['lab.limitsExtended']])expect(pdfHas(hubble,passage),passage).toBe(true);
+ await page.goto('about:blank');await openGuide(page,'cluster-hr');
+ const cluster=pdfText(await page.pdf());
+ for(const passage of [en['clusterLab.step.report.help'],en['clusterLab.limits']])expect(pdfHas(cluster,passage),passage).toBe(true);
 });
 
 test('the strip is not printed, and is inert while a window of the page is modal',async({page})=>{
