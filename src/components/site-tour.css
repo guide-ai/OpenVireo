@@ -25,3 +25,12 @@
  * never past the card), above Back and Start exploring. */
 .site-tour-choices{display:flex;flex-direction:column;align-items:stretch;gap:8px;margin:0 0 12px}
 .site-tour-choices button{width:100%;margin:0;min-height:40px;padding:8px 16px;font-size:13px;line-height:1.3;white-space:normal;overflow-wrap:anywhere;text-align:center}
+/* NC2 review S1: from 600 px up the last step's card is wider and its two choices sit side by side when they fit, so the card is
+ * short enough to go above or below the outlined Exercise guides section of the top menu (600–1099 px) instead of over it. */
+@media(min-width:600px){
+ .site-tour[data-step="start"] .site-tour-card{width:min(30rem,calc(100vw - 24px))}
+ .site-tour[data-step="start"] .site-tour-choices{flex-direction:row;flex-wrap:wrap}
+ .site-tour[data-step="start"] .site-tour-choices button{flex:1 1 12rem;width:auto}
+}
+/* NC2 review S2: on a short screen (a phone held sideways) the card scrolls inside, so Back and Start exploring stay reachable. */
+.site-tour-card{max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow-y:auto}

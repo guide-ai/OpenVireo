@@ -86,6 +86,59 @@ test('the tour\'s last step: Take a first look starts the first look; Choose a l
  await expect(page.getByRole('heading',{name:'The seven labs'})).toBeVisible();
 });
 
+// NC2 review S1: from 600 px to 1099 px the menu is at the top of the page; the last step's card (wider, its choices side by side)
+// goes above or below the outlined Exercise guides section instead of over it.
+const intersects=(a:{x:number;y:number;width:number;height:number},b:{x:number;y:number;width:number;height:number})=>
+ a.x<b.x+b.width&&b.x<a.x+a.width&&a.y<b.y+b.height&&b.y<a.y+a.height;
+for(const [lang,width,height] of [['en',1024,768],['ru',1024,768],['en',800,768],['en',800,600]] as const)
+ test(`${lang} at ${width} × ${height}: the last step's card does not cover the outlined part`,async({page})=>{
+  await page.setViewportSize({width,height});
+  await asVisitor(page);await page.goto(`/${lang==='en'?'':`?lang=${lang}`}#observatory`);
+  const tour=id(page,'site-tour');await expect(tour).toBeVisible({timeout:15000});
+  for(let i=0;i<3;i++)await id(page,'site-tour-next').click();
+  await expect(tour).toHaveAttribute('data-step','start');
+  // (The outline moves with a .2 s transition.)
+  await expect.poll(async()=>{const card=await id(page,'site-tour-card').boundingBox(),spot=await id(page,'site-tour-spot').boundingBox();
+   return !!(card&&spot&&!intersects(card,spot));},{timeout:5000}).toBe(true);
+  const card=await id(page,'site-tour-card').boundingBox();
+  expect(card&&card.y>=0&&card.y+card.height<=height&&card.x>=0&&card.x+card.width<=width).toBe(true);
+ });
+
+test('NC2 review S2: on a phone held sideways the last card scrolls inside, and Start exploring can be reached and pressed',async({page})=>{
+ await page.setViewportSize({width:568,height:320});
+ await asVisitor(page);await home(page);
+ const tour=id(page,'site-tour');await expect(tour).toBeVisible();
+ for(let i=0;i<3;i++)await id(page,'site-tour-next').click();
+ await expect(tour).toHaveAttribute('data-step','start');
+ const card=await id(page,'site-tour-card').boundingBox();
+ expect(card&&card.y>=0&&card.y+card.height<=320).toBe(true);
+ const done=id(page,'site-tour-next');await done.scrollIntoViewIfNeeded();await expect(done).toBeInViewport({ratio:1});
+ await done.click();await expect(tour).toHaveCount(0);await expect(id(page,'main-help-menu')).toBeFocused();
+});
+
+test('NC2 review N7: Escape on the last step closes the tour and gives the focus to Help',async({page})=>{
+ await asVisitor(page);await home(page);
+ const tour=id(page,'site-tour');await expect(tour).toBeVisible();
+ for(let i=0;i<3;i++)await id(page,'site-tour-next').click();
+ await expect(tour).toHaveAttribute('data-step','start');
+ await page.keyboard.press('Escape');
+ await expect(tour).toHaveCount(0);await expect(id(page,'main-help-menu')).toBeFocused();
+ expect(await page.evaluate(()=>localStorage.getItem('openvireo.tour.v1'))).toBe('done');
+});
+
+test('NC2 review N7: Take a first look from the welcome: the observatory, its heading focused, the strip shown, the tour marked seen',async({page})=>{
+ await page.goto('/');await expect(page.getByRole('heading',{level:1}).first()).toBeVisible({timeout:15000});
+ await id(page,'main-help-menu').click();await id(page,'main-help-tour').click();
+ const tour=id(page,'site-tour');await expect(tour).toBeVisible();
+ for(let i=0;i<3;i++)await id(page,'site-tour-next').click();
+ await page.locator('#site-tour-first-look').click();
+ await expect(tour).toHaveCount(0);
+ await expect(page).toHaveURL(/#observatory$/);
+ await expect(page.getByRole('heading',{level:1,name:'Start with the sky.'})).toBeFocused();
+ await expect(id(page,'guide-companion')).toBeVisible();await expect(id(page,'guide-companion')).toContainText('Open the dome');
+ expect(await page.evaluate(()=>localStorage.getItem('openvireo.tour.v1'))).toBe('done');
+});
+
 test('Escape or Skip ends the tour for good',async({page})=>{
  await asVisitor(page);await home(page);
  await expect(id(page,'site-tour')).toBeVisible();

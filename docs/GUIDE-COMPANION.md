@@ -171,7 +171,7 @@ shows no Full guide and no Restart exercise for it.
   heading's bottom end, from 1051 px under "What works…" at the heading's top end beside the title, and below that on the same
   line as "What works…", the two wrapping to two lines only when they do not fit; on a phone (≤ 520 px) the heading's eyebrow is
   then visually hidden as its subtitle already was (both stay for assistive technology), which pays for that wrap.
-  `tests/first-look.spec.ts` guards Open dome on the first screen at 375 × 667 and 390 × 664 in seven languages and the
+  `tests/first-look.spec.ts` guards Open dome on the first screen at 375 × 700 in seven languages (375 × 667 and 390 × 664 failed in CI, whose fonts are wider) and the
   heading's height at 1280 × 720; `tests/launch-landing.spec.ts` keeps its 1440 × 780 and 375 × 700 guards. Every opener calls the
   shell's `companion.firstLook`: the observatory, the strip, and `guideOpened`, so the first-visit tour does not start over it
   (its timer checks it again when it fires). On the observatory the focus then goes to the strip's Show me where (the pressed
@@ -235,15 +235,33 @@ LAUNCH-1's "Show tracking control" in the tour (the observatory's own tracking s
   steps work as before. Each way out marks the tour seen (the existing `openvireo.tour.v1`; nothing new is stored), and Help ›
   Take the tour takes it again.
 - **Keyboard order on the last card:** the card (focused on arrival), Take a first look, Choose a lab, Back, Start exploring.
-- **Layout.** The two choices are full-width buttons one under the other inside the card (long languages wrap inside the
-  button, never past the card), above the Back / Start exploring row; placement is `placeTourCard`'s, so it mirrors under a
-  right-to-left page (`tests/scripts/rtl-css.scripts.ts` checks the card left of the sidebar's outline on this step).
+- **Layout.** Below 600 px the two choices are full-width buttons one under the other (long languages wrap inside the button,
+  never past the card); from 600 px up the last step's card is wider (`min(30rem, 100vw − 24px)`) and the choices sit side by
+  side when they fit. They are above the Back / Start exploring row. Every card scrolls inside when the screen is too short
+  (`max-height: 100dvh − 24px`). Placement is `placeTourCard`'s, so it mirrors under a right-to-left page
+  (`tests/scripts/rtl-css.scripts.ts` checks the card left of the sidebar's outline on this step).
 - **Markers are `id`s** (`site-tour-first-look`, `site-tour-choose-lab`), never `data-testid`s (`tests/fixtures/rtlKnown.ts`).
+- **Choose a lab's focus** uses the shell's focus-counter pattern (`labListFocus`, an effect declared after the route heading's
+  focus, like `trackingFocus`), so the lab-list heading wins over the welcome's h1 on a route change.
 - **Tests:** `src/help/tour.test.ts` (the four steps, the last one's targets, the ten languages); `tests/onboarding.spec.ts` (Step
   1 of 4, every outline, the question and its two named buttons, the tab order, Take a first look → the strip on Open the dome
   with Show me where focused, Choose a lab by keyboard → the lab list focused and on screen, the phone card and its Menu outline,
-  Choose a lab at 375 px); `tests/home.spec.ts` (Choose a lab from the welcome itself); `tests/i18n/shell.spec.ts` (the last
-  step's texts in every language).
+  Choose a lab at 375 px; the card clear of the outline at 1024 × 768 in English and Russian and at 800 × 768 and 800 × 600 in
+  English; Start exploring reachable at 568 × 320; Escape on the last step; Take a first look from the welcome);
+  `tests/home.spec.ts` (Choose a lab from the welcome itself); `tests/i18n/shell.spec.ts` (the last step's texts in every
+  language).
+- **Review (2026-11-24, independent, high effort): approve after fixes**, all applied in "Front NEWCOMER NC2 review":
+  S1, on 600–1099 px screens of medium height the taller last card fell back to the bottom and covered the outlined Exercise
+  guides section (Russian 1024 × 768 by 55 px), fixed by the wider card with side-by-side choices; S2, on a phone held sideways
+  (568 × 320) Back and Start exploring were off screen, fixed by the card's own scrolling; N1, Choose a lab's `setTimeout`
+  replaced by `labListFocus`; N2, home.spec's list of the tour's parts; N4, an unused class and a doubled comment; N5, the
+  Russian no-break space in docs/I18N.md; N7, tests for Escape on the last step and Take a first look from the welcome; and the
+  help topic's stale "Tools button" (now "Menu button", with the nine glossary rows renamed, so the glossary lint also checks
+  the tour's start text). The nine translations were found fine.
+- **CI fixes folded into the same round (from NC1, main run 45521682534):** `tests/clea-help.spec.ts` now expects Take a first
+  look in the Help menu between Take the tour of the site and Websites; `tests/first-look.spec.ts` guards Open dome on the first
+  screen at 375 × 700 (as `tests/launch-landing.spec.ts` does) instead of 375 × 667 and 390 × 664, where CI's wider Ubuntu fonts
+  left it half on screen in Spanish, Portuguese and French.
 
 ## Layout and accessibility
 

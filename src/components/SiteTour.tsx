@@ -28,11 +28,10 @@ export function scheduleFirstVisitTour(start:()=>void,delay=700,ran?:()=>void):(
 
 /** The first-visit tour (Front Onboarding [W]): a modal window that steps through TOUR, outlining the part of the page each step
  * is about and dimming the rest. Escape or Skip ends it; finishing or skipping marks it seen, so it does not start again by
- * itself. Rendered at the document root, outside the header. */
-/** Front NEWCOMER NC2: the last step asks how the visitor would like to start. `onFirstLook` (Take a first look) and
- * `onChooseLab` (Choose a lab), when given, are its two choices; each ends the tour like Start exploring (marked seen, the modal
- * closed first) and hands over to the shell, which starts the first look or shows the welcome's lab list. (LAUNCH-1's "Show
- * tracking control" went with the observatory step.) */
+ * itself. Rendered at the document root, outside the header. Front NEWCOMER NC2: the last step asks how the visitor would like
+ * to start. `onFirstLook` (Take a first look) and `onChooseLab` (Choose a lab), when given, are its two choices; each ends the
+ * tour like Start exploring (marked seen, the modal closed first) and hands over to the shell, which starts the first look or
+ * shows the welcome's lab list. (LAUNCH-1's "Show tracking control" went with the observatory step.) */
 export default function SiteTour({onClose,onFirstLook,onChooseLab}:{onClose:()=>void;onFirstLook?:()=>void;onChooseLab?:()=>void}){
  const dialog=useRef<HTMLDialogElement>(null),card=useRef<HTMLDivElement>(null),done=useRef(false),id=useId();
  const [index,setIndex]=useState(0),[box,setBox]=useState<Box|null>(null),[place,setPlace]=useState<Placement|null>(null);
@@ -80,7 +79,7 @@ export default function SiteTour({onClose,onFirstLook,onChooseLab}:{onClose:()=>
     {!last&&<button type="button" className="text-button site-tour-skip" data-testid="site-tour-skip" onClick={()=>finish()}>{TOUR.skip}</button>}
     {index>0&&<button type="button" className="secondary-button" data-testid="site-tour-back" onClick={()=>setIndex(i=>i-1)}>{TOUR.back}</button>}
     {/* On the last step the two choices above carry the weight; Start exploring is its plain close. */}
-    <button type="button" className={last&&(onFirstLook||onChooseLab)?'text-button site-tour-done':'primary-button'} data-testid="site-tour-next" onClick={last?()=>finish():()=>setIndex(i=>i+1)}>{last?TOUR.done:TOUR.next}</button>
+    <button type="button" className={last&&(onFirstLook||onChooseLab)?'text-button':'primary-button'} data-testid="site-tour-next" onClick={last?()=>finish():()=>setIndex(i=>i+1)}>{last?TOUR.done:TOUR.next}</button>
    </div>
   </div>
  </dialog>,document.body);

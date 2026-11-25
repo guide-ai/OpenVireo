@@ -97,7 +97,7 @@ test('the first-visit tour waits for the exploration page: not on the welcome, t
  await welcome(page).getByRole('button',{name:en['home.explore'],exact:true}).click();
  await expect(page.getByTestId('site-tour')).toBeVisible();await expect(page.getByTestId('site-tour')).toContainText('Step 1 of 4');
  // Every step's part is on the exploration page.
- for(const sel of ['.portal-header nav','[data-nav-group="guides"]','.first-steps','[data-testid="investigation-actions"]','.page-bar .help-trigger'])await expect(page.locator(sel).first()).toBeVisible();
+ for(const sel of ['[data-nav-group="guides"]','[data-testid="investigation-actions"]','.page-bar .help-trigger'])await expect(page.locator(sel).first()).toBeVisible();
 });
 
 test('a visitor arriving through #lab= gets the guide and no tour, even on reaching the exploration page',async({page})=>{

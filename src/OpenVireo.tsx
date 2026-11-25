@@ -643,6 +643,10 @@ export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={
   useEffect(()=>{if(hotListFocus===0)return;const details=observatoryView.current?.querySelector<HTMLDetailsElement>('[data-testid="htl-details"]');if(!details)return;details.open=true;
    const load=details.querySelector<HTMLButtonElement>('[data-htl-exercise="PLEIADES.HTL"]'),target=load&&!load.disabled?load:details.querySelector<HTMLElement>('summary');
    target?.scrollIntoView?.({block:'center'});target?.focus();},[hotListFocus]);
+  // Front NEWCOMER NC2: the tour's Choose a lab shows the welcome's lab list and puts the focus on its heading; declared after the
+  // route heading focus, so it wins over the welcome's h1 on a route change.
+  const [labListFocus,setLabListFocus]=useState(0);
+  useEffect(()=>{if(labListFocus===0)return;const heading=homeView.current?.querySelector<HTMLElement>('#home-labs');heading?.scrollIntoView?.({block:'start'});heading?.focus({preventScroll:true});},[labListFocus]);
   useEffect(()=>{const update=()=>{observatoryClock.stopMotion();if(projectActivity.current)cancelProject();setView(route());};addEventListener('hashchange',update);return()=>removeEventListener('hashchange',update);},[]);
   const inView=project(selected,pointing,FIELDS[mode]).visible;
   const centered=targetCentered(selected,pointing,FIELDS[mode]);
@@ -1029,12 +1033,9 @@ export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={
     // the strip's Show me where once it is shown, not to nowhere. Elsewhere the page's own heading takes it.
     window.setTimeout(()=>document.querySelector<HTMLElement>('[data-testid="guide-companion-show"]')?.focus({preventScroll:true}),0);
    },
-   // Front NEWCOMER NC2: the tour's Choose a lab: the welcome, scrolled to its lab list, whose heading takes the focus (after
-   // the welcome's own h1 has taken it on a route change).
-   chooseLab:()=>{
-    if(view!=='home')navigate('home');
-    window.setTimeout(()=>{const heading=document.getElementById('home-labs');heading?.scrollIntoView?.({block:'start'});heading?.focus({preventScroll:true});},0);
-   },
+   // Front NEWCOMER NC2: the tour's Choose a lab: the welcome, scrolled to its lab list, whose heading takes the focus
+   // (labListFocus).
+   chooseLab:()=>{if(view!=='home')navigate('home');setLabListFocus(n=>n+1);},
   });
   // Front HOME: the tour starts the first time the visitor reaches the exploration page, not on the welcome, and never once a guide
   // was opened in this load (firstVisit.ts). Leaving before its timer runs (or React's development double effect) cancels it and

@@ -75,7 +75,7 @@ test('main window Help offers OpenVireo\'s own help, the tour, Websites and Abou
  await expect(id(page,'page-bar-help').getByTestId('main-help-menu')).toHaveAccessibleName('Help menu of the observatory');
  await id(page,'main-help-menu').click();
  const items=id(page,'page-bar-help').locator('.fi-menu-list > button');
- await expect(items).toHaveText(['Help topics…?','Take the tour of the site','Websites ›','About OpenVireo and privacy']);
+ await expect(items).toHaveText(['Help topics…?','Take the tour of the site','Take a first look','Websites ›','About OpenVireo and privacy']);
  await expect(id(page,'main-help-web')).toHaveAttribute('aria-keyshortcuts','?');
  await expect(page.getByTestId('main-help-menu-topics')).toHaveCount(0);await expect(page.getByTestId('main-help-about')).toHaveCount(0);
  await id(page,'main-help-web').click();
