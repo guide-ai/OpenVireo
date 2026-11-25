@@ -18,7 +18,7 @@ export const LAB_TEXT_ES:Readonly<Record<LabSlug,LabText>>=Object.freeze({
   description:'Práctica: mide corrimientos al rojo de galaxias en una franja del cielo y grafica su diagrama de cuña. Reconstrucción web gratuita de CLEA VIREO.',
   heading:'La estructura a gran escala del universo',
   intro:'Elige uno de los nueve campos de sondeo originales, mide el corrimiento al rojo de una galaxia tras otra y ubícalas en un diagrama de cuña. ¿Las galaxias están repartidas al azar o forman una red cósmica? Tu propio mapa te lo dirá.',
-  steps:['Elige un campo de sondeo y un telescopio.','Toma el espectro de cada galaxia y registra su corrimiento al rojo.','Grafica tus propios registros en un diagrama de cuña de ascensión recta y velocidad.','Describe las estructuras que ves y guarda tu investigación.'],
+  steps:['Elige un campo de sondeo y un telescopio.','Toma el espectro de cada galaxia y registra su corrimiento al rojo.','Grafica tus propios registros en un diagrama de cuña de ascensión recta y velocidad.','Describe lo que ves en tu mapa y guarda tu investigación.'],
   learn:['Cómo los sondeos de corrimiento al rojo cartografían el universo en tres dimensiones.','Cómo describir lo que muestra un mapa de galaxias.','Cómo se lee un diagrama de cuña.']},
  'stellar-classification':{name:'Clasificación estelar',
   title:'Clasificación espectral de estrellas: práctica CLEA · OpenVireo',

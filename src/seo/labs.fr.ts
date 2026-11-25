@@ -20,7 +20,7 @@ export const LAB_TEXT_FR:Readonly<Record<LabSlug,LabText>>=Object.freeze({
   description:'Relevé d’une bande du ciel : mesurez le décalage vers le rouge de galaxies et tracez un diagramme en cône. Reconstruction web gratuite d’un TP CLEA VIREO.',
   heading:'La structure à grande échelle de l’univers',
   intro:'Choisissez l’un des neuf champs de relevé d’origine, mesurez le décalage vers le rouge d’une galaxie après l’autre et placez-les dans un diagramme en cône. Les galaxies sont-elles réparties au hasard ou forment-elles une toile cosmique ? Votre propre carte vous le dira.',
-  steps:['Choisissez un champ de relevé et un télescope.','Obtenez le spectre de chaque galaxie et consignez son décalage vers le rouge.','Placez vos propres mesures dans un diagramme en cône ascension droite–vitesse.','Décrivez les structures que vous voyez et enregistrez votre investigation.'],
+  steps:['Choisissez un champ de relevé et un télescope.','Obtenez le spectre de chaque galaxie et consignez son décalage vers le rouge.','Placez vos propres mesures dans un diagramme en cône ascension droite–vitesse.','Décrivez ce que vous voyez sur votre carte et enregistrez votre investigation.'],
   learn:['Comment les relevés de décalages vers le rouge cartographient l’univers en trois dimensions.','Comment décrire ce que montre une carte de galaxies.','Comment lire un diagramme en cône.']},
  'stellar-classification':{name:'Classification stellaire',
   title:'Classer des spectres stellaires : TP CLEA VIREO · OpenVireo',

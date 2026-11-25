@@ -41,7 +41,7 @@ export const LABS:readonly Lab[]=Object.freeze([
   description:"Survey a strip of sky, measure galaxy redshifts and map them in a wedge diagram: random, or a cosmic web? A free web reconstruction of CLEA's VIREO LSS lab.",
   heading:'The large-scale structure of the universe',
   intro:'Choose one of the nine original survey fields, measure the redshift of galaxy after galaxy, and plot them in a wedge diagram. Are galaxies scattered at random, or do they form a cosmic web? Your own map will tell you.',
-  steps:['Choose a survey field and a telescope.','Take the spectrum of each galaxy and record its redshift.','Plot your own records in a right ascension–velocity wedge diagram.','Describe the structures you see and save your investigation.'],
+  steps:['Choose a survey field and a telescope.','Take the spectrum of each galaxy and record its redshift.','Plot your own records in a right ascension–velocity wedge diagram.','Describe what you see on your map and save your investigation.'],
   learn:['How redshift surveys map the universe in three dimensions.','How to describe what a map of galaxies shows.','How a wedge diagram is read.']},
  {slug:'stellar-classification',exercise:'E03',name:'Stellar classification',guide:'Classification guide',
   title:'Spectral classification of stars lab (CLEA) · OpenVireo',

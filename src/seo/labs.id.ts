@@ -20,7 +20,7 @@ export const LAB_TEXT_ID:Readonly<Record<LabSlug,LabText>>=Object.freeze({
   description:'Lakukan survei sejalur langit, ukur pergeseran merah galaksi, buat diagram kerucut: acak atau jaring kosmik? Rekonstruksi web gratis praktikum LSS CLEA VIREO.',
   heading:'Struktur skala besar alam semesta',
   intro:'Pilih salah satu dari sembilan bidang survei asli, ukur pergeseran merah galaksi demi galaksi, lalu petakan semuanya dalam diagram kerucut. Apakah galaksi tersebar secara acak, atau membentuk jaring kosmik? Peta Anda sendiri yang akan menjawabnya.',
-  steps:['Pilih bidang survei dan teleskop.','Ambil spektrum setiap galaksi dan catat pergeseran merahnya.','Petakan catatan Anda sendiri dalam diagram kerucut asensio rekta–kecepatan.','Jelaskan struktur yang Anda lihat dan simpan investigasi Anda.'],
+  steps:['Pilih bidang survei dan teleskop.','Ambil spektrum setiap galaksi dan catat pergeseran merahnya.','Petakan catatan Anda sendiri dalam diagram kerucut asensio rekta–kecepatan.','Jelaskan apa yang Anda lihat di peta Anda dan simpan investigasi Anda.'],
   learn:['Bagaimana survei pergeseran merah memetakan alam semesta dalam tiga dimensi.','Cara mendeskripsikan apa yang ditunjukkan peta galaksi.','Cara membaca diagram kerucut.']},
  'stellar-classification':{name:'Klasifikasi bintang',
   title:'Praktikum klasifikasi spektrum bintang (CLEA VIREO) · OpenVireo',

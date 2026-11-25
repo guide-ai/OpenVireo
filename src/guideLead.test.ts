@@ -60,21 +60,21 @@ const RESULT:Readonly<Record<Exclude<LabSlug,'object-x'|'cluster-hr'>,Readonly<R
   'pt-br':['expan','mais rápid','mais depressa','proporcion','linear','inclinação','aument','cresc','mais long'],
   fr:['expansion','plus vite','plus rapide','proportionn','linéaire','pente','augment','croît','croiss','plus loin','plus lointain'],
   id:['mengembang','ekspansi','lebih cepat','sebanding','proporsional','linear','linier','kemiringan','bertambah','meningkat','makin','semakin','lebih jauh'],
-  hi:['फैल','प्रसार','विस्तार','अधिक तेज़','आनुपातिक','रैखिक','ढलान','बढ़','अधिक दूर','ज़्यादा दूर'],ja:['膨張','速く','比例','直線','傾き','増','ほど速','ほど遠'],
+  hi:['फैल','प्रसार','विस्तार(?![ \u00a0]+से)$','अधिक तेज़','आनुपातिक','रैखिक','ढलान','बढ़','अधिक दूर','ज़्यादा दूर'],ja:['膨張','速く','比例','直線','傾き','増','ほど速','ほど遠'],
   'zh-hans':['膨胀','更快','正比','线性','斜率','增','越远','越快'],'zh-hant':['膨脹','更快','正比','線性','斜率','增','越遠','越快'],
   ru:['расшир','быстрее','пропорциональн','линейн','наклон','увелич','раст$','растёт','растут','возраста','дальше'],
  },
  'large-scale-structure':{
-  en:['wall','void','filament','crowd','*evenly','cosmic web','bubble','clump','cluster','sheet','empty','*uneven'],
-  es:['muralla','pared','vacío','vacía','filament','agrup','*uniforme','red cósmica','burbuja','grumo','cúmul','lámina','desigual'],
-  'pt-br':['muralha','parede','vazio','vazia','filament','aglomer','*uniforme','teia cósmica','bolha','grumo','lâmina','desigual'],
-  fr:['mur$','murs$','vide','filament','amas','*uniformément','*inégal','toile cosmique','bulle','grumeau','feuillet','regroup'],
-  id:['dinding','kosong','filamen','berkerumun','*merata','jaring kosmik','gelembung','gumpal','gugus','lembaran','mengelompok'],
-  hi:['दीवार','रिक्त','तंतु','झुंड','*समान रूप','*असमान','ब्रह्मांडीय जाल','गुच्छ','परत','खाली'],
-  ja:['壁','空洞','ボイド','フィラメント','密集','一様','網の目','泡','塊','集団','群れ','シート','空っぽ','偏り','偏って'],
-  'zh-hans':['墙','空洞','巨洞','纤维','聚集','均匀','宇宙网','泡','团块','成团','星系团','片状','空的'],
-  'zh-hant':['牆','空洞','巨洞','纖維','聚集','均勻','宇宙網','泡','團塊','成團','星系團','片狀','空的'],
-  ru:['стен','пуст','войд','волокн','нит$','нити$','*равномерн','паутин','пузыр','сгущ','скоплен','слои','слой','комк'],
+  en:['wall','void','filament','crowd','*evenly','cosmic web','bubble','clump','cluster','sheet','empty','*uneven','structur'],
+  es:['muralla','pared','vacío','vacía','filament','agrup','*uniforme','red cósmica','burbuja','grumo','cúmul','lámina','desigual','estructur'],
+  'pt-br':['muralha','parede','vazio','vazia','filament','aglomer','*uniforme','teia cósmica','bolha','grumo','lâmina','desigual','estrutur'],
+  fr:['mur$','murs$','vide','filament','amas','*uniformément','*inégal','toile cosmique','bulle','grumeau','feuillet','regroup','structur'],
+  id:['dinding','kosong','filamen','berkerumun','*merata','jaring kosmik','gelembung','gumpal','gugus','lembaran','mengelompok','struktur'],
+  hi:['दीवार','रिक्त','तंतु','झुंड','*समान रूप','*असमान','ब्रह्मांडीय जाल','गुच्छ','परत','खाली','संरचना'],
+  ja:['壁','空洞','ボイド','フィラメント','密集','一様','網の目','泡','塊','集団','群れ','シート','空っぽ','偏り','偏って','構造'],
+  'zh-hans':['墙','空洞','巨洞','纤维','聚集','均匀','宇宙网','泡','团块','成团','星系团','片状','空的','结构'],
+  'zh-hant':['牆','空洞','巨洞','纖維','聚集','均勻','宇宙網','泡','團塊','成團','星系團','片狀','空的','結構'],
+  ru:['стен','пуст','войд','волокн','нит$','нити$','*равномерн','паутин','пузыр','сгущ','скоплен','слои','слой','комк','структур'],
  },
  'stellar-classification':{
   en:['temperature','hotter','cooler','hot$','cool$'],es:['temperatura','caliente','fría','frío'],'pt-br':['temperatura','quente','fria','frio'],
@@ -152,82 +152,140 @@ describe('Front NEWCOMER NC4: the why-lines ask, and never answer',()=>{
 });
 
 // Front NEWCOMER /labs/ texts (user decision of 2026-11-25, AGENTS.md): the search pages under /labs/ (src/seo/labs*.ts) stop
-// stating a lab's result as well. Their intros, meta descriptions and learn lists go through the same per-language result lists,
-// sentence by sentence, with two principled exceptions:
-// - KEPT: a search keyword the page keeps on purpose (Hubble's expansion, the cosmic web, the dispersion measure) may appear only in a
-//   sentence (or clause after a colon or semicolon) that ends in a question mark («Are galaxies scattered at random, or do they form a cosmic web?»); stated as a fact, or
-//   any other result word even inside a question, it fails. Each page must still carry its kept keyword somewhere, so search finds it.
-// - Object X: a sentence that names all five kinds is the lab's own question (star, galaxy, quasar, pulsar or asteroid?); naming
-//   fewer gives one away, and so does the Solar System, which the guide hides until the reveal.
+// stating a lab's result as well. Every text of each lab page (title, description, heading, intro, steps and learn list) goes
+// through the same per-language result lists, clause by clause, and only these reviewed exceptions pass:
+// - KEPT_QUESTIONS: a search keyword the page keeps on purpose (Hubble's expansion, the cosmic web, the dispersion measure) passes
+//   only in one of the exact question clauses listed for its language, the ones now on the pages («Are galaxies scattered at random,
+//   or do they form a cosmic web?»). A new question with a kept keyword («How fast is the universe expanding?») fails until it is
+//   reviewed and listed; stated as a fact it always fails, and any other result word fails even in a listed question. Each page must
+//   still carry its kept keyword somewhere, so search finds it.
+// - Object X: a clause that names all five kinds is the lab's own question when it is itself a question, or when it is the
+//   description's or the intro's indirect question («…you decide whether the object is a star, a galaxy, a quasar, a pulsar or an
+//   asteroid»); naming fewer gives one away, and so does the Solar System, which the guide hides until the reveal.
+// - The lab's own name: «Large-scale structure» names the lab in its title, heading and (zh-Hans, zh-Hant) description, so the
+//   name in the page's language (its `name`) is taken out of a clause before the check; «structure» anywhere else fails.
+// - ALLOWED: two strings carry a result word legitimately and are allowed only that word: the pulsar step that compares with the
+//   catalogue's dispersion measure, and the Object X step that starts «For an asteroid…» (a conditional the original manual gives).
 const KEPT:Readonly<Record<'hubble'|'large-scale-structure'|'pulsars',Readonly<Record<string,readonly string[]>>>>={
- hubble:{en:['expan'],es:['expan'],'pt-br':['expan'],fr:['expansion'],id:['mengembang','ekspansi'],hi:['फैल','प्रसार','विस्तार'],ja:['膨張'],
+ hubble:{en:['expan'],es:['expan'],'pt-br':['expan'],fr:['expansion'],id:['mengembang','ekspansi'],hi:['फैल','प्रसार'],ja:['膨張'],
   'zh-hans':['膨胀'],'zh-hant':['膨脹'],ru:['расшир']},
  'large-scale-structure':{en:['cosmic web'],es:['red cósmica'],'pt-br':['teia cósmica'],fr:['toile cosmique'],id:['jaring kosmik'],
   hi:['ब्रह्मांडीय जाल'],ja:['網の目'],'zh-hans':['宇宙网'],'zh-hant':['宇宙網'],ru:['паутин']},
  pulsars:{en:['dispersion'],es:['dispersi'],'pt-br':['dispers'],fr:['dispersion'],id:['dispersi'],hi:['परिक्षेपण'],ja:['分散'],
   'zh-hans':['色散'],'zh-hant':['色散'],ru:['дисперси']},
 };
+/** The reviewed question clauses that may carry a kept keyword, exactly as on the pages (review N2). */
+const KEPT_QUESTIONS:Readonly<Record<string,readonly string[]>>={
+ en:['Is the universe standing still, or expanding?','random, or a cosmic web?','Are galaxies scattered at random, or do they form a cosmic web?','What is a dispersion measure?','What can the delay between the two frequencies tell you, and what is a dispersion measure?'],
+ es:['¿El universo está quieto o se expande?','¿Las galaxias están repartidas al azar o forman una red cósmica?','¿Qué es la medida de dispersión?','¿Qué te dice el retraso entre las dos frecuencias y qué es la medida de dispersión?'],
+ 'pt-br':['O universo está parado ou em expansão?','As galáxias estão espalhadas ao acaso ou formam uma teia cósmica?','O que é a medida de dispersão?','O que o atraso entre as duas frequências revela, e o que é a medida de dispersão?'],
+ fr:['L’univers est-il immobile ou en expansion ?','Les galaxies sont-elles réparties au hasard ou forment-elles une toile cosmique ?','Qu’est-ce que la mesure de dispersion ?','Que vous apprend le retard entre les deux fréquences, et qu’est-ce que la mesure de dispersion ?'],
+ id:['Apakah alam semesta diam atau mengembang?','acak atau jaring kosmik?','Apakah galaksi tersebar secara acak, atau membentuk jaring kosmik?','Apa itu ukuran dispersi?','Apa yang diungkap selisih waktu tiba antara kedua frekuensi, dan apa itu ukuran dispersi?'],
+ hi:['क्या ब्रह्मांड स्थिर है, या फैल रहा है?','बेतरतीब या ब्रह्मांडीय जाल?','क्या आकाशगंगाएँ बेतरतीब बिखरी हैं, या ब्रह्मांडीय जाल बनाती हैं?','परिक्षेपण माप क्या है?','दोनों आवृत्तियों के बीच की देरी आपको क्या बताती है, और परिक्षेपण माप क्या है?'],
+ ja:['宇宙は静止しているのでしょうか、それとも膨張しているのでしょうか？','ランダムでしょうか、宇宙の網の目でしょうか？','銀河はランダムに散らばっているのでしょうか、それとも宇宙の網の目をつくっているのでしょうか？','分散量度とは何でしょうか？'],
+ 'zh-hans':['宇宙是静止的，还是在膨胀？','随机分布，还是宇宙网？','星系是随机散布的，还是构成了宇宙网？','什么是色散量？'],
+ 'zh-hant':['宇宙是靜止的，還是在膨脹？','隨機分布，還是宇宙網？','星系是隨機散布的，還是構成了宇宙網？','什麼是色散量？'],
+ ru:['Вселенная неподвижна или расширяется?','хаос или космическая паутина?','Разбросаны ли галактики случайно или образуют космическую паутину?','Что такое мера дисперсии?','О чём говорит запаздывание между двумя частотами и что такое мера дисперсии?'],
+};
 const SOLAR_SYSTEM:Readonly<Record<string,string>>={en:'solar system',es:'sistema solar','pt-br':'sistema solar',fr:'système solaire',
  id:'tata surya',hi:'सौर मंडल',ja:'太陽系','zh-hans':'太阳系','zh-hant':'太陽系',ru:'солнечн'};
+/** Each language's LSS «structure» stem (review N3), allowed only inside the lab's name. */
+const STRUCTURE:Readonly<Record<string,string>>={en:'structur',es:'estructur','pt-br':'estrutur',fr:'structur',id:'struktur',hi:'संरचना',
+ ja:'構造','zh-hans':'结构','zh-hant':'結構',ru:'структур'};
 const kept=(dir:string,lab:LabSlug):readonly string[]=>(KEPT as Record<string,Record<string,readonly string[]>>)[lab]?.[dir]??[];
+const kinds=(dir:string)=>Object.values(LAB_MAPS[dir]!.kinds as Record<string,string>).map(k=>k.replace(/\s*[(（].*$/u,''));
+/** The strings allowed one result word, by `<slug>.<field>` (review N3). */
+const ALLOWED:Readonly<Record<string,(dir:string)=>readonly string[]>>={
+ 'pulsars.steps.3':dir=>kept(dir,'pulsars'),
+ 'object-x.steps.3':dir=>[kinds(dir)[4]!],
+};
+const dirOf=(tag:string)=>tag==='en'?'en':languageEntry(tag)!.dir;
+/** Each lab's name in each language, as its pages give it. */
+const labName=(dir:string,lab:LabSlug)=>SEO_LANGUAGES.find(l=>dirOf(l.tag)===dir)!.labs.find(l=>l.slug===lab)!.name;
+const withoutName=(dir:string,lab:LabSlug,sentence:string)=>{
+ const name=labName(dir,lab),at=sentence.toLocaleLowerCase().indexOf(name.toLocaleLowerCase());
+ return at<0?sentence:sentence.slice(0,at)+' '+sentence.slice(at+name.length);
+};
+/** The Object X strings whose five-kind clause is the lab's indirect question. */
+const OBJECT_X_CHOICE=new Set(['object-x.description','object-x.intro']);
 /** Clauses end at . ! ? । : ; and their full-width forms (a CJK sentence has no space after its mark), so a statement joined to a
  * question by a colon is still a statement: in «…map them in a wedge diagram: random, or a cosmic web?» only the part after it asks. */
 const sentences=(text:string)=>text.split(/(?<=[.!?。！？।:;：；])\s*/u).filter(s=>s.trim());
 const isQuestion=(sentence:string)=>/[?？]\s*$/u.test(sentence);
-const pageStatesResult=(dir:string,lab:LabSlug,text:string)=>sentences(text).flatMap(sentence=>{
- let found=statesResult(dir,lab,sentence);
+/** The result words a page string states; `field` names it (`intro`, `steps.3`…) for the per-string exceptions. */
+const pageStatesResult=(dir:string,lab:LabSlug,text:string,field='')=>sentences(text).flatMap(sentence=>{
+ const id=`${lab}.${field}`;
+ let found=statesResult(dir,lab,withoutName(dir,lab,sentence));
  if(lab==='object-x'){
-  const kinds=Object.values(LAB_MAPS[dir]!.kinds as Record<string,string>).map(k=>k.replace(/\s*[(（].*$/u,''));
-  if(kinds.every(kind=>matcher(dir,kind).test(sentence)))found=[];
+  if((isQuestion(sentence)||OBJECT_X_CHOICE.has(id))&&kinds(dir).every(kind=>matcher(dir,kind).test(sentence)))found=[];
   if(matcher(dir,SOLAR_SYSTEM[dir]!).test(sentence))found=[...found,SOLAR_SYSTEM[dir]!];
  }
- return isQuestion(sentence)?found.filter(stem=>!kept(dir,lab).includes(stem)):found;
+ if(isQuestion(sentence)&&KEPT_QUESTIONS[dir]!.includes(sentence.trim()))found=found.filter(stem=>!kept(dir,lab).includes(stem));
+ const allowed=ALLOWED[id]?.(dir)??[];
+ return found.filter(stem=>!allowed.includes(stem));
 });
-const dirOf=(tag:string)=>tag==='en'?'en':languageEntry(tag)!.dir;
+const fields=(lab:{title:string;description:string;heading:string;intro:string;steps:readonly string[];learn:readonly string[]})=>[
+ ['title',lab.title],['description',lab.description],['heading',lab.heading],['intro',lab.intro],
+ ...lab.steps.map((t,i)=>[`steps.${i}`,t]),...lab.learn.map((t,i)=>[`learn.${i}`,t])] as const;
 
 describe('Front NEWCOMER /labs/ texts: the search pages ask, and never answer',()=>{
- it('ten languages, each with the kept keywords and the Solar System words',()=>{
+ it('ten languages, each with the kept keywords, the reviewed questions and the Solar System and structure words',()=>{
   expect(SEO_LANGUAGES.map(l=>dirOf(l.tag)).sort()).toEqual([...DIRS].sort());
-  for(const lists of [...Object.values(KEPT),SOLAR_SYSTEM])expect(Object.keys(lists).sort()).toEqual([...DIRS].sort());
-  // A kept keyword is one of its lab's result words, so the question exception is the only way it passes.
+  for(const lists of [...Object.values(KEPT),KEPT_QUESTIONS,SOLAR_SYSTEM,STRUCTURE])expect(Object.keys(lists).sort()).toEqual([...DIRS].sort());
+  // A kept keyword and the structure stem are their lab's result words, so the listed exceptions are the only way they pass.
   for(const [lab,lists] of Object.entries(KEPT))for(const [dir,words] of Object.entries(lists))for(const word of words)expect(RESULT[lab as keyof typeof KEPT][dir]).toContain(word);
+  for(const [dir,stem] of Object.entries(STRUCTURE))expect(RESULT['large-scale-structure'][dir]).toContain(stem);
  });
  for(const L of SEO_LANGUAGES){
   const dir=dirOf(L.tag);
-  it(`${dir}: each lab's intro, description and learn list state none of its guide's results`,()=>{
-   for(const lab of L.labs){
-    for(const text of [lab.description,lab.intro,...lab.learn])expect(pageStatesResult(dir,lab.slug,text),`${dir} ${lab.slug}: ${text}`).toEqual([]);
-   }
+  it(`${dir}: each lab's title, description, heading, intro, steps and learn list state none of its guide's results`,()=>{
+   for(const lab of L.labs)for(const [field,text] of fields(lab))expect(pageStatesResult(dir,lab.slug,text,field),`${dir} ${lab.slug}.${field}: ${text}`).toEqual([]);
   });
-  it(`${dir}: each kept keyword is still on its page, as a question or a topic`,()=>{
+  it(`${dir}: every reviewed question is on a page, and each kept keyword is still on its page`,()=>{
+   const clauses=new Set(L.labs.flatMap(lab=>fields(lab).flatMap(([,text])=>sentences(text).map(s=>s.trim()))));
+   for(const question of KEPT_QUESTIONS[dir]!)expect(clauses.has(question),`${dir}: ${question}`).toBe(true);
    for(const lab of L.labs){
     const words=kept(dir,lab.slug);if(!words.length)continue;
-    const page=[lab.title,lab.description,lab.heading,lab.intro,...lab.steps,...lab.learn].join(' ');
+    const page=fields(lab).map(([,text])=>text).join(' ');
     expect(words.some(word=>matcher(dir,word).test(page)),`${dir} ${lab.slug}`).toBe(true);
    }
   });
  }
- it('the check bites: the former /labs/ sentences are caught, the question form passes',()=>{
+ it('the check bites: the former /labs/ sentences and unreviewed questions are caught, the reviewed questions pass',()=>{
   expect(pageStatesResult('en','hubble','From your own measurements you build a Hubble diagram and estimate the expansion rate of the universe.')).toEqual(['expan']);
   expect(pageStatesResult('en','hubble','Is the universe standing still, or expanding?')).toEqual([]);
   expect(pageStatesResult('en','hubble','Why do farther galaxies recede faster?')).toEqual(['faster','farther']);
-  expect(pageStatesResult('en','large-scale-structure','Survey a strip of sky and plot a wedge diagram of the cosmic web. Do they form a cosmic web?')).toEqual(['cosmic web']);
+  // Review N2: a question is not enough; only the reviewed clauses pass.
+  expect(pageStatesResult('en','hubble','How fast is the universe expanding?')).toEqual(['expan']);
+  expect(pageStatesResult('en','large-scale-structure','What shape does the cosmic web take?')).toEqual(['cosmic web']);
+  expect(pageStatesResult('en','large-scale-structure','Survey a strip of sky and plot a wedge diagram of the cosmic web. Do they form a cosmic web?')).toEqual(['cosmic web','cosmic web']);
   expect(pageStatesResult('en','large-scale-structure','Walls, filaments and voids appear in your own data.')).toEqual(['wall','void','filament']);
-  expect(pageStatesResult('en','large-scale-structure','Why are there walls and voids in a cosmic web?')).toEqual(['wall','void']);
   expect(pageStatesResult('en','large-scale-structure','Plot the cosmic web: is it there?')).toEqual(['cosmic web']);
+  // Review N1 and N3: the former step, and «structure» outside the title and heading.
+  expect(pageStatesResult('en','large-scale-structure','Describe the structures you see and save your investigation.','steps.3')).toEqual(['structur']);
+  expect(pageStatesResult('en','large-scale-structure','Large-scale structure lab (CLEA VIREO) · OpenVireo','title')).toEqual([]);
+  expect(pageStatesResult('zh-hans','large-scale-structure','这是大尺度结构实验。')).toEqual([]);
+  expect(pageStatesResult('en','large-scale-structure','Galaxies form a structure.','learn.1')).toEqual(['structur']);
   expect(pageStatesResult('en','stellar-classification','Which absorption lines mark hot and cool stars.')).toEqual(['hot$','cool$']);
   expect(pageStatesResult('en','pulsars','The delay between frequencies reveals how much interstellar matter the signal crossed.')).toEqual(['interstellar']);
   expect(pageStatesResult('en','pulsars','How dispersion delays low-frequency radio signals.')).toEqual(['dispersion']);
+  expect(pageStatesResult('en','pulsars','Compare your results with the dispersion measure.','steps.2')).toEqual(['dispersion']);
   expect(pageStatesResult('en','object-x','How motion between images reveals a Solar System body.')).toEqual(['solar system']);
   expect(pageStatesResult('en','object-x','Is it a star, a galaxy, a quasar, a pulsar or an asteroid?')).toEqual([]);
+  // Review N2: the five kinds named in a statement outside the description and intro give nothing away only as a question.
+  expect(pageStatesResult('en','object-x','It is a star, a galaxy, a quasar, a pulsar or an asteroid.','learn.0')).toEqual(['star','galaxy','quasar','pulsar','asteroid']);
   expect(pageStatesResult('en','object-x','It moves like an asteroid.')).toEqual(['asteroid']);
+  expect(pageStatesResult('en','object-x','It moves like an asteroid.','steps.3')).toEqual([]);
   expect(pageStatesResult('fr','large-scale-structure','Murs, filaments et vides apparaissent dans vos propres données.')).toEqual(['murs$','vide','filament']);
-  expect(pageStatesResult('fr','large-scale-structure','Forment-elles une toile cosmique ?')).toEqual([]);
-  expect(pageStatesResult('ja','large-scale-structure','宇宙の網の目構造を扇形図に描きます。')).toEqual(['網の目']);
-  expect(pageStatesResult('ja','large-scale-structure','宇宙の網の目は見えるでしょうか？答えは自分の地図が教えてくれます。')).toEqual([]);
-  expect(pageStatesResult('hi','hubble','फिर ब्रह्मांड के विस्तार की दर का अनुमान लगाएँ।')).toEqual(['विस्तार']);
+  expect(pageStatesResult('fr','large-scale-structure','Forment-elles une toile cosmique ?')).toEqual(['toile cosmique']);
+  expect(pageStatesResult('ja','large-scale-structure','宇宙の網の目構造を扇形図に描きます。')).toEqual(['網の目','構造']);
+  expect(pageStatesResult('ja','large-scale-structure','ランダムでしょうか、宇宙の網の目でしょうか？')).toEqual([]);
   expect(pageStatesResult('ru','pulsars','Что мера дисперсии подсказывает о расстоянии до пульсара.')).toEqual(['дисперси']);
   expect(pageStatesResult('zh-hans','object-x','图像之间的运动如何揭示一个太阳系天体。')).toEqual(['太阳系']);
+  // Review N7: Hindi «विस्तार» is the expansion only as a whole word, not «विस्तार से» (in detail) nor «विस्तारित» (extended).
+  expect(pageStatesResult('hi','hubble','फिर ब्रह्मांड के विस्तार की दर का अनुमान लगाएँ।')).toEqual(['विस्तार(?![  ]+से)$']);
+  expect(pageStatesResult('hi','hubble','चरणों को विस्तार से पढ़ें।')).toEqual([]);
+  expect(pageStatesResult('hi','hubble','विस्तारित सूची देखें।')).toEqual([]);
  });
 });
 

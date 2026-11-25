@@ -1120,10 +1120,23 @@ The search keywords stay on the page as a question or a topic: «Hubble's law» 
 Spanish, Portuguese and French pages, which lacked it), «dispersion measure» and «pulsar». The descriptions keep the 110–160
 column limits; to fit, the pulsar descriptions drop «measure their period», which the steps still say.
 
-**Check.** `src/guideLead.test.ts` ("Front NEWCOMER /labs/ texts") runs every language's intros, meta descriptions and learn items
-through the NC4 per-language result lists, clause by clause (a clause ends at . ! ? । : ; or a full-width form). Two exceptions,
-both principled and both tested: a *kept keyword* (per language, one of the lab's own result words: Hubble's expansion, the cosmic
-web, the dispersion measure) passes only inside a clause that ends in a question mark, so «Are galaxies scattered at random, or do
-they form a cosmic web?» passes while «…a wedge diagram of the cosmic web.» fails, and any other result word fails even inside a
-question («Why are there walls and voids…?»); and for Object X a clause that names all five kinds is the lab's own question, while
-naming fewer, or the Solar System, gives the identity away. Each page must still carry its kept keyword somewhere.
+Review fixes (same day): the LSS step «Describe the structures you see and save your investigation.» became «Describe what you see
+on your map and save your investigation.» in all ten languages (each catalog's `lssLab.step.describe`), and the check was tightened
+as below.
+
+**Check.** `src/guideLead.test.ts` ("Front NEWCOMER /labs/ texts") runs every text of each lab page in every language (title,
+description, heading, intro, steps and learn list) through the NC4 per-language result lists, clause by clause (a clause ends at
+. ! ? । : ; or a full-width form). LSS's lists gain a «structure» stem. Only reviewed exceptions pass, each tested:
+- *Kept keywords* (per language, one of the lab's own result words: Hubble's expansion, the cosmic web, the dispersion measure) pass
+  only in an explicit per-language allowlist of question clauses, exactly the ones now on the pages («Are galaxies scattered at
+  random, or do they form a cosmic web?»). A new question such as «How fast is the universe expanding?» or «What shape does the
+  cosmic web take?» fails until it is reviewed and listed; a statement such as «…a wedge diagram of the cosmic web.» always fails;
+  any other result word fails even in a listed question. Every listed clause must be on a page, and each page must still carry its
+  kept keyword.
+- *Object X*: a clause naming all five kinds passes when it is itself a question, or when it is the description's or intro's
+  indirect question («…whether the object is a star, a galaxy, a quasar, a pulsar or an asteroid»); naming fewer, or the Solar
+  System, gives the identity away.
+- *The lab's own name* in the page's language is taken out of a clause first, so «Large-scale structure» passes in the title,
+  heading and (zh-Hans, zh-Hant) description, and «structure» anywhere else fails.
+- *Per-string allowlist*: the pulsar step «Compare your results with the dispersion measure…» may name dispersion, and the Object X
+  step «For an asteroid…» may name the asteroid.

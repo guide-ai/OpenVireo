@@ -19,7 +19,7 @@ export const LAB_TEXT_PT_BR:Readonly<Record<LabSlug,LabText>>=Object.freeze({
   description:'Levantamento de uma faixa do céu: meça desvios para o vermelho de galáxias e trace um diagrama em cunha. Reconstrução web gratuita de uma prática do CLEA VIREO.',
   heading:'A estrutura em grande escala do universo',
   intro:'Escolha um dos nove campos de levantamento originais, meça o desvio para o vermelho de uma galáxia após a outra e coloque-as em um diagrama em cunha. As galáxias estão espalhadas ao acaso ou formam uma teia cósmica? O seu próprio mapa vai mostrar.',
-  steps:['Escolha um campo de levantamento e um telescópio.','Obtenha o espectro de cada galáxia e registre o seu desvio para o vermelho.','Coloque os seus próprios registros em um diagrama em cunha de ascensão reta e velocidade.','Descreva as estruturas que você vê e salve sua investigação.'],
+  steps:['Escolha um campo de levantamento e um telescópio.','Obtenha o espectro de cada galáxia e registre o seu desvio para o vermelho.','Coloque os seus próprios registros em um diagrama em cunha de ascensão reta e velocidade.','Descreva o que você vê no seu mapa e salve sua investigação.'],
   learn:['Como os levantamentos de desvio para o vermelho mapeiam o universo em três dimensões.','Como descrever o que um mapa de galáxias mostra.','Como se lê um diagrama em cunha.']},
  'stellar-classification':{name:'Classificação estelar',
   title:'Classificar espectros estelares: prática CLEA VIREO · OpenVireo',
