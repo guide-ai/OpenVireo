@@ -136,7 +136,7 @@ describe('Front HI0: the Hindi (hi) bundle',()=>{
   expect(HI3_KEYS.filter(k=>!Object.hasOwn(hi,k))).toEqual([]);
  });
  it('Front HI4: the catalog covers exercises E04 and E05 (every key of their prefixes)',()=>{
-  expect(HI4_KEYS.length).toBe(653); // 653: Front NEWCOMER NC4 adds pleiadesLab.why and clusterLab.why
+  expect(HI4_KEYS.length).toBe(655); // 653: Front NEWCOMER NC4 adds pleiadesLab.why and clusterLab.why // 655: NC5 adds pleiadesLab.version.quick and pleiadesLab.version.full
   expect(HI4_KEYS.filter(k=>!Object.hasOwn(hi,k))).toEqual([]);
  });
  it('Front HI5: the catalog covers the radio telescope (every key of its prefixes)',()=>{

@@ -3,12 +3,16 @@ import {analyzeHubble,type HubbleWorkspace} from './hubbleAnalysis';
 import {HUBBLE_HOT_LIST} from './hubbleHotList';
 import type {Measurement} from './spectrum';
 
+/** Front NEWCOMER NC5 (user decision, 2026-11-24): the quick version follows any 3 different supported galaxies, the visitor's
+ * choice; a web suggestion, a part of the original exercise. */
+export const HUBBLE_QUICK_GOAL=3;
 export type LabArchiveEntry=Readonly<{acquisitionId:string;targetId:string;sha256:string}>;
 /** total: supported acquisition targets in this version; original: the 13 entries of the original Hubble.HTL. Both are
- * reported so the reduced denominator is never presented as the original exercise. */
+ * reported so the reduced denominator is never presented as the original exercise. goal (Front NEWCOMER NC5): the distinct
+ * acquired targets the visitor's version follows, HUBBLE_QUICK_GOAL for the quick version and `total` for the full one. */
 export type HubbleLabProgress=Readonly<{
  targets:readonly Readonly<{id:string;archived:boolean;measured:boolean;inHubble:boolean}>[];
- archived:number;measured:number;inHubble:number;duplicateTargets:boolean;total:number;original:number;
+ archived:number;measured:number;inHubble:number;duplicateTargets:boolean;total:number;original:number;goal:number;
  next:'acquire'|'measure'|'dataset'|'recipe'|'inputs'|'interpret';
 }>;
 /** New UI workflow summary, not an original scientific calculation or grade.
@@ -16,8 +20,13 @@ export type HubbleLabProgress=Readonly<{
  * documented/example row cannot assert completion of an acquired target.
  * It exposes no catalogue z, recommended alignment, velocity or fit answer.
  * Progress is derived again after restoration; it is never serialized/trusted.
+ * Front NEWCOMER NC5 (plan §2.5): `goal` is the number of distinct acquired targets the guide follows, all the supported ones by
+ * default (the full version, as before). At a smaller goal (the quick version) an archived unmeasured galaxy is still measured
+ * first, `acquire` lasts while fewer than `goal` galaxies are archived, and `inputs` lasts until at least `goal` distinct
+ * acquired targets are complete Hubble rows, every row is complete (an extra incomplete row still blocks, as the analysis
+ * does) and the fit has a value. Counts are never clamped: a fourth galaxy shows as 4 against a goal of 3.
  */
-export function hubbleLabProgress(archive:readonly LabArchiveEntry[],measurements:readonly Measurement[],workspace:HubbleWorkspace):HubbleLabProgress {
+export function hubbleLabProgress(archive:readonly LabArchiveEntry[],measurements:readonly Measurement[],workspace:HubbleWorkspace,goal:number=GALAXY_TARGETS.length):HubbleLabProgress {
  const bound=measurements.filter(m=>m.origin?.kind==='catalog-galaxy-acquisition'&&archive.some(a=>a.acquisitionId===m.origin!.acquisitionId&&a.targetId===measurementGalaxyTarget(m.origin)&&a.sha256===m.sha256));
  const result=analyzeHubble(workspace,measurements);
  const included=workspace.rows.map(({input})=>input.kind==='measurement'?bound.find(m=>m.id===input.measurementId):undefined);
@@ -28,6 +37,7 @@ export function hubbleLabProgress(archive:readonly LabArchiveEntry[],measurement
  // One galaxy at a time, as the exercise is carried out: an archived spectrum that has no measurement yet is measured before
  // the next galaxy is acquired (user report, 2026-11-23: the guide stayed on "acquire" until all the galaxies were archived, so
  // nothing seemed to move while the student acquired and measured them one by one).
- const next=targets.some(t=>t.archived&&!t.measured)?'measure':archived<targets.length?'acquire':included.some(m=>!m)?'dataset':workspace.recipeId!=='vireo'?'recipe':inHubble<targets.length||workspace.rows.length!==targets.length||result.value===undefined?'inputs':'interpret';
- return Object.freeze({targets:Object.freeze(targets),archived,measured,inHubble,duplicateTargets,total:targets.length,original:HUBBLE_HOT_LIST.length,next});
+ // At the full goal `rows.length!==inHubble` is the former `rows.length!==targets.length` once every target is in.
+ const next=targets.some(t=>t.archived&&!t.measured)?'measure':archived<goal?'acquire':included.some(m=>!m)?'dataset':workspace.recipeId!=='vireo'?'recipe':inHubble<goal||workspace.rows.length!==inHubble||result.value===undefined?'inputs':'interpret';
+ return Object.freeze({targets:Object.freeze(targets),archived,measured,inHubble,duplicateTargets,total:targets.length,original:HUBBLE_HOT_LIST.length,goal,next});
 }

@@ -137,7 +137,7 @@ describe('Front ZT0: the Traditional Chinese (zh-Hant) bundle',()=>{
  });
  it('Front ZT1 and ZT2: the catalog covers every en.json key (ZT1 the observatory, VIREO\'s names and E01–E03; ZT2 E04, E05, the radio telescope, E06 and E08), and no other key',()=>{
   const zt2=(Object.keys(en) as MessageKey[]).filter(k=>ZT2_PREFIXES.test(k));
-  expect(zt2.length).toBe(1437);// 1437: Front NEWCOMER NC4 adds pleiadesLab.why, clusterLab.why and pulsarLab.why
+  expect(zt2.length).toBe(1439);// 1437: Front NEWCOMER NC4 adds pleiadesLab.why, clusterLab.why and pulsarLab.why; 1439: NC5 adds pleiadesLab.version.quick and pleiadesLab.version.full
   expect(Object.keys(en).filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
   expect(Object.keys(zh).filter(k=>!Object.hasOwn(en,k))).toEqual([]);
  });

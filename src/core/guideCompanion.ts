@@ -9,7 +9,7 @@ import {OBJECT_X_LAB_STEPS,type ObjectXLabProgress} from './objectXLab';
 import {CLASSIFICATION_LAB_STEPS,type ClassificationLabProgress} from './classificationLab';
 import {CLUSTER_LAB_STEPS,type ClusterLabProgress} from './clusterLab';
 import {PULSAR_LAB_STEPS,type PulsarLabProgress} from './pulsarLab';
-import {PLEIADES_LAB_STEPS,type PleiadesLabProgress} from './pleiadesLab';
+import {PLEIADES_LAB_STEPS,PLEIADES_SAMPLE_TARGETS,type PleiadesLabProgress} from './pleiadesLab';
 import {FIRST_LOOK_STEPS,type FirstLookProgress} from './firstLook';
 
 /** The guides the strip can show: the seven labs' guides and the first look (core/firstLook.ts, Front NEWCOMER NC1), a guide
@@ -80,3 +80,13 @@ export function companionTarget(p:CompanionProgress):string{
  * language («1 · Choose a practice», «1 · 練習を選ぶ»). The strip already says «Step n of m», so it shows the title without it;
  * the guide's window keeps its numbered titles and no string changes. A title without such a number is returned as it is. */
 export const withoutStepNumber=(title:string):string=>title.replace(/^\s*\d+\s*·\s*/u,'');
+
+/** Front NEWCOMER NC5 (plan §2.5): whether the guide follows its quick version, read from the goal its progress was computed
+ * with (core/labVersion.ts), so the strip and the window never disagree with the counts. Only Hubble and Pleiades have one. */
+export function companionQuick(p:CompanionProgress):boolean{
+ switch(p.lab){
+  case 'hubble':return p.progress.goal<p.progress.total;
+  case 'pleiades':return p.progress.goal<PLEIADES_SAMPLE_TARGETS;
+  default:return false;
+ }
+}

@@ -1,10 +1,11 @@
 import {memo,type RefObject} from 'react';
 import {sameData} from './renderStability';
 import {t} from './i18n';
-import {PLEIADES_LAB_COUNTED_STEPS,PLEIADES_LAB_STEPS,type PleiadesLabProgress,type PleiadesLabStep} from './core/pleiadesLab';
+import {PLEIADES_LAB_COUNTED_STEPS,PLEIADES_LAB_STEPS,PLEIADES_QUICK_GOAL,PLEIADES_SAMPLE_TARGETS,type PleiadesLabProgress,type PleiadesLabStep} from './core/pleiadesLab';
 import {PLEIADES_HTL} from './core/pleiadesHotList';
 import {moreDetail,stepTitle} from './guideMoreDetail';
-import {whatNext,whyLead} from './guideLead';
+import {versionChoice,whatNext,whyLead} from './guideLead';
+import type {LabVersion,VersionedLab} from './core/labVersion';
 import type {LabSlug} from './seo/labSlugs';
 import './hubble-lab.css';
 import './pulsar-lab.css';
@@ -19,11 +20,12 @@ const STEP_DESTINATION:Readonly<Record<PleiadesLabStep,PleiadesLabDestination>>=
 /** Front NEWCOMER NC3: a step's title, shared with the companion strip's line. */
 export const pleiadesStepTitle=(step:PleiadesLabStep)=>t(`pleiadesLab.step.${step}.title`);
 /** Front GUIDE-COMPANION: what the guide says under a step's heading and status, shared with the companion strip's Step
- * details. `ids` false (the companion) leaves out the test ids: the closed guide is still in the document. */
+ * details. `ids` false (the companion) leaves out the test ids: the closed guide is still in the document. Front NEWCOMER NC5:
+ * the sample step's help names the full version's star count. */
 export function pleiadesStepBody(step:PleiadesLabStep,ids=true){
  const id=(name:string)=>ids?name:undefined;
  return <>
-    <p>{t(`pleiadesLab.step.${step}.help`)}</p>
+    <p>{step==='sample'?t('pleiadesLab.step.sample.help',{total:PLEIADES_SAMPLE_TARGETS}):t(`pleiadesLab.step.${step}.help`)}</p>
     {step==='sample'&&<p className="lab-recovery" data-testid={id('pleiades-lab-fit-minimum')}>{t('pleiadesLab.step.sample.minimum')}</p>}
     {step==='distance'&&<p data-testid={id('pleiades-lab-distance-formula')}>{t('pleiadesLab.step.distance.formula')}</p>}
     {step==='distance'&&<p>{t('pleiadesLab.step.distance.optional')}</p>}
@@ -35,23 +37,24 @@ export const pleiadesStepDestination=(step:PleiadesLabStep):PleiadesLabDestinati
 /** WEB-PLEIADES-GUIDE-01: the Pleiades photometry (E04) guide, with the PulsarLabGuide layout. Every mark is recomputed from the
  * current state by pleiadesLabProgress; nothing is stored. The guide explains the paper-and-overlay procedure; it computes no
  * magnitude, color or distance itself, and it does not mark the whole E05 exercise complete. */
-function PleiadesLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:PleiadesLabProgress;onNavigate:(destination:PleiadesLabDestination)=>void;/** Front NEWCOMER NC4: opens another lab's guide (What next); a stable callback. */onNext:(lab:LabSlug)=>void}){
+function PleiadesLabGuide({dialogRef,progress,onNavigate,onNext,onVersion}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:PleiadesLabProgress;onNavigate:(destination:PleiadesLabDestination)=>void;/** Front NEWCOMER NC4: opens another lab's guide (What next); a stable callback. */onNext:(lab:LabSlug)=>void;/** Front NEWCOMER NC5: chooses the quick or full version (core/labVersion.ts); a stable callback. */onVersion:(lab:VersionedLab,version:LabVersion)=>void}){
  function go(destination:PleiadesLabDestination){dialogRef.current?.close();onNavigate(destination);}
- const doneCount=PLEIADES_LAB_COUNTED_STEPS.filter(s=>progress.done[s]).length;
+ const doneCount=PLEIADES_LAB_COUNTED_STEPS.filter(s=>progress.done[s]).length,version:LabVersion=progress.goal<PLEIADES_SAMPLE_TARGETS?'quick':'full';
  /** The guide's counts line, in its progress block and as What next's recap (Front NEWCOMER NC4). */
  const counts=t('pleiadesLab.counts',{done:doneCount,total:PLEIADES_LAB_COUNTED_STEPS.length});
  const statusText=(step:PleiadesLabStep)=>step==='save'?t('pleiadesLab.status.save')
-  :step==='sample'?t('pleiadesLab.status.sample',{count:progress.colorTargets,total:progress.sampleTargets})
+  :step==='sample'?t('pleiadesLab.status.sample',{count:progress.colorTargets,total:progress.goal})
   :t(progress.done[step]?'pleiadesLab.status.done':'pleiadesLab.status.notYet');
  return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog pleiades-lab-dialog" aria-labelledby="pleiades-lab-heading" aria-describedby="pleiades-lab-why" data-testid="pleiades-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('pleiadesLab.eyebrow')}</div><h2 id="pleiades-lab-heading">{t('pleiadesLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="pleiades-lab-close" onClick={()=>dialogRef.current?.close()}>{t('pleiadesLab.close')}</button></div>
   {whyLead('pleiades-lab-why',t('pleiadesLab.why'))}
+  {versionChoice('pleiades-lab',version,{quick:t('pleiadesLab.version.quick',{count:PLEIADES_QUICK_GOAL}),full:t('pleiadesLab.version.full',{count:PLEIADES_SAMPLE_TARGETS})},v=>onVersion('pleiades',v),version==='quick'&&progress.next==='save')}
   <details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('pleiadesLab.intro')}</p><p className="lab-recovery" data-testid="pleiades-lab-adaptation">{t('pleiadesLab.adaptation')}</p></details>
   <section className="lab-progress" aria-labelledby="pleiades-lab-progress-heading">
    <h3 id="pleiades-lab-progress-heading">{t('pleiadesLab.progress')}</h3>
    <p data-testid="pleiades-lab-counts" role="status">{counts}</p>
-   <p data-testid="pleiades-lab-coverage">{t('pleiadesLab.coverage',{count:progress.colorTargets,total:progress.sampleTargets})}</p>
+   <p data-testid="pleiades-lab-coverage">{t('pleiadesLab.coverage',{count:progress.colorTargets,total:progress.goal})}</p>
    <p className="pulsar-lab-next" data-testid="pleiades-lab-next" data-next={progress.next}>{t(`pleiadesLab.next.${progress.next}`)}</p>
    <p className="lab-recovery" data-testid="pleiades-lab-e05">{t('pleiadesLab.e05')}</p>
    <button className="secondary-button" data-testid="pleiades-lab-observations" onClick={()=>go('observations')}>{t('pleiadesLab.goObservations')}</button>
@@ -75,4 +78,4 @@ function PleiadesLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRef:RefO
  </dialog>;
 }
 // Front Perf: the closed guide re-renders only when its progress (plain data), ref or handler changes.
-export default memo(PleiadesLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&a.onNext===b.onNext&&sameData(a.progress,b.progress));
+export default memo(PleiadesLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&a.onNext===b.onNext&&a.onVersion===b.onVersion&&sameData(a.progress,b.progress));

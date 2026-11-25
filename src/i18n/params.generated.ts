@@ -513,6 +513,14 @@ export interface MessageParameters {
   "lab.whatNext": never;
   "lab.tryNext": "lab";
   "lab.openNext": never;
+  "lab.version.legend": never;
+  "lab.version.quick": "count";
+  "lab.version.full": "count";
+  "lab.version.note": never;
+  "lab.version.tip": never;
+  "lab.version.quickDone": never;
+  "lab.version.continueFull": never;
+  "lab.version.strip": never;
   "lab.interpretHelp": never;
   "lab.reflect.data": never;
   "lab.reflect.fit": never;
@@ -3023,6 +3031,8 @@ export interface MessageParameters {
   "pleiadesLab.return": never;
   "pleiadesLab.intro": never;
   "pleiadesLab.why": never;
+  "pleiadesLab.version.quick": "count";
+  "pleiadesLab.version.full": "count";
   "pleiadesLab.adaptation": never;
   "pleiadesLab.progress": never;
   "pleiadesLab.counts": "done" | "total";
@@ -3061,7 +3071,7 @@ export interface MessageParameters {
   "pleiadesLab.step.color.title": never;
   "pleiadesLab.step.color.help": never;
   "pleiadesLab.step.sample.title": never;
-  "pleiadesLab.step.sample.help": never;
+  "pleiadesLab.step.sample.help": "total";
   "pleiadesLab.step.sample.minimum": never;
   "pleiadesLab.step.distance.title": never;
   "pleiadesLab.step.distance.help": never;
@@ -3400,7 +3410,7 @@ export interface MessageParameters {
   "multispec.objectxNeedTarget": never;
   "multispec.telescope": never;
   "galaxyExposure.umiAdaptation": never;
-  "lab.next.interpretSupported": "original" | "supported";
+  "lab.next.interpretSupported": "count" | "original" | "supported";
   "lab.limitsExtended": never;
   "lss.reason.qso-selected": never;
   "galaxyExposure.engineAdaptation": never;

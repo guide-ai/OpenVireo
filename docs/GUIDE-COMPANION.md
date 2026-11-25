@@ -360,6 +360,44 @@ M1 and m7, answer Q14):
   classification shows What next in the strip's Step details and in the window, and each button opens the Pleiades window,
   described by its why-line.
 
+## Quick versions of the two long labs
+
+Front NEWCOMER NC5 (user decision, 2026-11-24, recorded in AGENTS.md; plan analysis/front-plans/front-newcomer.md §2.5, review M3,
+answer Q5):
+
+- **Hubble's law and Pleiades photometry offer a quick version** beside the full one: any 3 different supported galaxies, any 8
+  admitted stars, the visitor's choice. It is a web suggestion, a part of the original exercise; the full version is the original
+  (13 galaxies, 24 stars). Quick opens by default (Q5). LSS keeps its 5-galaxy suggestion; the other labs have none.
+- **The choice is tab state** (`labVersions` in the shell, `src/core/labVersion.ts`), like the guide in use: nothing is stored, no
+  file changes, and a reload, Restart exercise or a successful Restore starts with the default again.
+- **The progress functions take a goal** with the full version as default, so every other caller keeps its behaviour:
+  `hubbleLabProgress(archive,measurements,workspace,goal)` (passed by the shell to `SpectrumInstrument` as `labGoal`) and
+  `pleiadesLabProgress({…,goal})`. Hubble: an archived unmeasured galaxy is still measured first; `acquire` lasts while fewer than
+  `goal` galaxies are archived; `dataset` and `recipe` are unchanged; `inputs` lasts until at least `goal` distinct acquired
+  targets are complete rows, every row is complete (an extra incomplete row still blocks) and the fit has a value; then
+  `interpret`. Pleiades: the sample step is done at `goal` confirmed B−V. Both progress objects carry `goal`; Hubble keeps `total`
+  (13 supported) for its coverage line.
+- **"Done" in the quick version** is the guide's closing state, as in the full one (Hubble `interpret`, Pleiades `save`, so the
+  Pleiades distance fit still follows the 8 stars): What next appears there, and under the version choice the window says «You
+  finished the quick version. Continue with the full exercise for the whole list.» with **Continue with the full exercise**, which
+  chooses Full and leaves the focus on its radio button; the guide and the strip then go back to the next unfinished step.
+- **Counts are never clamped** and show the version's goal beside them: «Complete Hubble targets: 4 (goal 3)», «Admitted stars with
+  your own confirmed B−V: 9 (goal 8)». Nine strings became goal-neutral once instead of quick copies (`lab.counts`,
+  `lab.next.acquire`, `lab.next.measure`, `lab.next.interpretSupported` with `{count}`, `lab.recipeHelp`, `pleiadesLab.coverage`,
+  `pleiadesLab.status.sample`, `pleiadesLab.next.sample`, `pleiadesLab.step.sample.help` with `{total}` = 24).
+- **The window:** under the why-line, a native radio group (legend «Version», one tab stop, arrows between the two; its change is
+  announced by the counts line's `role="status"`), described by the shared note; Hubble adds the tip «Galaxies from different
+  groups make a clearer graph.» (`versionChoice` in `src/guideLead.tsx`, a plain function, as the windows render closed on every
+  load). **The strip** shows «Quick version» beside the lab's name while quick is chosen (`companionQuick`, read from the goal the
+  progress was computed with, so it never disagrees with the counts); its counts line is the guide's, with the goal.
+- **Tests:** `src/core/labVersion.test.ts` (both cores at the quick goal and the default: measure before the next acquire, the
+  recipe and fit still needed, an extra incomplete row blocks, duplicates not counted, counts above the goal; `companionQuick`);
+  `src/guideLead.test.ts` (the ten version strings in ten languages, with `{count}` and none of their lab's result words; both
+  windows quick and full, the goal in the counts, Continue with the full exercise only once quick is done);
+  `tests/hubble-guide.spec.ts` (three galaxies on the 0.4 m reach `interpret` in the quick version, then Continue with the full
+  exercise moves the strip back to `acquire`); the full walks of `tests/hubble-guide.spec.ts` and `tests/pleiades-exercise.spec.ts`
+  choose Full first.
+
 ## Layout and accessibility
 
 - Fixed 8 px above the bottom of the window, as wide as the page bar; beside the fixed sidebar from 1100 px up. One row from

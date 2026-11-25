@@ -170,13 +170,13 @@ const noop=()=>{};
 const html=(el:ReactElement)=>renderToStaticMarkup(el);
 /** Each window at its first step and in its closing state. */
 const WINDOWS:readonly (readonly [LabSlug,string,(closing:boolean)=>string])[]=[
- ['hubble','hubble-lab',c=>html(createElement(HubbleLabGuide,{dialogRef:ref,progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),...c?{next:'interpret' as const}:{}},onNavigate:noop,onNext:noop}))],
+ ['hubble','hubble-lab',c=>html(createElement(HubbleLabGuide,{dialogRef:ref,progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),...c?{next:'interpret' as const}:{}},onNavigate:noop,onNext:noop,onVersion:noop}))],
  ['large-scale-structure','lss-lab',c=>html(createElement(LssLabGuide,{dialogRef:ref,progress:{...lssLabProgress(INITIAL_LSS_LAB_SUMMARY),...c?{next:'done' as const}:{}},onNavigate:noop,onNext:noop}))],
  ['object-x','objectx-lab',c=>html(createElement(ObjectXLabGuide,{dialogRef:ref,progress:{...objectXLabProgress(INITIAL_OBJECT_X_LAB_SUMMARY),...c?{next:'done' as const}:{}},onNavigate:noop,onNext:noop}))],
  ['stellar-classification','classification-lab',c=>html(createElement(ClassificationLabGuide,{dialogRef:ref,progress:{...classificationLabProgress(EMPTY_CLASSIFICATION_WORKSPACE,EMPTY_CLASSIFICATION_EXERCISE_SUMMARY),...c?{next:'save' as const}:{}},onNavigate:noop,onNext:noop}))],
  ['cluster-hr','cluster-lab',c=>html(createElement(ClusterLabGuide,{dialogRef:ref,progress:clusterLabProgress({loaded:true,inspected:c,validTrial:c,confirmed:c,reportOpened:c}),cluster:null,onNavigate:noop,own:clusterOwnStatus(0,10,false),onNext:noop}))],
  ['pulsars','pulsar-lab',c=>html(createElement(PulsarLabGuide,{dialogRef:ref,progress:{...pulsarLabProgress({radio:INITIAL_RADIO_EXERCISE_SUMMARY,analysis:EMPTY_PULSAR_MEASUREMENT_SUMMARY,captureRows:0}),...c?{next:'save' as const}:{}},onNavigate:noop,onNext:noop}))],
- ['pleiades','pleiades-lab',c=>html(createElement(PleiadesLabGuide,{dialogRef:ref,progress:{...pleiadesLabProgress({list:true,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY}),...c?{next:'save' as const}:{}},onNavigate:noop,onNext:noop}))],
+ ['pleiades','pleiades-lab',c=>html(createElement(PleiadesLabGuide,{dialogRef:ref,progress:{...pleiadesLabProgress({list:true,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY}),...c?{next:'save' as const}:{}},onNavigate:noop,onNext:noop,onVersion:noop}))],
 ];
 const NAME:Readonly<Record<LabSlug,string>>={hubble:E['home.hubble']!,'large-scale-structure':E['home.lss']!,'stellar-classification':E['home.classification']!,
  pleiades:E['home.pleiades']!,'cluster-hr':E['home.clusterHr']!,pulsars:E['home.pulsars']!,'object-x':E['home.objectX']!};
@@ -187,7 +187,8 @@ describe('Front NEWCOMER NC4: the seven windows',()=>{
   const open=render(false),done=render(true);
   expect(open).toContain(`aria-describedby="${prefix}-why"`);
   // The why-line comes first after the heading, before the research notes and the progress block.
-  const lead=new RegExp(`<p id="${prefix}-why" class="lab-why">([^<]+)</p><details class="research-notes"><summary>${E['notes.summary']}</summary><p>([^<]+)</p>`).exec(open);
+  // Front NEWCOMER NC5: the Hubble and Pleiades windows put their version choice between the two.
+  const lead=new RegExp(`<p id="${prefix}-why" class="lab-why">([^<]+)</p>(?:<div class="lab-version">(?:(?!<details).)*)?<details class="research-notes"><summary>${E['notes.summary']}</summary><p>([^<]+)</p>`).exec(open);
   expect(lead,lab).not.toBeNull();
   expect(lead![1]).toBe(esc(why('en',lab)));
   expect(open.indexOf(`id="${prefix}-why"`)).toBeLessThan(open.indexOf('class="lab-progress"'));
@@ -198,5 +199,50 @@ describe('Front NEWCOMER NC4: the seven windows',()=>{
  });
  it('the cluster window shows no What next without a way to open the next guide',()=>{
   expect(html(createElement(ClusterLabGuide,{dialogRef:ref,progress:clusterLabProgress({loaded:true,inspected:true,validTrial:true,confirmed:true,reportOpened:true}),cluster:null,onNavigate:noop,own:clusterOwnStatus(0,10,false)}))).not.toContain('lab-what-next');
+ });
+});
+
+// Front NEWCOMER NC5 (plan §2.5; user decision of 2026-11-24): the quick versions of Hubble's law and Pleiades photometry.
+const VERSION_KEYS=['lab.version.legend','lab.version.quick','lab.version.full','lab.version.note','lab.version.tip','lab.version.quickDone','lab.version.continueFull','lab.version.strip','pleiadesLab.version.quick','pleiadesLab.version.full'];
+describe('Front NEWCOMER NC5: the version choice',()=>{
+ for(const dir of DIRS)it(`${dir}: the ten version strings exist, keep {count}, and state none of their lab's results`,()=>{
+  const c=catalog(dir);
+  for(const key of VERSION_KEYS){expect(c[key],`${dir} ${key}`).toBeTruthy();if(dir!=='en'&&key!=='lab.version.legend')expect(c[key],`${dir} ${key}: untranslated`).not.toBe(E[key]);}
+  for(const key of ['lab.version.quick','lab.version.full','pleiadesLab.version.quick','pleiadesLab.version.full'])expect(c[key],`${dir} ${key}`).toContain('{count}');
+  for(const key of VERSION_KEYS.filter(k=>k.startsWith('lab.')))expect(statesResult(dir,'hubble',c[key]!),`${dir} ${key}: ${c[key]}`).toEqual([]);
+  for(const key of ['lab.version.note','lab.version.quickDone','lab.version.continueFull','lab.version.strip','pleiadesLab.version.quick','pleiadesLab.version.full'])expect(statesResult(dir,'pleiades',c[key]!),`${dir} ${key}: ${c[key]}`).toEqual([]);
+  // The goal-neutral counts name the goal beside the real count, never as «count of goal».
+  expect(c['lab.counts']).toMatch(/\{rows\}.*\{total\}/u);
+  expect(c['lab.next.interpretSupported']).toContain('{count}');
+  expect(c['pleiadesLab.step.sample.help']).toContain('{total}');
+ });
+ const hubble=(goal:number,closing:boolean)=>html(createElement(HubbleLabGuide,{dialogRef:ref,progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE,goal),...closing?{next:'interpret' as const}:{}},onNavigate:noop,onNext:noop,onVersion:noop}));
+ const pleiades=(goal:number,closing:boolean)=>html(createElement(PleiadesLabGuide,{dialogRef:ref,progress:{...pleiadesLabProgress({list:true,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY,goal}),...closing?{next:'save' as const}:{}},onNavigate:noop,onNext:noop,onVersion:noop}));
+ it('Hubble: a radio group under the why-line, the shared note and the tip; the goal in the counts; Continue with the full exercise once the quick version is done',()=>{
+  const quick=hubble(3,false),full=hubble(13,false);
+  expect(quick).toContain(`<legend>${E['lab.version.legend']}</legend>`);
+  expect(quick).toMatch(/<input type="radio" id="hubble-lab-version-quick" name="hubble-lab-version" checked="" value="quick"\/>Quick: 3 galaxies<\/label>/u);
+  expect(quick).toContain('value="full"/>Full: all 13 galaxies, as in the original</label>');
+  expect(full).toMatch(/checked="" value="full"\/>Full: all 13 galaxies/u);
+  expect(quick).toContain(`<p id="hubble-lab-version-note" class="lab-version-note">${esc(E['lab.version.note']!)}</p><p class="lab-version-note">${E['lab.version.tip']}</p>`);
+  expect(quick).toContain('Complete Hubble targets: 0 (goal 3)');
+  expect(full).toContain('Complete Hubble targets: 0 (goal 13)');
+  expect(quick.indexOf('class="lab-why"')).toBeLessThan(quick.indexOf('class="lab-version"'));
+  expect(quick).not.toContain(E['lab.version.continueFull']);
+  const done=hubble(3,true);
+  expect(done).toContain(`<div class="lab-version-done"><p>${E['lab.version.quickDone']}</p><button type="button" class="secondary-button">${E['lab.version.continueFull']}</button></div>`);
+  expect(done).toContain('Your dataset of 0 galaxies');
+  expect(hubble(13,true)).not.toContain('lab-version-done');
+ });
+ it('Pleiades: the stars, the goal in its coverage and sample status; the sample help names the full version’s 24 stars',()=>{
+  const quick=pleiades(8,false);
+  expect(quick).toMatch(/checked="" value="quick"\/>Quick: 8 stars<\/label>/u);
+  expect(quick).toContain('Full: all 24 stars, as in the original');
+  expect(quick).not.toContain(E['lab.version.tip']);
+  expect(quick).toContain('Admitted stars with your own confirmed B−V: 0 (goal 8)');
+  expect(quick).toContain('Admitted stars with your confirmed B−V: 0 (goal 8)');
+  expect(quick).toContain('the full version covers all 24 admitted original stars');
+  expect(pleiades(8,true)).toContain('lab-version-done');
+  expect(pleiades(24,true)).not.toContain('lab-version-done');
  });
 });

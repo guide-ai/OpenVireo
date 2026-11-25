@@ -18,6 +18,8 @@
 .guide-companion-text p{margin:0}
 .guide-companion-place{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 10px;font-size:var(--ov-text-xs);color:var(--ov-text-muted)}
 .guide-companion-place strong{color:var(--ov-text);font-weight:650;letter-spacing:.02em}
+/* Front NEWCOMER NC5: «Quick version» beside the lab's name. */
+.guide-companion-version{color:var(--ov-text);background:var(--ov-accent-soft);padding-inline:6px;border-radius:var(--ov-radius-sm)}
 .guide-companion-next{margin-block-start:2px!important;font-size:var(--ov-text-sm);line-height:1.5}
 .guide-companion-missing{font-size:var(--ov-text-sm);line-height:1.5;color:var(--ov-text-muted)}
 .guide-companion-missing:empty{display:none}

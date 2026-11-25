@@ -2,6 +2,7 @@
  "about": "Front FR0: French strings that may equal their English source, each with a reason (plan front-i18n-fr.md §5.3). Keys are the lint's string ids: `catalog:<key>`, `map:<id>.<path>`, `original:<normalised original>`.",
  "entries": {
   "catalog:app.name": "product name (OpenVireo)",
+  "catalog:lab.version.legend": "the same word in French (Version, the quick or full version of a lab, Front NEWCOMER NC5)",
   "catalog:instructorMode.optionsClosedOk": "the same word in French (OK, as Windows French writes it)",
   "catalog:siteClock.utValue": "a format of parameters, numbers and units only",
   "catalog:siteClock.hoursValue": "a format of parameters, numbers and units only",

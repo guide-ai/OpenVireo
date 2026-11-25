@@ -84,7 +84,7 @@ export function companionContent(p:CompanionProgress):CompanionContent{
    }
   }
   case 'pleiades':{
-   const next=p.progress.next,body=pleiadesStepBody(next,false),counts=t('pleiadesLab.coverage',{count:p.progress.colorTargets,total:p.progress.sampleTargets});
+   const next=p.progress.next,body=pleiadesStepBody(next,false),counts=t('pleiadesLab.coverage',{count:p.progress.colorTargets,total:p.progress.goal});
    // The sample step's "Next:" line is a warning (only the 0.4m telescope reaches every admitted star), and save is the closing
    // state: both keep their line (NC3 review N2).
    return next==='save'||next==='sample'?{name:t('pleiadesLab.nav'),line:t(`pleiadesLab.next.${next}`),details:body,target,closing:false,counts}

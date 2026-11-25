@@ -59,15 +59,21 @@ export type PleiadesLabProgress=Readonly<{
  /** First counted step not done, skipping list/point/activate once a B/V measurement exists; 'save' when all are done. */
  next:PleiadesLabStep;
  colorTargets:number;
- sampleTargets:number;
+ /** Front NEWCOMER NC5: the admitted stars the visitor's version covers (PLEIADES_QUICK_GOAL or PLEIADES_SAMPLE_TARGETS). */
+ goal:number;
  /** Front GUIDE-COMPANION, for Show me where only: during the sample step, what the selected star still needs (see
   * PleiadesExerciseSummary.current); null in every other step. */
  sampleNeed:PleiadesTargetNeed|null;
 }>;
 
-/** list: the shared Hot List currently holds the 24 exercise rows in order. pointed: the App pointing equals an admitted row. */
-export function pleiadesLabProgress(i:Readonly<{list:boolean;pointed:boolean;photometer:PleiadesExerciseSummary}>):PleiadesLabProgress{
- const p=i.photometer,ready=p.armed&&p.access==='ready';
+/** Front NEWCOMER NC5 (user decision, 2026-11-24): the quick version covers any 8 admitted stars, the visitor's choice; a web
+ * suggestion, a part of the original exercise. */
+export const PLEIADES_QUICK_GOAL=8;
+/** list: the shared Hot List currently holds the 24 exercise rows in order. pointed: the App pointing equals an admitted row.
+ * goal (Front NEWCOMER NC5): the confirmed B−V stars the sample step needs, all the admitted stars by default (the full
+ * version); colorTargets is never clamped to it. */
+export function pleiadesLabProgress(i:Readonly<{list:boolean;pointed:boolean;photometer:PleiadesExerciseSummary;goal?:number}>):PleiadesLabProgress{
+ const p=i.photometer,ready=p.armed&&p.access==='ready',goal=i.goal??PLEIADES_SAMPLE_TARGETS;
  const done:Record<PleiadesLabStep,boolean>={
   list:i.list,
   point:i.pointed||ready,
@@ -75,11 +81,11 @@ export function pleiadesLabProgress(i:Readonly<{list:boolean;pointed:boolean;pho
   measure:p.measuredTargets>=1,
   record:p.recordedTargets>=1,
   color:p.colorTargets>=1,
-  sample:p.colorTargets>=PLEIADES_SAMPLE_TARGETS,
+  sample:p.colorTargets>=goal,
   distance:p.fit,
   save:false,
  };
  const measured=done.measure;
  const next=PLEIADES_LAB_COUNTED_STEPS.find(s=>!done[s]&&!(measured&&(s==='list'||s==='point'||s==='activate')))??'save';
- return Object.freeze({done:Object.freeze(done),next,colorTargets:p.colorTargets,sampleTargets:PLEIADES_SAMPLE_TARGETS,sampleNeed:next==='sample'?p.current:null});
+ return Object.freeze({done:Object.freeze(done),next,colorTargets:p.colorTargets,goal,sampleNeed:next==='sample'?p.current:null});
 }

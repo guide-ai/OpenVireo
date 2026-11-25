@@ -1,6 +1,7 @@
 import {memo,useEffect,useId,useRef,useState,type KeyboardEvent,type RefObject} from 'react';
 import {createPortal} from 'react-dom';
-import {companionNow,type CompanionProgress} from '../core/guideCompanion';
+import {companionNow,companionQuick,type CompanionProgress} from '../core/guideCompanion';
+import {t} from '../i18n';
 import {labRestartHref,type LabSlug} from '../seo/labSlugs';
 import {guideTargets} from '../help/guideTargets';
 import {clippedBox,findGuideTarget,focusGuideTarget,revealGuideTarget,viewSize,waitForGuideTarget} from '../help/spot';
@@ -181,7 +182,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide,onNext}:{progress:Com
   {details&&<div className="guide-companion-details" id={`${id}-d`} role="group" aria-label={C.details} data-testid="guide-companion-details">{content.details}{/* Front NEWCOMER NC4: the closing state's Step details end with the guide's What next; its counts are already in the strip. */}{now.allDone&&lab&&whatNext(`${id}-n`,lab,openNext)}</div>}
   <div className="guide-companion-row">
    <div className="guide-companion-text">
-    <p className="guide-companion-place"><strong data-testid="guide-companion-lab">{content.name}</strong>{!content.closing&&<>{' '}<span data-testid="guide-companion-step">{C.stepOf(now.index,now.total)}</span></>}{content.counts&&<span data-testid="guide-companion-counts">{content.counts}</span>}</p>
+    <p className="guide-companion-place"><strong data-testid="guide-companion-lab">{content.name}</strong>{/* Front NEWCOMER NC5: beside the lab's name while its quick version is chosen. */}{companionQuick(progress)&&<>{' '}<span className="guide-companion-version">{t('lab.version.strip')}</span></>}{!content.closing&&<>{' '}<span data-testid="guide-companion-step">{C.stepOf(now.index,now.total)}</span></>}{content.counts&&<span data-testid="guide-companion-counts">{content.counts}</span>}</p>
     <p className="guide-companion-next" role="status" data-testid="guide-companion-next">{content.line}</p>
     <p className="guide-companion-missing" role="status" data-testid="guide-companion-missing">{missing?C.notYet:''}</p>
    </div>

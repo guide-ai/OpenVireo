@@ -41,7 +41,9 @@ test('nondefault row 1 (01799-01442) is measured as N2230.DAT@144496, then all 2
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await pointRow(page,0);
  await expect(page.getByTestId('pointing-ra')).toHaveText('3.68833');await expect(page.getByTestId('pointing-dec')).toHaveText('23.96667');await expect(page.getByLabel('Target',{exact:true})).toHaveValue(navigation);
  const card=page.getByTestId('pleiades-point-card');await expect(card).toHaveAttribute('data-admitted','true');await expect(card).toContainText('01799-01442');
- await guide(page);await expect(step(page,'list')).toHaveAttribute('data-done','true');await expect(step(page,'point')).toHaveAttribute('data-done','true');await page.keyboard.press('Escape');
+ await guide(page);await expect(step(page,'list')).toHaveAttribute('data-done','true');await expect(step(page,'point')).toHaveAttribute('data-done','true');
+ // Front NEWCOMER NC5: the quick version (8 stars) opens by default; this walk follows the full one.
+ const dialog=page.getByTestId('pleiades-lab-dialog');await expect(dialog.getByLabel('Quick: 8 stars',{exact:true})).toBeChecked();await dialog.getByLabel('Full: all 24 stars, as in the original',{exact:true}).check();await expect(page.getByTestId('pleiades-lab-coverage')).toHaveText('Admitted stars with your own confirmed B−V: 0 (goal 24)');await page.keyboard.press('Escape');
  await toPhotometer(page,true,()=>card.getByRole('button',{name:'Measure with photometer',exact:true}).click());
  await expect(page.getByTestId('photo-pointed-row')).toHaveAttribute('data-pointed','admitted');await activate(page).click();
  const select=page.getByLabel('Photometry target',{exact:true});await expect(select).toHaveValue('N2230.DAT@144496');await readout(page,PLEIADES_ADMITTED_ROWS[0]);await expect(page.getByTestId('photo-phase')).toHaveText('Ready');
@@ -54,7 +56,7 @@ test('nondefault row 1 (01799-01442) is measured as N2230.DAT@144496, then all 2
   // Front GUIDE-COMPANION: the sample step is one cycle per star, and Show me where follows it: the next star, its readings,
   // its notebook entries and its B−V, as for the first star. The strip stays on step 7 and shows the guide's own count.
   const strip=page.getByTestId('guide-companion'),second=i===1;
-  if(second){await expect(strip).toHaveAttribute('data-step','sample');await expect(strip).toHaveAttribute('data-target','sample');await expect(page.getByTestId('guide-companion-counts')).toHaveText('Admitted stars with your own confirmed B−V: 1 of 24');
+  if(second){await expect(strip).toHaveAttribute('data-step','sample');await expect(strip).toHaveAttribute('data-target','sample');await expect(page.getByTestId('guide-companion-counts')).toHaveText('Admitted stars with your own confirmed B−V: 1 (goal 24)');
    await companionShow(page);await expect(select).toBeFocused();}
   if(i>0)await select.selectOption(row.catalogId);await expect(select).toHaveValue(row.catalogId);await readout(page,row);
   if(second){await expect(strip).toHaveAttribute('data-target','measure');await expect(strip).toHaveAttribute('data-step','sample');await companionShow(page);await expect(page.getByTestId('photo-start')).toBeFocused();}
@@ -62,10 +64,10 @@ test('nondefault row 1 (01799-01442) is measured as N2230.DAT@144496, then all 2
   if(second)await expect(strip).toHaveAttribute('data-target','color');
   await page.getByLabel('Saved B reading',{exact:true}).selectOption(await lastOption(page,'Saved B reading'));await page.getByLabel('Saved V reading',{exact:true}).selectOption(await lastOption(page,'Saved V reading'));
   await page.getByRole('button',{name:'Calculate B−V',exact:true}).click();await expect(page.getByTestId('photo-manual-bv')).toHaveText(String(Number((Number(b)-Number(v)).toFixed(3))));
-  if(second){await expect(strip).toHaveAttribute('data-target','sample');await expect(page.getByTestId('guide-companion-counts')).toHaveText('Admitted stars with your own confirmed B−V: 2 of 24');}
+  if(second){await expect(strip).toHaveAttribute('data-target','sample');await expect(page.getByTestId('guide-companion-counts')).toHaveText('Admitted stars with your own confirmed B−V: 2 (goal 24)');}
  }
  await expect(page.locator('.photometer-notebook tbody tr')).toHaveCount(48);
- await guide(page);await expect(step(page,'sample')).toHaveAttribute('data-done','true');await expect(page.getByTestId('pleiades-lab-coverage')).toContainText('24 of 24');await expect(step(page,'distance')).toHaveAttribute('data-done','false');await page.getByTestId('pleiades-lab-close').click();
+ await guide(page);await expect(step(page,'sample')).toHaveAttribute('data-done','true');await expect(page.getByTestId('pleiades-lab-coverage')).toContainText('24 (goal 24)');await expect(step(page,'distance')).toHaveAttribute('data-done','false');await page.getByTestId('pleiades-lab-close').click();
  await page.getByLabel('Your vertical shift m−M (mag)',{exact:true}).fill('5.5');await page.getByRole('button',{name:'Confirm manual cluster fit',exact:true}).click();await expect(page.getByTestId('pleiades-distance-pc')).toHaveText('125.892541');await expect(page.getByTestId('pleiades-manual-point')).toHaveCount(24);
  await guide(page);await expect(page.getByTestId('pleiades-lab-counts')).toHaveText('Guide steps done: 8/8');await expect(page.getByTestId('pleiades-lab-observations')).toBeVisible();await expect(page.getByTestId('pleiades-lab-next')).toHaveAttribute('data-next','save');await expect(step(page,'save')).toHaveAttribute('data-done','false');await page.getByTestId('pleiades-lab-close').click();
  await page.screenshot({path:'test-results/pleiades-exercise-desktop.png',fullPage:true});
@@ -135,7 +137,7 @@ test('an admitted row outside the selected telescope domain is not offered for m
  await expect(card.getByRole('button',{name:'Measure with photometer',exact:true})).toHaveCount(0);await expect(page.getByTestId('pleiades-point-telescope')).toContainText('Mayall');await expect(page.getByTestId('pleiades-point-telescope')).toContainText('0.4m telescope');
  await expect(page.getByTestId('htl-exercise-row')).toContainText(`PLEIADES.HTL entry ${excluded!.index+1}:`);await expect(page.getByTestId('htl-exercise-row')).toContainText('outside the checked photometer domain');
  await guide(page);await expect(step(page,'list')).toHaveAttribute('data-done','true');await expect(step(page,'point')).toHaveAttribute('data-done','false');await expect(page.getByTestId('pleiades-lab-next')).toHaveAttribute('data-next','point');
- await expect(page.getByTestId('pleiades-lab-step-sample')).toContainText('All 24 are measurable only with the 0.4m telescope');await page.keyboard.press('Escape');
+ await expect(page.getByTestId('pleiades-lab-step-sample')).toContainText('Only the 0.4m telescope reaches every admitted star');await page.keyboard.press('Escape');
  // Ordinary navigation still reaches the photometer, whose existing Activate guard blocks the pointed row.
  await toPhotometer(page,false,()=>navPhotometer(page));
  await expect(page.getByTestId('photo-pointed-row')).toHaveAttribute('data-pointed','blocked');await expect(page.getByTestId('photo-pointed-row')).toContainText('outside the checked domain');await expect(activate(page)).toBeDisabled();await expect(page.getByTestId('photo-phase')).toHaveText(/Inactive/);

@@ -560,6 +560,13 @@
   "reason": "identifier: the source documents' recorded file names and titles with their SHA-256 (provenance kept as recorded)"
  },
  {
+  "file": "src/HubbleLabGuide.tsx",
+  "kind": "original",
+  "value": "HUBBLE_QUICK_GOAL",
+  "count": 1,
+  "reason": "identifier: the quick version's galaxy count (a number, Front NEWCOMER NC5)"
+ },
+ {
   "file": "src/LssLabGuide.tsx",
   "kind": "original",
   "value": "LSS_LAB_STEPS.map",
@@ -936,6 +943,20 @@
   "value": "PLEIADES_HTL.archiveSha256",
   "count": 1,
   "reason": "identifier: a SHA-256 hash"
+ },
+ {
+  "file": "src/PleiadesLabGuide.tsx",
+  "kind": "original",
+  "value": "PLEIADES_QUICK_GOAL",
+  "count": 1,
+  "reason": "identifier: the quick version's star count (a number, Front NEWCOMER NC5)"
+ },
+ {
+  "file": "src/PleiadesLabGuide.tsx",
+  "kind": "original",
+  "value": "PLEIADES_SAMPLE_TARGETS",
+  "count": 2,
+  "reason": "identifier: the full version's admitted star count (a number, Front NEWCOMER NC5)"
  },
  {
   "file": "src/PulsarLabGuide.tsx",

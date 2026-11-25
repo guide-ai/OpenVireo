@@ -35,13 +35,13 @@ const render=(el:ReactElement)=>renderToStaticMarkup(el);
 const steps=(html:string)=>{const list=/<ol class="lab-steps[^"]*">([\s\S]*?)<\/ol>/.exec(html)![1];return list.split(/(?=<li(?: [^>]*)?><h3)/).filter(s=>s.startsWith("<li"));};
 
 const WINDOWS:readonly (readonly [string,string,number,()=>string])[]=[
- ['hubble','hubble-lab-step',5,()=>render(createElement(HubbleLabGuide,{dialogRef:ref,progress:hubbleLabProgress([],[],EMPTY_HUBBLE),onNavigate:noop,onNext:noop}))],
+ ['hubble','hubble-lab-step',5,()=>render(createElement(HubbleLabGuide,{dialogRef:ref,progress:hubbleLabProgress([],[],EMPTY_HUBBLE),onNavigate:noop,onNext:noop,onVersion:noop}))],
  ['large-scale-structure','lss-lab-step',LSS_LAB_STEPS.length,()=>render(createElement(LssLabGuide,{dialogRef:ref,progress:lssLabProgress(INITIAL_LSS_LAB_SUMMARY),onNavigate:noop,onNext:noop}))],
  ['object-x','objectx-guide-step',OBJECT_X_LAB_STEPS.length,()=>render(createElement(ObjectXLabGuide,{dialogRef:ref,progress:objectXLabProgress(INITIAL_OBJECT_X_LAB_SUMMARY),onNavigate:noop,onNext:noop}))],
  ['stellar-classification','classification-lab-step',CLASSIFICATION_LAB_STEPS.length,()=>render(createElement(ClassificationLabGuide,{dialogRef:ref,progress:classificationLabProgress(EMPTY_CLASSIFICATION_WORKSPACE,EMPTY_CLASSIFICATION_EXERCISE_SUMMARY),onNavigate:noop,onNext:noop}))],
  ['cluster-hr','cluster-lab-step',CLUSTER_LAB_STEPS.length,()=>render(createElement(ClusterLabGuide,{dialogRef:ref,progress:clusterLabProgress({loaded:true,inspected:false,validTrial:false,confirmed:false,reportOpened:false}),cluster:null,onNavigate:noop,own:clusterOwnStatus(0,10,false)}))],
  ['pulsars','pulsar-lab-step',PULSAR_LAB_STEPS.length,()=>render(createElement(PulsarLabGuide,{dialogRef:ref,progress:pulsarLabProgress({radio:INITIAL_RADIO_EXERCISE_SUMMARY,analysis:EMPTY_PULSAR_MEASUREMENT_SUMMARY,captureRows:0}),onNavigate:noop,onNext:noop}))],
- ['pleiades','pleiades-lab-step',PLEIADES_LAB_STEPS.length,()=>render(createElement(PleiadesLabGuide,{dialogRef:ref,progress:pleiadesLabProgress({list:true,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY}),onNavigate:noop,onNext:noop}))],
+ ['pleiades','pleiades-lab-step',PLEIADES_LAB_STEPS.length,()=>render(createElement(PleiadesLabGuide,{dialogRef:ref,progress:pleiadesLabProgress({list:true,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY}),onNavigate:noop,onNext:noop,onVersion:noop}))],
 ];
 
 describe('Front NEWCOMER NC3: plain step titles, detail folded under More detail',()=>{
@@ -79,7 +79,7 @@ describe('Front NEWCOMER NC3: plain step titles, detail folded under More detail
 
 describe('Front NEWCOMER NC3 review: texts kept where they explain something',()=>{
  it('Hubble opens Save your work together with Interpret; it stays closed before',()=>{
-  const save=(next:HubbleLabProgress['next'])=>/<details class="lab-step-more" open=""><summary aria-labelledby="hubble-lab-step-save-more/.test(render(createElement(HubbleLabGuide,{dialogRef:ref,progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),next},onNavigate:noop,onNext:noop})));
+  const save=(next:HubbleLabProgress['next'])=>/<details class="lab-step-more" open=""><summary aria-labelledby="hubble-lab-step-save-more/.test(render(createElement(HubbleLabGuide,{dialogRef:ref,progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),next},onNavigate:noop,onNext:noop,onVersion:noop})));
   expect(save('acquire')).toBe(false);expect(save('inputs')).toBe(false);expect(save('interpret')).toBe(true);
  });
  it('the pulsar backup note is in the body of Save the investigation; the Pleiades E05 note is beside Data from Observations',()=>{
@@ -98,7 +98,7 @@ describe('Front NEWCOMER NC3: the strip\'s line is the step title',()=>{
   expect(line({lab:'hubble',progress:hubbleLabProgress([],[],EMPTY_HUBBLE)})).toBe(E['lab.acquireTitle']);
   expect(line({lab:'hubble',progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),next:'recipe'}})).toBe(E['lab.hubbleTitle']);
   expect(line({lab:'hubble',progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),next:'dataset'}})).toBe(E['lab.next.dataset']);
-  expect(line({lab:'hubble',progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),next:'interpret'}})).toMatch(/^Your 13-target dataset/);
+  expect(line({lab:'hubble',progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),next:'interpret'}})).toMatch(/^Your dataset of 0 galaxies/);
   expect(line({lab:'stellar-classification',progress:classificationLabProgress(EMPTY_CLASSIFICATION_WORKSPACE,EMPTY_CLASSIFICATION_EXERCISE_SUMMARY)})).toBe('Choose a practice');
   const cluster=clusterLabProgress({loaded:true,inspected:true,validTrial:false,confirmed:false,reportOpened:false});
   expect(line({lab:'cluster-hr',progress:cluster})).toBe(E['clusterLab.step.trial.title']);

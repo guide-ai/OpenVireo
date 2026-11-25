@@ -161,7 +161,7 @@ describe('Front JA0: the Japanese (ja) bundle',()=>{
   expect(JA3_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
  });
  it('Front JA4: the catalog covers E04 and E05 (every key of their prefixes)',()=>{
-  expect(JA4_KEYS.length).toBe(653); // 653: Front NEWCOMER NC4 adds pleiadesLab.why and clusterLab.why
+  expect(JA4_KEYS.length).toBe(655); // 653: Front NEWCOMER NC4 adds pleiadesLab.why and clusterLab.why // 655: NC5 adds pleiadesLab.version.quick and pleiadesLab.version.full
   expect(JA4_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
  });
  it('Front JA5: the catalog covers the radio telescope (every key of its prefixes)',()=>{

@@ -38,7 +38,7 @@ export const NUMERIC=/^[-+−±\d\s.,:;°′″'"·×/()[\]–%=→≈hms]*\d[-+
 /** Front PT4: texts of the walk that are the same words in one language (its identical.json, with a reason each): Spanish's No
  * (VIREO's No button, ES6's SAME), Portuguese's OK (VIREO's OK button, as Windows pt-BR writes it). French's (Front FR4): the
  * observatory's Minutes and Gain (e⁻/ADU), OK, and the confirmed fit's «Distance (pc)». */
-export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'es-419':new Set(['No']),'pt-BR':new Set(['OK']),fr:new Set(['Minutes','Gain (e⁻/ADU)','OK','Distance (pc)']),
+export const SAME_IN:Readonly<Record<string,ReadonlySet<string>>>={'es-419':new Set(['No']),'pt-BR':new Set(['OK']),fr:new Set(['Minutes','Gain (e⁻/ADU)','OK','Distance (pc)','Version']),// Version: Front NEWCOMER NC5's legend (identical.json)
  // Front ID4: Indonesian's Target and Filter (identical.json), VIREO's File and OK (ID1's identical originals) and the observatory's Gain (e⁻/ADU).
  id:new Set(['Target','Filter','Gain (e⁻/ADU)','File','OK']),
  // Front JA4: VIREO's OK and (km/sec) in Japanese (JA1's identical originals).

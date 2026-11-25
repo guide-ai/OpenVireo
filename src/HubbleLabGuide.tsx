@@ -3,9 +3,10 @@ import {sameData} from './renderStability';
 import {t,formatNumber} from './i18n';
 import {galaxyIdentity,galaxyDistanceReference} from './core/galaxyIdentity';
 import {HUBBLE_SOURCES} from './core/hubbleAnalysis';
-import type {HubbleLabProgress} from './core/hubbleLab';
+import {HUBBLE_QUICK_GOAL,type HubbleLabProgress} from './core/hubbleLab';
 import {moreDetail,stepTitle} from './guideMoreDetail';
-import {whatNext,whyLead} from './guideLead';
+import {versionChoice,whatNext,whyLead} from './guideLead';
+import type {LabVersion,VersionedLab} from './core/labVersion';
 import type {LabSlug} from './seo/labSlugs';
 import './hubble-lab.css';
 export type LabDestination='galaxy-exposure'|'spectrum'|'hubble';
@@ -17,9 +18,10 @@ export const hubblePhaseItem=(next:Phase):HubbleGuideItem=>next==='acquire'||nex
 /** Where each phase is carried out (the Continue button and the companion's Show me where). */
 export const hubblePhaseDestination=(next:Phase):LabDestination=>next==='acquire'?'galaxy-exposure':next==='measure'?'spectrum':'hubble';
 /** The "Next:" line, shared by the guide and the companion strip (components/GuideCompanion.tsx). */
-export const hubbleNextText=(progress:HubbleLabProgress)=>progress.next==='interpret'?t('lab.next.interpretSupported',{supported:progress.total,original:progress.original}):t(`lab.next.${progress.next}`);
-/** The guide's counts line (archived, measured and complete targets), shared with the companion strip. */
-export const hubbleCountsText=(progress:HubbleLabProgress)=>t('lab.counts',{archived:progress.archived,measured:progress.measured,rows:progress.inHubble,total:progress.total});
+export const hubbleNextText=(progress:HubbleLabProgress)=>progress.next==='interpret'?t('lab.next.interpretSupported',{count:progress.inHubble,supported:progress.total,original:progress.original}):t(`lab.next.${progress.next}`);
+/** The guide's counts line (archived, measured and complete targets), shared with the companion strip. Front NEWCOMER NC5: the
+ * counts are never clamped and the goal is the version's (3 or all 13: «4 (goal 3)»). */
+export const hubbleCountsText=(progress:HubbleLabProgress)=>t('lab.counts',{archived:progress.archived,measured:progress.measured,rows:progress.inHubble,total:progress.goal});
 /** Front NEWCOMER NC3: an item's plain title, shared with the companion strip's line. */
 export function hubbleItemTitle(item:HubbleGuideItem){
  switch(item){case 'acquire':return t('lab.acquireTitle');case 'measure':return t('lab.measureTitle');case 'hubble':return t('lab.hubbleTitle');case 'save':return t('lab.saveTitle');case 'interpret':return t('lab.interpretTitle');}
@@ -34,12 +36,12 @@ export function hubbleItemBody(item:HubbleGuideItem){
   case 'interpret':return <><p>{t('lab.interpretHelp')}</p><ul>{(['data','fit','errors','environment']as const).map(key=><li key={key}>{t(`lab.reflect.${key}`)}</li>)}</ul></>;
  }
 }
-function HubbleLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:HubbleLabProgress;onNavigate:(destination:LabDestination)=>void;/** Front NEWCOMER NC4: opens another lab's guide (What next); a stable callback. */onNext:(lab:LabSlug)=>void}){
+function HubbleLabGuide({dialogRef,progress,onNavigate,onNext,onVersion}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:HubbleLabProgress;onNavigate:(destination:LabDestination)=>void;/** Front NEWCOMER NC4: opens another lab's guide (What next); a stable callback. */onNext:(lab:LabSlug)=>void;/** Front NEWCOMER NC5: chooses the quick or full version (core/labVersion.ts); a stable callback. */onVersion:(lab:VersionedLab,version:LabVersion)=>void}){
  function go(destination:LabDestination){dialogRef.current?.close();onNavigate(destination);}
- const item=hubblePhaseItem(progress.next);
+ const item=hubblePhaseItem(progress.next),version:LabVersion=progress.goal<progress.total?'quick':'full';
  return <dialog ref={dialogRef} className="hubble-lab-dialog" aria-labelledby="hubble-lab-heading" aria-describedby="hubble-lab-why">
   <div className="lab-heading"><div><div className="eyebrow">{t('lab.eyebrow')}</div><h2 id="hubble-lab-heading">{t('lab.title')}</h2></div><button className="secondary-button" autoFocus onClick={()=>dialogRef.current?.close()}>{t('lab.close')}</button></div>
-  {whyLead('hubble-lab-why',t('lab.why'))}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('lab.intro')}</p><p>{t('lab.introOptions')}</p></details>
+  {whyLead('hubble-lab-why',t('lab.why'))}{versionChoice('hubble-lab',version,{quick:t('lab.version.quick',{count:HUBBLE_QUICK_GOAL}),full:t('lab.version.full',{count:progress.total})},v=>onVersion('hubble',v),version==='quick'&&progress.next==='interpret',t('lab.version.tip'))}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('lab.intro')}</p><p>{t('lab.introOptions')}</p></details>
   <section className="lab-progress" aria-labelledby="lab-progress-heading"><h3 id="lab-progress-heading">{t('lab.progress')}</h3><p data-testid="lab-progress-counts" role="status">{hubbleCountsText(progress)}</p><p data-testid="lab-original-coverage">{t('lab.coverage',{supported:progress.total,original:progress.original})}</p><p data-testid="lab-next">{hubbleNextText(progress)}</p>{progress.duplicateTargets&&<p className="lab-recovery">{t('lab.duplicate')}</p>}<button className="secondary-button" onClick={()=>go(hubblePhaseDestination(progress.next))}>{t('lab.continue')}</button><details className="lab-progress-help"><summary>{t('lab.progressMeaning')}</summary><p>{t('lab.progressHelp')}</p></details></section>
   <ol className="lab-steps">
    {/* Front NEWCOMER NC3: title and button visible, what the guide says under the item folded under More detail. */}
@@ -57,4 +59,4 @@ function HubbleLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRef:RefObj
  </dialog>;
 }
 // Front Perf: the closed guide re-renders only when its progress (plain data), ref or handler changes.
-export default memo(HubbleLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&a.onNext===b.onNext&&sameData(a.progress,b.progress));
+export default memo(HubbleLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&a.onNext===b.onNext&&a.onVersion===b.onVersion&&sameData(a.progress,b.progress));

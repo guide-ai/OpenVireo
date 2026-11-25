@@ -48,6 +48,15 @@
 .lab-what-next{margin:20px 0;padding:12px 18px;border-inline-start:3px solid var(--ov-accent);background:var(--ov-accent-soft);border-radius:var(--ov-radius-sm)}
 .lab-what-next h3{margin-top:4px}
 .lab-what-next p{color:var(--ov-text)}
+/* Front NEWCOMER NC5: the version choice of the Hubble and Pleiades windows. */
+.lab-version{margin:8px 0 12px}
+.lab-version fieldset{display:flex;flex-wrap:wrap;gap:6px 20px;margin:0;padding:8px 12px;border:1px solid var(--ov-border);border-radius:var(--ov-radius-sm)}
+.lab-version legend{padding-inline:4px;font-weight:650;color:var(--ov-text)}
+.lab-version-option{display:inline-flex;align-items:center;gap:8px;min-block-size:24px;color:var(--ov-text);cursor:pointer}
+.lab-version-option input{margin:0;inline-size:18px;block-size:18px}
+.lab-version-note{margin:6px 0 0;font-size:var(--ov-text-sm);color:var(--ov-text-muted)}
+.lab-version-done{margin-top:10px;padding:10px 14px;border-inline-start:3px solid var(--ov-accent);background:var(--ov-accent-soft);border-radius:var(--ov-radius-sm)}
+.lab-version-done p{margin:0 0 8px;color:var(--ov-text)}
 @media(max-width:620px){.hubble-lab-dialog .lab-why{font-size:var(--ov-text-md)}}
 /* Front NEWCOMER NC3 review (S1): a guide window printed while it is open prints as the whole page. The page behind it is
    hidden (every element that is not the window, inside it or an ancestor of it: the cluster guide sits inside <main>), and the

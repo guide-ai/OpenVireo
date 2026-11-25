@@ -155,7 +155,7 @@ describe('Front ID0: the Indonesian (id) bundle',()=>{
   expect(ID3_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
  });
  it('Front ID4: the catalog covers E04 and E05 (every key of ph, pa, pleiadesLab, nc, db, ce, clusterLab, ownHr and obsHr)',()=>{
-  expect(ID4_KEYS.length).toBe(653); // 653: Front NEWCOMER NC4 adds pleiadesLab.why and clusterLab.why
+  expect(ID4_KEYS.length).toBe(655); // 653: Front NEWCOMER NC4 adds pleiadesLab.why and clusterLab.why // 655: NC5 adds pleiadesLab.version.quick and pleiadesLab.version.full
   expect(ID4_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
  });
  it('Front ID5: every radio direction caption and original letter is read in the `direction` context (U/S/T/B, not the longitude letters)',()=>{

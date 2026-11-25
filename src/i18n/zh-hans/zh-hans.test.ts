@@ -158,7 +158,7 @@ describe('Front ZH0: the Simplified Chinese (zh-Hans) bundle',()=>{
   expect(ZH1_GUIDE_KEYS.filter(k=>!Object.hasOwn(en,k)||!Object.hasOwn(zh,k))).toEqual([]);
  });
  it('Front ZH2: the catalog covers E01 and E02 (every key of their prefixes, and classLink.open)',()=>{
-  expect(ZH2_KEYS.length).toBe(809);// 804: Front NEWCOMER NC3 adds lab.moreDetail; 809: NC4 adds lab.why, lssLab.why, lab.whatNext, lab.tryNext and lab.openNext
+  expect(ZH2_KEYS.length).toBe(817);// 804: Front NEWCOMER NC3 adds lab.moreDetail; 809: NC4 adds lab.why, lssLab.why, lab.whatNext, lab.tryNext and lab.openNext; 817: NC5 adds the eight lab.version.* keys
   expect(ZH2_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
  });
  it('Front ZH3: the catalog covers E03 (every key of its prefixes, with continuity.restoreExposure and ssp.header)',()=>{
@@ -166,7 +166,7 @@ describe('Front ZH0: the Simplified Chinese (zh-Hans) bundle',()=>{
   expect(ZH3_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
  });
  it('Front ZH4: the catalog covers E04 and E05 (every key of their prefixes)',()=>{
-  expect(ZH4_KEYS.length).toBe(653); // 653: Front NEWCOMER NC4 adds pleiadesLab.why and clusterLab.why
+  expect(ZH4_KEYS.length).toBe(655); // 653: Front NEWCOMER NC4 adds pleiadesLab.why and clusterLab.why // 655: NC5 adds pleiadesLab.version.quick and pleiadesLab.version.full
   expect(ZH4_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
  });
  it('Front ZH5: the catalog covers the radio telescope (every key of its prefixes)',()=>{
