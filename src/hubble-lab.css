@@ -45,6 +45,9 @@
 /* Front NEWCOMER NC4: the why-line that opens each guide window (guideLead.tsx) reads as the window's lead, in the text colour;
    What next, at the end once the counted steps are done, is set off like the progress block. */
 .hubble-lab-dialog .lab-why{font-size:var(--ov-text-lg);color:var(--ov-text);margin:12px 0 8px}
+/* Front NEWCOMER NC6: the computed time and level under the why-line, and its computed-not-measured note. */
+.lab-facts{margin:0 0 10px;font-size:var(--ov-text-sm);color:var(--ov-text);font-weight:550}
+.lab-facts .lab-facts-note{display:block;margin-top:2px;font-weight:400;color:var(--ov-text-muted)}
 .lab-what-next{margin:20px 0;padding:12px 18px;border-inline-start:3px solid var(--ov-accent);background:var(--ov-accent-soft);border-radius:var(--ov-radius-sm)}
 .lab-what-next h3{margin-top:4px}
 .lab-what-next p{color:var(--ov-text)}

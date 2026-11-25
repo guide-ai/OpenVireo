@@ -48,7 +48,7 @@ function PleiadesLabGuide({dialogRef,progress,version,onNavigate,onNext,onVersio
  return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog pleiades-lab-dialog" aria-labelledby="pleiades-lab-heading" aria-describedby="pleiades-lab-why" data-testid="pleiades-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('pleiadesLab.eyebrow')}</div><h2 id="pleiades-lab-heading">{t('pleiadesLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="pleiades-lab-close" onClick={()=>dialogRef.current?.close()}>{t('pleiadesLab.close')}</button></div>
-  {whyLead('pleiades-lab-why',t('pleiadesLab.why'))}
+  {whyLead('pleiades-lab-why',t('pleiadesLab.why'),'pleiades')}
   {versionChoice('pleiades-lab',version,{quick:t('pleiadesLab.version.quick',{count:PLEIADES_QUICK_GOAL}),full:t('pleiadesLab.version.full',{count:PLEIADES_SAMPLE_TARGETS})},v=>onVersion('pleiades',v),version==='quick'&&progress.next==='save')}
   <details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('pleiadesLab.intro')}</p><p className="lab-recovery" data-testid="pleiades-lab-adaptation">{t('pleiadesLab.adaptation')}</p></details>
   <section className="lab-progress" aria-labelledby="pleiades-lab-progress-heading">

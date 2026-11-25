@@ -3,6 +3,7 @@ import {t} from './i18n';
 import {LAB_NEXT} from './home/labNext';
 import type {LabSlug} from './seo/labSlugs';
 import type {LabVersion} from './core/labVersion';
+import {labFactsLine} from './home/labFactsText';
 
 /** Front NEWCOMER NC4 [W] (plan analysis/front-plans/front-newcomer.md §2.4; user decision of 2026-11-24): the top and the end
  * of each guide's window. Plain functions, not components: the seven windows render closed on every load
@@ -10,7 +11,14 @@ import type {LabVersion} from './core/labVersion';
  * The why-line asks the question the visitor will answer, then says what they will do; it never states the lab's result, not
  * even qualitatively (src/guideLead.test.ts checks every language). It is the dialog's description (`aria-describedby`); the
  * guide's former intro is a research note below it. */
-export const whyLead=(id:string,text:string)=><p id={id} className="lab-why">{text}</p>;
+export const whyLead=(id:string,text:string,lab:LabSlug)=><><p id={id} className="lab-why">{text}</p>{labFacts(id,lab)}</>;
+
+/** Front NEWCOMER NC6 [W] (plan §2.6): under the why-line, the lab's computed rough time and level (the full exercise's, and the
+ * quick version's on Hubble and Pleiades), as on its home card, with the note that the times are computed from the steps, not
+ * measured with visitors. `id` is the why-line's id; the facts take `<id>-facts`. */
+function labFacts(id:string,lab:LabSlug){
+ return <p id={`${id}-facts`} className="lab-facts"><span>{labFactsLine(lab)}</span> <span className="lab-facts-note">{t('home.estimateNote')}</span></p>;
+}
 
 /** Front NEWCOMER NC5 [W] (plan §2.5; user decision of 2026-11-24): the version choice of the Hubble and Pleiades windows, under
  * the why-line. A native radio group (one tab stop, arrows move between the two); a change is announced by the radio button's own

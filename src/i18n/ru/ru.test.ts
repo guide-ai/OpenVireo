@@ -149,7 +149,7 @@ describe('Front RU0: the Russian (ru) bundle',()=>{
   expect(SHELL_KEYS.length).toBe(131);
   expect(SHELL_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
   const home=(Object.keys(en) as MessageKey[]).filter(k=>k.startsWith('home.'));
-  expect(home.length).toBe(27);expect(home.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
+  expect(home.length).toBe(34);/* 34 since Front NEWCOMER NC6 (the lab facts: home.time … home.estimateNote) */expect(home.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
  });
  it('Front RU1: the catalog covers the observatory (every key of its instruments\' prefixes) and the guide keys it renders',()=>{
   expect(RU1_KEYS.length).toBeGreaterThan(450);

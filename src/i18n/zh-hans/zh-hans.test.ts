@@ -149,7 +149,7 @@ describe('Front ZH0: the Simplified Chinese (zh-Hans) bundle',()=>{
   for(const key of Object.keys(zh))expect(Object.hasOwn(en,key),key).toBe(true);
   expect(SHELL_KEYS.length).toBe(131);// 131 since Front HI0 (app.digitNotice, the digit notice)
   expect(SHELL_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
-  expect(HOME_KEYS.length).toBe(27);expect(HOME_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
+  expect(HOME_KEYS.length).toBe(34);/* 34 since Front NEWCOMER NC6 (the lab facts: home.time … home.estimateNote) */expect(HOME_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
  });
  it('Front ZH1: the catalog covers the observatory (every key of its instruments\' prefixes) and the guide keys it renders',()=>{
   expect(ZH1_KEYS.length).toBeGreaterThan(450);

@@ -9,6 +9,7 @@
 import {SITE_URL,labUrl} from './labs.ts';
 import {ENGLISH,SEO_LANGUAGES,pathOf,seoDirection,type PageKey,type SeoLab,type SeoLanguage} from './languages.ts';
 import {LANGUAGES,type LanguageEntry,type TextDirection} from '../i18n/languages.ts';
+import {LAB_FACTS,START_HERE,isoDuration,type Minutes} from '../home/labFacts.ts';
 
 export const SITE_NAME='OpenVireo';
 export const OG_IMAGE=ENGLISH.ogImage;
@@ -63,6 +64,18 @@ export function homeHead(title:string,description:string):string{
  return sharedHead({key:'home',title,description})+`<script type="application/ld+json">${ldJson({'@context':'https://schema.org','@graph':[app,site]})}</script>`;
 }
 
+/** Front NEWCOMER NC6 (plan §2.6; user decision of 2026-11-24): a lab's facts in a language, as its home card shows them: the full
+ * exercise's computed rough time, its level and, on the two labs with a quick version, the quick time, joined with « · ». The
+ * texts are a range with {low} and {high} (the static pages' minutes are under 1000, so no thousands separator applies). */
+type FactTexts=Readonly<{time:string;quickTime:string;level1:string;level2:string;level3:string}>;
+const minutes=(text:string,m:Minutes)=>text.replace('{low}',String(m[0])).replace('{high}',String(m[1]));
+export function labFactsText(texts:FactTexts,slug:SeoLab['slug']):string{
+ const f=LAB_FACTS[slug],level=f.level===1?texts.level1:f.level===2?texts.level2:texts.level3;
+ return [minutes(texts.time,f.full),level,...(f.quick?[minutes(texts.quickTime,f.quick)]:[])].join(' · ');
+}
+/** The English catalog's texts of the same facts (homeBoot reads en.json). */
+const catalogFacts=(text:(key:string)=>string):FactTexts=>({time:text('home.time'),quickTime:text('home.quickTime'),level1:text('home.level1'),level2:text('home.level2'),level3:text('home.level3')});
+
 /** Front HOME: the catalog keys of the welcome's lab cards (src/home/Welcome.tsx), by lab slug, in the /labs/ order. */
 export const HOME_LAB_KEYS:Readonly<Record<SeoLab['slug'],string>>=Object.freeze({hubble:'home.hubble','large-scale-structure':'home.lss',
  'stellar-classification':'home.classification',pleiades:'home.pleiades','cluster-hr':'home.clusterHr',pulsars:'home.pulsars','object-x':'home.objectX'});
@@ -72,9 +85,12 @@ export const HOME_LAB_KEYS:Readonly<Record<SeoLab['slug'],string>>=Object.freeze
  * lead, the three facts and the seven labs with their one-line summaries, each linking to its /labs/ page. */
 export function homeBoot(m:Readonly<Record<string,string>>):string{
  const text=(key:string)=>{const v=m[key];if(typeof v!=='string')throw new Error(`homeBoot: no text for ${key}`);return esc(v);};
+ // Front NEWCOMER NC6: each lab's facts after its summary, Start here before its name, and the computed-not-measured note.
+ let facts:FactTexts|undefined;const factsOf=(slug:SeoLab['slug'])=>labFactsText(facts??=catalogFacts(text),slug);
  return `<div class="seo-boot"><p class="eyebrow">${text('home.eyebrow')}</p><h1>${text('home.title')}</h1><p>${text('home.lead')}</p>`+
   `<ul aria-label="${text('home.factsLabel')}"><li>${text('home.factInstall')}</li><li>${text('home.factFree')}</li><li>${text('home.factFaithful')}</li></ul>`+
-  `<h2>${text('home.labsHeading')}</h2><nav aria-label="Labs"><ul class="labs">${ENGLISH.labs.map(l=>`<li><a href="${labUrl(l.slug)}">${text(HOME_LAB_KEYS[l.slug])}</a>: ${text(HOME_LAB_KEYS[l.slug]+'Summary')}</li>`).join('')}</ul></nav>`+
+  `<h2>${text('home.labsHeading')}</h2><nav aria-label="Labs"><ul class="labs">${ENGLISH.labs.map(l=>`<li>${l.slug===START_HERE?`<strong>${text('home.startHere')}</strong> `:''}<a href="${labUrl(l.slug)}">${text(HOME_LAB_KEYS[l.slug])}</a>: ${text(HOME_LAB_KEYS[l.slug]+'Summary')} <small>${factsOf(l.slug)}</small></li>`).join('')}</ul></nav>`+
+  `<p>${text('home.estimateNote')}</p>`+
   `<p>Loading OpenVireo…</p></div>`;
 }
 
@@ -120,13 +136,14 @@ export function labPage(lab:SeoLab,language:SeoLanguage=ENGLISH,registry:readonl
  const others=language.labs.filter(l=>l.slug!==lab.slug);
  const body=crumbNav(language,[{name:SITE_NAME,path:home},{name:ui.labsCrumb,path:labs}],lab.name)+
   `<p class="eyebrow">${esc(ui.labEyebrow)}</p><h1>${esc(lab.heading)}</h1><p class="lead">${esc(lab.intro)}</p>`+
+  `<p class="facts">${esc(labFactsText(ui,lab.slug))} <span>${esc(ui.estimateNote)}</span></p>`+
   `<p class="cta"><a class="button" href="${esc(openLabHref(language,lab.slug))}">${esc(ui.openLab)}</a> <span>${esc(ui.openLabNote(lab.slug))}</span></p>`+
   `<section><h2>${esc(ui.whatYouDo)}</h2><ol>${lab.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></section>`+
   `<section><h2>${esc(ui.whatYouLearn)}</h2><ul>${lab.learn.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></section>`+
   `<section><h2>${esc(ui.otherLabs)}</h2><ul class="others">${others.map(l=>`<li><a href="${pathOf(language,l.slug)}">${esc(l.name)}</a></li>`).join('')}</ul></section>`;
  const ld={'@context':'https://schema.org','@graph':[
   {'@type':'LearningResource',name:lab.heading,description:lab.description,url:SITE_URL+path,inLanguage:language.tag,
-   learningResourceType:ui.learningResourceType,educationalLevel:[...ui.educationalLevel],isAccessibleForFree:true,
+   learningResourceType:ui.learningResourceType,timeRequired:isoDuration(LAB_FACTS[lab.slug].full[1]),isAccessibleForFree:true,
    teaches:[...lab.learn],isBasedOn:CREDIT,isPartOf:{'@type':'WebSite',name:SITE_NAME,url:SITE_URL+'/'}},
   crumbs([{name:SITE_NAME,path:home},{name:ui.labsCrumb,path:labs},{name:lab.name,path}]),
  ]};
@@ -136,7 +153,10 @@ export function labPage(lab:SeoLab,language:SeoLanguage=ENGLISH,registry:readonl
 export const LABS_INDEX_TITLE=ENGLISH.labsIndex.title;
 export const LABS_INDEX_DESCRIPTION=ENGLISH.labsIndex.description;
 
-const cards=(language:SeoLanguage)=>`<ul class="cards">${language.labs.map(l=>`<li><a href="${pathOf(language,l.slug)}"><strong>${esc(l.name)}</strong><span>${esc(l.description)}</span></a></li>`).join('')}</ul>`;
+/** The lab cards of the labs index and of a language's home page. Front NEWCOMER NC6: each with its facts, one with Start here
+ * before its name, and the computed-not-measured note under the list. */
+const cards=(language:SeoLanguage)=>`<ul class="cards">${language.labs.map(l=>`<li><a href="${pathOf(language,l.slug)}">${l.slug===START_HERE?`<em class="start">${esc(language.ui.startHere)}</em>`:''}<strong>${esc(l.name)}</strong><span>${esc(l.description)}</span><span class="facts">${esc(labFactsText(language.ui,l.slug))}</span></a></li>`).join('')}</ul>`+
+ `<p class="note">${esc(language.ui.estimateNote)}</p>`;
 
 export function labsIndexPage(language:SeoLanguage=ENGLISH,registry:readonly LanguageEntry[]=LANGUAGES):string{
  const x=language.labsIndex,home=pathOf(language,'home'),labs=pathOf(language,'labs');

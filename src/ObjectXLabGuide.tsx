@@ -20,7 +20,7 @@ function ObjectXLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRef:RefOb
  const counts=G.counts(done,OBJECT_X_LAB_STEPS.length,progress.summary.imagesOfTarget);
  return <dialog ref={dialogRef} className="hubble-lab-dialog" aria-labelledby="objectx-lab-heading" aria-describedby="objectx-lab-why" data-testid="objectx-guide">
   <div className="lab-heading"><div><div className="eyebrow">{G.eyebrow}</div><h2 id="objectx-lab-heading">{G.title}</h2></div><button className="secondary-button" autoFocus onClick={()=>dialogRef.current?.close()}>{G.close}</button></div>
-  {whyLead('objectx-lab-why',G.why)}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{G.intro}</p></details>
+  {whyLead('objectx-lab-why',G.why,'object-x')}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{G.intro}</p></details>
   <section className="lab-progress" aria-labelledby="objectx-lab-progress"><h3 id="objectx-lab-progress">{G.progress}</h3><p role="status" data-testid="objectx-guide-counts">{counts}</p></section>
   <ol className="lab-steps">{OBJECT_X_LAB_STEPS.map(step=>{const d=STEP_DESTINATION[step],[title,help]=G.steps[step];return <li key={step} data-testid={`objectx-guide-step-${step}`} data-done={progress.done[step]?'true':'false'} data-next={progress.next===step||undefined}>
    <h3>{stepTitle(`objectx-guide-step-${step}`,title)} <span>{progress.done[step]?G.done:G.todo}</span></h3>

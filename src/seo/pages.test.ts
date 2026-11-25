@@ -9,7 +9,8 @@ import es from '../i18n/es/es.json' with {type:'json'};
 import pt from '../i18n/pt-br/pt-br.json' with {type:'json'};
 import {OBJECT_X_LAB_EN} from '../objectx/ObjectXMessages';
 import {POLISH_MESSAGES} from '../polish/PolishMessages';
-import {HOME_LAB_KEYS,LABS_INDEX_DESCRIPTION,SITEMAP_PATHS,homeBoot,homeHead,labPage,labsIndexPage,notFoundPage,sitemap,staticSeoFiles} from './pages';
+import {LAB_FACTS,START_HERE,isoDuration} from '../home/labFacts';
+import {HOME_LAB_KEYS,LABS_INDEX_DESCRIPTION,SITEMAP_PATHS,homeBoot,labFactsText,homeHead,labPage,labsIndexPage,notFoundPage,sitemap,staticSeoFiles} from './pages';
 import {documentMessages} from '../i18n/html';
 
 const attr=(html:string,re:RegExp)=>re.exec(html)?.[1];
@@ -44,6 +45,10 @@ describe('lab overview pages',()=>{
    expect(html).toContain(`href="/#lab=${l.slug}"`);
    expect(html).toContain('It is not the original program');
    const [data]=ld(html);expect(data['@graph'][0]).toMatchObject({'@type':'LearningResource',url:`${SITE_URL}/labs/${l.slug}/`,isAccessibleForFree:true});
+   // Front NEWCOMER NC6: timeRequired is the full version's upper bound as an ISO 8601 duration; no school levels (Q9).
+   expect(data['@graph'][0].timeRequired).toMatch(/^PT(?:[1-9]\d*H)?(?:[1-5]?\dM)?$/);
+   expect(data['@graph'][0].timeRequired).toBe(isoDuration(LAB_FACTS[l.slug].full[1]));expect(data['@graph'][0]).not.toHaveProperty('educationalLevel');
+   expect(html).toContain('<p class="facts">About ');expect(html).toContain('not measured with visitors.</span></p>');
    // No runnable script and no inline style: the site's CSP (script-src/style-src without 'unsafe-inline') covers the page.
    expect(html.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g,'')).not.toMatch(/<script|style=|<style/);
   }
@@ -55,6 +60,10 @@ describe('lab overview pages',()=>{
  });
  it('the index lists every lab page',()=>{
   const html=labsIndexPage();for(const l of LABS)expect(html).toContain(`href="${labUrl(l.slug)}"`);
+  // Front NEWCOMER NC6: every card carries its facts, one (Stellar classification) says Start here, and the note follows the list.
+  expect(html.match(/<span class="facts">/g)).toHaveLength(LABS.length);
+  expect([...html.matchAll(/<a href="([^"]+)"><em class="start">Start here<\/em>/g)].map(m=>m[1])).toEqual([labUrl('stellar-classification')]);
+  expect(html).toContain('</ul><p class="note">Times are rough estimates computed from the steps, not measured with visitors.</p>');
  });
 });
 
@@ -126,10 +135,15 @@ describe('home pre-render (Front HOME)',()=>{
   expect(en['home.lead']).toMatch(/^OpenVireo is an unofficial web reconstruction of VIREO/);
  });
  it('lists the seven labs with their one-line summaries, each linking to its /labs/ page in the /labs/ order',()=>{
-  const links=[...boot.matchAll(/<li><a href="([^"]+)">([^<]+)<\/a>: ([^<]+)<\/li>/g)];
-  expect(links.map(m=>m[1])).toEqual(LABS.map(l=>labUrl(l.slug)));
+  // Front NEWCOMER NC6: each item ends with the lab's facts, and the Start here lab's begins with the badge.
+  const links=[...boot.matchAll(/<li>(?:<strong>([^<]+)<\/strong> )?<a href="([^"]+)">([^<]+)<\/a>: ([^<]+) <small>([^<]+)<\/small><\/li>/g)].map(([,start,href,name,summary,facts])=>({start,href,name,summary,facts}));
+  expect(links.map(m=>m.start)).toEqual(LABS.map(l=>l.slug===START_HERE?en['home.startHere']:undefined));
+  expect(links.map(m=>m.facts)).toEqual(LABS.map(l=>labFactsText({time:en['home.time'],quickTime:en['home.quickTime'],level1:en['home.level1'],level2:en['home.level2'],level3:en['home.level3']},l.slug)));
+  expect(links[0].facts).toBe('About 60–120 min · Some background helps · Quick version: about 20–40 min');
+  expect(boot).toContain(`<p>${en['home.estimateNote']}</p>`);
+  expect(links.map(m=>m.href)).toEqual(LABS.map(l=>labUrl(l.slug)));
   expect(Object.keys(HOME_LAB_KEYS)).toEqual([...LAB_SLUGS]);
-  links.forEach((m,i)=>{const k=HOME_LAB_KEYS[LABS[i].slug] as keyof typeof en;expect(m[2]).toBe(en[k]);expect(m[3]).toBe(en[`${k}Summary` as keyof typeof en]);
+  links.forEach((m,i)=>{const k=HOME_LAB_KEYS[LABS[i].slug] as keyof typeof en;expect(m.name).toBe(en[k]);expect(m.summary).toBe(en[`${k}Summary` as keyof typeof en]);
    expect(en[`${k}Summary` as keyof typeof en].length).toBeLessThanOrEqual(120);});
   expect(en['home.objectXSummary']).toMatch(/star.*galaxy.*quasar.*pulsar.*asteroid/);
  });

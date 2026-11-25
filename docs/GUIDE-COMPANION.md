@@ -407,6 +407,53 @@ answer Q5):
   exercise moves the strip back to `acquire`); the full walks of `tests/hubble-guide.spec.ts` and `tests/pleiades-exercise.spec.ts`
   choose Full first.
 
+## Time, level and Start here
+
+Front NEWCOMER NC6 (user decision, 2026-11-24, recorded in AGENTS.md; plan analysis/front-plans/front-newcomer.md §2.6, review M6,
+answers Q6 and Q9):
+
+- **One table, `src/home/labFacts.ts`** (pure, no text): per lab the full exercise's rough time in minutes, the quick version's on
+  Hubble and Pleiades, and a level 1–3; `START_HERE` is Stellar classification (Q6). The home cards, the guide windows and the
+  static /labs/ pages render it.
+- **The times are computed, not measured with visitors**, and every place that shows them says so: «Times are rough estimates
+  computed from the steps, not measured with visitors.» (`home.estimateNote`, under the home cards, after each window's facts and
+  on the /labs/ pages). The method, inputs and date are in the table's comment: the visitor actions of each whole-exercise walk,
+  30–60 s per action for the set-up and the first object and 10–20 s for each repeated galaxy or star, plus the real-time waits
+  the walks shorten (the Hubble guide's 2–3 min per galaxy exposure, also used for LSS; photometer integrations; the pulsar
+  capture; Object X's CCD images and spectrum), rounded outwards to 5 min under an hour and 15 min from an hour up. NC6 departs
+  from plan §2.6 in one point: the plan counts 30–60 s for every action, which gave 2–4 hours for the full Hubble list and 3–6
+  for the full Pleiades list; repeated cycles count a third of that. The user or their testers will time Stellar classification
+  and Hubble quick (Q15); the table is the one place to change.
+
+  | lab | full | quick | level |
+  |---|---|---|---|
+  | Hubble's law | 60–120 min | 20–40 min (3 galaxies) | 2 Some background helps |
+  | Large-scale structure | 25–50 min | | 1 No background needed |
+  | Stellar classification (Start here) | 5–20 min | | 1 No background needed |
+  | Pleiades photometry | 60–150 min | 35–75 min (8 stars) | 2 Some background helps |
+  | Cluster HR diagrams | 5–20 min | | 3 Challenging |
+  | Pulsars | 20–50 min | | 3 Challenging |
+  | Object X | 30–75 min | | 3 Challenging |
+
+- **Home cards:** inside each card's button, under the summary, «About 60–120 min · Some background helps · Quick version: about
+  20–40 min» (`home-lab-<slug>-facts`); on Stellar classification a «Start here» badge before the name (`home-lab-<slug>-start`).
+  The button's `aria-describedby` lists the badge, the summary and the facts; its name stays the lab's name. No new tab stop. The
+  card order stays the /labs/ order.
+- **Guide windows:** under the why-line (`<prefix>-why-facts`, `whyLead` in `src/guideLead.tsx`), the same facts line and the
+  note; the why-line alone stays the dialog's description. On Hubble and Pleiades the facts give both times, so the version
+  choice below needs no times of its own.
+- **/labs/ pages** (`src/seo/pages.ts`): each lab page has the facts line and the note under its intro, and its JSON-LD
+  `LearningResource` carries `timeRequired`, the full version's upper bound as an ISO 8601 duration (`PT2H`, `PT1H15M`, `PT20M`);
+  the school levels (`educationalLevel`) are gone (Q9: the audience is the general public). The labs index and each language's
+  home page show the facts on every card, Start here on one, and the note under the list. The English pre-render (`homeBoot`)
+  mirrors the facts and the note from `en.json`.
+- Nothing is stored and no file changes; no answer, expected value or grade is shown.
+- **Tests:** `src/home/labFacts.test.ts` (every lab, low < high, outward rounding, quick below full and for the cores' goals,
+  levels 1–3, Start here on the shortest level-1 lab, ISO durations); `src/guideLead.test.ts` (each window's facts line after the
+  why-line); `src/seo/pages.test.ts` and `src/seo/languages.test.ts` (facts and note on every page in every language,
+  `timeRequired`, no `educationalLevel`, one Start here on the index, the pre-render); `tests/home.spec.ts` (each card's
+  accessible description: badge, summary, facts; one badge; the note; each window's facts line).
+
 ## Layout and accessibility
 
 - Fixed 8 px above the bottom of the window, as wide as the page bar; beside the fixed sidebar from 1100 px up. One row from

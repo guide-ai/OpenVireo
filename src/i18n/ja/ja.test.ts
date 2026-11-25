@@ -143,7 +143,7 @@ describe('Front JA0: the Japanese (ja) bundle',()=>{
   expect(()=>createI18n(ja as Partial<Record<MessageKey,string>>,'ja',{fallback:true})).not.toThrow();
   for(const key of Object.keys(ja))expect(Object.hasOwn(en,key),key).toBe(true);
   expect(SHELL_KEYS.length).toBe(131);// 131 since Front HI0 (app.digitNotice, the shared digit notice)
-  expect(HOME_KEYS.length).toBe(27);
+  expect(HOME_KEYS.length).toBe(34);/* 34 since Front NEWCOMER NC6 (the lab facts: home.time … home.estimateNote) */
   expect([...SHELL_KEYS,...HOME_KEYS].filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
  });
  it('Front JA1: the catalog covers the observatory (every key of its instruments\' prefixes) and the guide keys it renders',()=>{

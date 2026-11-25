@@ -128,6 +128,10 @@
 .home-lab:hover:not(:disabled){background:var(--ov-surface-hover);border-color:var(--ov-accent-soft-border)}
 .home-lab strong{font-size:var(--ov-text-md);font-weight:650;color:var(--ov-accent-text)}
 .home-lab span{font-size:var(--ov-text-sm);font-weight:400;color:var(--ov-text-muted)}
+/* Front NEWCOMER NC6: the computed time and level at the foot of each card, and the one Start here badge before its name. */
+.home-lab .home-lab-facts{margin-top:auto;padding-top:4px;color:var(--ov-text);font-weight:550}
+.home-lab .home-lab-start{padding:1px 8px;border-radius:999px;background:var(--ov-accent);color:var(--ov-accent-contrast);font-size:var(--ov-text-xs);font-weight:650}
+.home-labs-note{font-size:var(--ov-text-sm);color:var(--ov-text-muted);margin:8px 0 0}
 @media(max-width:780px){.home-welcome{padding-top:24px}.home-facts{grid-template-columns:1fr;gap:6px}}
 @media(max-width:520px){.home-labs{grid-template-columns:1fr}}
 

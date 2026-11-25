@@ -54,7 +54,7 @@ function PulsarLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRef:RefObj
  return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog" aria-labelledby="pulsar-lab-heading" aria-describedby="pulsar-lab-why" data-testid="pulsar-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('pulsarLab.eyebrow')}</div><h2 id="pulsar-lab-heading">{t('pulsarLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="pulsar-lab-close" onClick={()=>dialogRef.current?.close()}>{t('pulsarLab.close')}</button></div>
-  {whyLead('pulsar-lab-why',t('pulsarLab.why'))}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('pulsarLab.intro')}</p></details>
+  {whyLead('pulsar-lab-why',t('pulsarLab.why'),'pulsars')}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('pulsarLab.intro')}</p></details>
   <section className="lab-progress" aria-labelledby="pulsar-lab-progress-heading">
    <h3 id="pulsar-lab-progress-heading">{t('pulsarLab.progress')}</h3>
    <p data-testid="pulsar-lab-counts" role="status">{counts}</p>

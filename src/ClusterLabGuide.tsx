@@ -18,7 +18,7 @@ export default function ClusterLabGuide({dialogRef,progress,cluster,onNavigate,o
  return <dialog ref={dialogRef} className="hubble-lab-dialog cluster-lab-dialog" aria-labelledby="cluster-lab-heading" aria-describedby="cluster-lab-why" data-testid="cluster-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('clusterLab.eyebrow')}</div><h2 id="cluster-lab-heading">{t('clusterLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="cluster-lab-close" onClick={()=>dialogRef.current?.close()}>{t('clusterLab.close')}</button></div>
-  {whyLead('cluster-lab-why',t('clusterLab.why'))}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('clusterLab.intro')}</p><p>{t('clusterLab.introOptions')}</p></details>
+  {whyLead('cluster-lab-why',t('clusterLab.why'),'cluster-hr')}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('clusterLab.intro')}</p><p>{t('clusterLab.introOptions')}</p></details>
   <section className="lab-progress" aria-labelledby="cluster-lab-progress-heading">
    <h3 id="cluster-lab-progress-heading">{t('clusterLab.progress')}</h3>
    <p data-testid="cluster-lab-counts" role="status">{counts}</p>

@@ -33,7 +33,7 @@ function ClassificationLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRe
  return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog pleiades-lab-dialog classification-lab-dialog" aria-labelledby="classification-lab-heading" aria-describedby="classification-lab-why" data-testid="classification-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('classLab.eyebrow')}</div><h2 id="classification-lab-heading">{t('classLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="classification-lab-close" onClick={()=>dialogRef.current?.close()}>{t('classLab.close')}</button></div>
-  {whyLead('classification-lab-why',t('classLab.why'))}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('classLab.intro')}</p><p>{t('classLab.introOptions')}</p>
+  {whyLead('classification-lab-why',t('classLab.why'),'stellar-classification')}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('classLab.intro')}</p><p>{t('classLab.introOptions')}</p>
    {/* Front NEWCOMER NC3: the adaptation note is a research note (NC4: with the former intro, below the why-line). */}
    <p className="lab-recovery" data-testid="classification-lab-adaptation">{t('classLab.adaptation')}</p></details>
   <section className="lab-progress" aria-labelledby="classification-lab-progress-heading">

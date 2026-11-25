@@ -117,7 +117,7 @@ describe('Front HI0: the Hindi (hi) bundle',()=>{
  it('the catalog is a valid partial catalog (en.json keys, the same {params}) and covers the whole shell, the welcome and the footer',()=>{
   expect(()=>createI18n(hi as Partial<Record<MessageKey,string>>,'hi',{fallback:true})).not.toThrow();
   for(const key of Object.keys(hi))expect(Object.hasOwn(en,key),key).toBe(true);
-  expect(SHELL_KEYS.length).toBe(131);expect(HOME_KEYS.length).toBe(27);
+  expect(SHELL_KEYS.length).toBe(131);expect(HOME_KEYS.length).toBe(34);/* 34 since Front NEWCOMER NC6 (the lab facts: home.time … home.estimateNote) */
   expect([...SHELL_KEYS,...HOME_KEYS,...FOOTER_KEYS].filter(k=>!Object.hasOwn(hi,k))).toEqual([]);
   expect(Object.keys(hi).length).toBe(new Set([...SHELL_KEYS,...HOME_KEYS,...FOOTER_KEYS,...HI1_KEYS,...HI1_GUIDE_KEYS,...HI2_KEYS,...HI3_KEYS,...HI4_KEYS,...HI5_KEYS,...HI6_KEYS]).size);
  });

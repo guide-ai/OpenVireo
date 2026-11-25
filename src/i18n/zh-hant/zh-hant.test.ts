@@ -131,7 +131,7 @@ describe('Front ZT0: the Traditional Chinese (zh-Hant) bundle',()=>{
   for(const key of Object.keys(zh))expect(Object.hasOwn(en,key),key).toBe(true);
   expect(SHELL_KEYS.length).toBe(131);
   expect(SHELL_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
-  expect(HOME_KEYS.length).toBe(27);expect(HOME_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
+  expect(HOME_KEYS.length).toBe(34);/* 34 since Front NEWCOMER NC6 (the lab facts: home.time … home.estimateNote) */expect(HOME_KEYS.filter(k=>!Object.hasOwn(zh,k))).toEqual([]);
   // Adapted, not converted (user decision of 2026-11-19): every key it holds is also in the reviewed zh-Hans catalog it adapts.
   expect(Object.keys(zh).filter(k=>!Object.hasOwn(zhHans,k))).toEqual([]);
  });

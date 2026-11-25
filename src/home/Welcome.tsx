@@ -2,10 +2,13 @@
  * https://openvireo.space/. It says what the site is (an unofficial web reconstruction of Project CLEA's VIREO), three facts
  * for a first-time visitor, one button to the free-exploration page (`observatory`), and the seven labs as cards. A card opens
  * its guide through the same opener as its Guides menu button and the #lab= links (openGuide in OpenVireo.tsx), so there is one
- * handler per lab. Presentation only: no state of its own. src/seo/pages.ts (homeBoot) mirrors the English text for crawlers. */
+ * handler per lab. Front NEWCOMER NC6: each card also shows the lab's computed rough time and level (home/labFacts.ts), one card
+ * says Start here, and a note under the cards says the times are computed, not measured. Presentation only: no state of its own. src/seo/pages.ts (homeBoot) mirrors the English text for crawlers. */
 import {memo} from 'react';
 import {t} from '../i18n';
 import type {LabSlug} from '../seo/labSlugs';
+import {START_HERE} from './labFacts';
+import {labFactsLine} from './labFactsText';
 
 /** The seven labs in the /labs/ order; keys are literal so the i18n split and the catalog checks see them. */
 const cards=():{slug:LabSlug;name:string;summary:string}[]=>[
@@ -30,10 +33,14 @@ function Welcome({openGuide,onExplore}:{openGuide:Readonly<Record<LabSlug,()=>vo
   <h2 className="home-labs-heading" id="home-labs" tabIndex={-1}>{t('home.labsHeading')}</h2>
   <p className="home-labs-hint">{t('home.labsHint')}</p>
   <ul className="home-labs" aria-labelledby="home-labs">
-   {cards().map(c=><li key={c.slug}><button type="button" className="home-lab" data-lab={c.slug} aria-labelledby={`home-lab-${c.slug}`} aria-describedby={`home-lab-${c.slug}-summary`} onClick={openGuide[c.slug]}>
-    <strong id={`home-lab-${c.slug}`}>{c.name}</strong><span id={`home-lab-${c.slug}-summary`}>{c.summary}</span>
-   </button></li>)}
+   {cards().map(c=>{const id=`home-lab-${c.slug}`,start=c.slug===START_HERE;
+    return <li key={c.slug}><button type="button" className="home-lab" data-lab={c.slug} data-start-here={start||undefined} aria-labelledby={id} aria-describedby={`${start?`${id}-start `:''}${id}-summary ${id}-facts`} onClick={openGuide[c.slug]}>
+     {start&&<span id={`${id}-start`} className="home-lab-start">{t('home.startHere')}</span>}
+     <strong id={id}>{c.name}</strong><span id={`${id}-summary`}>{c.summary}</span>
+     <span id={`${id}-facts`} className="home-lab-facts">{labFactsLine(c.slug)}</span>
+    </button></li>;})}
   </ul>
+  <p className="home-labs-note" id="home-labs-note">{t('home.estimateNote')}</p>
  </section>;
 }
 

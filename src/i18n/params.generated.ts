@@ -147,6 +147,13 @@ export interface MessageParameters {
   "home.pulsarsSummary": never;
   "home.objectX": never;
   "home.objectXSummary": never;
+  "home.time": "high" | "low";
+  "home.quickTime": "high" | "low";
+  "home.level1": never;
+  "home.level2": never;
+  "home.level3": never;
+  "home.startHere": never;
+  "home.estimateNote": never;
   "home.pageName": never;
   "home.explore": never;
   "home.exploreHint": never;

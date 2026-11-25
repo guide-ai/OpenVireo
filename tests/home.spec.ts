@@ -17,6 +17,10 @@ const LABS=[
  {slug:'pulsars',name:en['home.pulsars'],title:'Pulsar timing guide'},
  {slug:'object-x',name:en['home.objectX'],title:'The quest for Object X'},
 ] as const;
+/** Front NEWCOMER NC6: each card's facts line in English (src/home/labFacts.ts, computed rough times, not measured). */
+const FACTS:Record<string,string>={hubble:'About 60–120 min · Some background helps · Quick version: about 20–40 min','large-scale-structure':'About 25–50 min · No background needed',
+ 'stellar-classification':'About 5–20 min · No background needed',pleiades:'About 60–150 min · Some background helps · Quick version: about 35–75 min',
+ 'cluster-hr':'About 5–20 min · Challenging',pulsars:'About 20–50 min · Challenging','object-x':'About 30–75 min · Challenging'};
 /** The Guides menu button of each lab (the sidebar's Exercise guides section). */
 const MENU:Record<string,string>={hubble:en['lab.nav'],'large-scale-structure':en['lssLab.nav'],'stellar-classification':en['classLab.nav'],pleiades:en['pleiadesLab.nav'],'cluster-hr':'Cluster HR guide',pulsars:en['pulsarLab.nav'],'object-x':'Object X guide'};
 
@@ -29,7 +33,13 @@ test('/ opens the welcome: what the site is, three facts, the explore button and
  await expect(facts).toHaveText([en['home.factInstall'],en['home.factFree'],en['home.factFaithful']]);
  const cards=w.getByRole('list',{name:en['home.labsHeading']}).getByRole('button');
  await expect(cards).toHaveCount(7);
- for(const [i,l] of LABS.entries()){await expect(cards.nth(i)).toHaveAccessibleName(l.name);await expect(cards.nth(i)).toHaveAccessibleDescription(en[`home.${({hubble:'hubble','large-scale-structure':'lss','stellar-classification':'classification',pleiades:'pleiades','cluster-hr':'clusterHr',pulsars:'pulsars','object-x':'objectX'} as const)[l.slug]}Summary`]);}
+ // Front NEWCOMER NC6: each card's description is its summary and its computed time and level (and the quick time on Hubble and
+ // Pleiades); the Stellar classification card alone starts with Start here. A note under the cards says the times are computed.
+ for(const [i,l] of LABS.entries()){await expect(cards.nth(i)).toHaveAccessibleName(l.name);
+  const start=l.slug==='stellar-classification'?`${en['home.startHere']} `:'';
+  await expect(cards.nth(i)).toHaveAccessibleDescription(`${start}${en[`home.${({hubble:'hubble','large-scale-structure':'lss','stellar-classification':'classification',pleiades:'pleiades','cluster-hr':'clusterHr',pulsars:'pulsars','object-x':'objectX'} as const)[l.slug]}Summary`]} ${FACTS[l.slug]}`);}
+ await expect(w.locator('.home-lab-start')).toHaveCount(1);await expect(w.locator('.home-lab-start')).toHaveText(en['home.startHere']);
+ await expect(w.locator('#home-labs-note')).toHaveText(en['home.estimateNote']);
  await expect(w.getByRole('button',{name:en['home.explore'],exact:true})).toBeVisible();
  await expect(page.getByTestId('page-bar-place')).toHaveText(en['home.pageName']);
  // The exploration page is not shown: no first steps, no telescope, no observatory heading.
@@ -45,6 +55,8 @@ for(const lab of LABS)test(`the ${lab.slug} card opens the same guide as its Gui
  await welcome(page).getByRole('button',{name:lab.name,exact:true}).click();
  const guide=page.locator('dialog[open]');
  await expect(guide).toContainText(lab.title,{timeout:15000});await expect(guide).toHaveCount(1);
+ // Front NEWCOMER NC6: under its why-line the window shows the card's facts and says the times are computed.
+ await expect(guide.locator('.lab-facts')).toHaveText(`${FACTS[lab.slug]} ${en['home.estimateNote']}`);
  const fromCard={hash:await page.evaluate(()=>location.hash),text:(await guide.innerText()).slice(0,200)};
  await page.keyboard.press('Escape');await expect(guide).toHaveCount(0);
  // The menu button of the same lab, from a fresh welcome, gives the same guide and the same page.
@@ -82,7 +94,8 @@ for(const [query,cat] of [['?lang=es-419',es],['?lang=pt-BR',pt]] as const)test(
  await page.goto(`/${query}`);await expect(h1(page,cat['home.title'])).toBeVisible({timeout:30000});
  const w=page.getByRole('region',{name:cat['home.title']});
  await expect(w.getByRole('list',{name:cat['home.factsLabel']}).getByRole('listitem')).toHaveText([cat['home.factInstall'],cat['home.factFree'],cat['home.factFaithful']]);
- await expect(w.getByRole('button',{name:cat['home.objectX'],exact:true})).toHaveAccessibleDescription(cat['home.objectXSummary']);
+ await expect(w.getByRole('button',{name:cat['home.objectX'],exact:true})).toHaveAccessibleDescription(`${cat['home.objectXSummary']} ${cat['home.time'].replace('{low}','30').replace('{high}','75')} · ${cat['home.level3']}`);
+ await expect(w.getByRole('button',{name:cat['home.classification'],exact:true})).toHaveAccessibleDescription(new RegExp(`^${cat['home.startHere']} `));
  await expect(page.getByTestId('page-bar-place')).toHaveText(cat['home.pageName']);
  await w.getByRole('button',{name:cat['home.explore'],exact:true}).click();
  await expect(page.getByRole('heading',{level:1,name:cat['sky.title']})).toBeFocused();

@@ -14,7 +14,8 @@ import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {LABS,SITE_URL,labUrl,labsIndexUrl,SEO_PATH_PREFIX} from './labs';
 import {ENGLISH,SEO_LANGUAGES,pathOf,type PageKey,type SeoLanguage} from './languages';
-import {alternates,labPage,labsIndexPage,languageHomePage,sitemap,staticSeoFiles} from './pages';
+import {alternates,labFactsText,labPage,labsIndexPage,languageHomePage,sitemap,staticSeoFiles} from './pages';
+import {LAB_FACTS,isoDuration} from '../home/labFacts';
 import {documentMessages} from '../i18n/html';
 import en from '../i18n/en.json' with {type:'json'};
 import esGlossary from '../i18n/es/glossary.json' with {type:'json'};
@@ -197,7 +198,6 @@ function pairsOf(L:SeoLanguage):Pair[]{
  out.push({id:'ogImageAlt',en:ENGLISH.ogImageAlt,text:L.ogImageAlt},{id:'ogImageText.title',en:ENGLISH.ogImageText.title,text:L.ogImageText.title});
  ENGLISH.ogImageText.lines.forEach((t,j)=>out.push({id:`ogImageText.lines.${j}`,en:t,text:L.ogImageText.lines[j]}));
  out.push({id:'ui.openLabNote',en:'',text:L.ui.openLabNote('hubble')});
- L.ui.educationalLevel.forEach((t,j)=>out.push({id:`ui.educationalLevel.${j}`,en:'',text:t}));
  for(const [k,v] of Object.entries(L.home!))(Array.isArray(v)?v:[v]).forEach((t:string,j:number)=>out.push({id:`home.${k}${Array.isArray(v)?`.${j}`:''}`,en:'',text:t}));
  return out;
 }
@@ -286,7 +286,10 @@ for(const L of TRANSLATED)describe(`${languageEntry(L.tag)!.englishName} pages (
    expect(html).toContain(`<a class="button" href="/?lang=${L.tag}#lab=${lab.slug}">${L.ui.openLab}</a>`);
    expect(html).toContain(`<h1>${lab.heading}</h1>`);
    const [data]=ld(html);
-   expect(data['@graph'][0]).toMatchObject({'@type':'LearningResource',name:lab.heading,inLanguage:L.tag,learningResourceType:L.ui.learningResourceType,educationalLevel:[...L.ui.educationalLevel],teaches:[...lab.learn]});
+   expect(data['@graph'][0]).toMatchObject({'@type':'LearningResource',name:lab.heading,inLanguage:L.tag,learningResourceType:L.ui.learningResourceType,timeRequired:isoDuration(LAB_FACTS[lab.slug].full[1]),teaches:[...lab.learn]});
+   // Front NEWCOMER NC6: no school levels (Q9); the facts line and its computed-not-measured note under the intro, in the language.
+   expect(data['@graph'][0]).not.toHaveProperty('educationalLevel');
+   expect(html).toContain(`<p class="facts">${labFactsText(L.ui,lab.slug)} <span>${L.ui.estimateNote}</span></p>`);
    expect(data['@graph'][0].isBasedOn.author.name).toBe('Project CLEA, Gettysburg College');
    expect(data['@graph'][1].itemListElement.map((i:{item:string})=>i.item)).toEqual([`${SITE_URL}${L.prefix}/`,`${SITE_URL}${L.prefix}/labs/`,`${SITE_URL}${L.prefix}/labs/${lab.slug}/`]);
   }
