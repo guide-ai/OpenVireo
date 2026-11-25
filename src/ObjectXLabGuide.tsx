@@ -2,6 +2,7 @@ import {memo,type RefObject} from 'react';
 import {sameData} from './renderStability';
 import {OBJECT_X_GUIDE as G} from './objectx/ObjectXMessages';
 import {OBJECT_X_LAB_STEPS,type ObjectXLabProgress,type ObjectXLabStep} from './core/objectXLab';
+import {moreDetail,stepTitle} from './guideMoreDetail';
 import './hubble-lab.css';
 export type ObjectXLabDestination='object-x'|'observatory';
 const STEP_DESTINATION:Readonly<Record<ObjectXLabStep,ObjectXLabDestination|null>>={target:'object-x',clock:'object-x',list:'object-x',image:'observatory',repeat:'observatory',measure:'object-x',classify:'object-x',describe:'object-x',reveal:'object-x',save:null};
@@ -17,8 +18,9 @@ function ObjectXLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HT
   <p id="objectx-lab-intro">{G.intro}</p>
   <section className="lab-progress" aria-labelledby="objectx-lab-progress"><h3 id="objectx-lab-progress">{G.progress}</h3><p role="status" data-testid="objectx-guide-counts">{G.counts(done,OBJECT_X_LAB_STEPS.length,progress.summary.imagesOfTarget)}</p></section>
   <ol className="lab-steps">{OBJECT_X_LAB_STEPS.map(step=>{const d=STEP_DESTINATION[step],[title,help]=G.steps[step];return <li key={step} data-testid={`objectx-guide-step-${step}`} data-done={progress.done[step]?'true':'false'} data-next={progress.next===step||undefined}>
-   <h3>{title} <span>{progress.done[step]?G.done:G.todo}</span></h3><p>{help}</p>
-   {d&&<button className="secondary-button" onClick={()=>go(d)}>{d==='observatory'?G.goObservatory:G.go}</button>}</li>;})}</ol>
+   <h3>{stepTitle(`objectx-guide-step-${step}`,title)} <span>{progress.done[step]?G.done:G.todo}</span></h3>
+   {d&&<button className="secondary-button" onClick={()=>go(d)}>{d==='observatory'?G.goObservatory:G.go}</button>}
+   {moreDetail(`objectx-guide-step-${step}`,progress.next===step,<p>{help}</p>)}</li>;})}</ol>
   <button className="secondary-button" onClick={()=>dialogRef.current?.close()}>{G.return}</button>
  </dialog>;
 }

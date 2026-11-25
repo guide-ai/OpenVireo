@@ -152,6 +152,8 @@ for(const [label,viewport] of [['desktop 1440',{width:1440,height:1050}],['mobil
    // Phase 1 item 1.5: the backup is available (no "not complete" claim) and the counts have eight required steps.
    await expect(id(page,'pulsar-lab-backup')).toHaveAttribute('data-backup','available');await expect(id(page,'pulsar-lab-counts')).toHaveText('2 of 8 required pulsar steps done (the optional last step is not counted).');
    await expect(id(page,'pulsar-lab-delay-formula')).toHaveText('delay [s] = 4150 × DM × (1/f_low² − 1/f_high²), with f in MHz and DM in pc/cm³');
+   // Front NEWCOMER NC3: the channels step is not the current one, so its text is folded under its More detail.
+   await expect(id(page,'pulsar-lab-add-disarms')).toBeHidden();await id(page,'pulsar-lab-step-channels').locator('.lab-step-more > summary').click();
    await expect(id(page,'pulsar-lab-add-disarms')).toBeVisible();await noVisibleOffsets(id(page,'pulsar-lab-dialog'));
    await shot(page,info,`guide-${viewport.width}`);
    await page.keyboard.press('Escape');await expect(id(page,'pulsar-lab-dialog')).toBeHidden();

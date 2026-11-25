@@ -33,7 +33,7 @@ test('the strip appears when a guide\'s window is closed, follows the work, and 
  await expect(strip(page)).toHaveAttribute('data-lab','pulsars');await expect(strip(page)).toHaveAttribute('data-step','setup');
  await expect(strip(page)).toHaveAccessibleName('Current step of the guide');
  await expect(id(page,'guide-companion-lab')).toHaveText('Pulsar guide');await expect(id(page,'guide-companion-step')).toHaveText('Step 1 of 9');
- await expect(id(page,'guide-companion-next')).toHaveText('Next: press Start pulsar exercise on the Radio telescope page.');
+ await expect(id(page,'guide-companion-next')).toHaveText('Set up the radio telescope');
  await expect(id(page,'guide-companion-hide')).toHaveAccessibleName('Hide this guide');
  // Show me where: the step's page, its control focused and outlined; the page is not dimmed and still takes clicks.
  await show(page);
@@ -53,13 +53,15 @@ test('the strip appears when a guide\'s window is closed, follows the work, and 
  await expect(id(page,'guide-companion-spot')).toHaveCount(0);
  await expect(strip(page)).toHaveAttribute('data-step','point',{timeout:30_000});
  await expect(id(page,'guide-companion-step')).toHaveText('Step 3 of 9');
- await expect(id(page,'guide-companion-next')).toHaveText('Next: point the telescope at a pulsar and press Receiver.');
+ await expect(id(page,'guide-companion-next')).toHaveText('Point at a pulsar');
  await show(page);await expect(id(page,'pulsar-params-open')).toBeFocused();
  // Step details: the guide's own text for the step.
  const toggle=id(page,'guide-companion-details-toggle');
  await expect(toggle).toHaveAttribute('aria-expanded','false');await expect(id(page,'guide-companion-details')).toHaveCount(0);
  await toggle.click();
  await expect(toggle).toHaveAttribute('aria-expanded','true');
+ // Front NEWCOMER NC3: the line is the step title; Step details start with the guide's "Next:" line, then the step's text.
+ await expect(id(page,'guide-companion-details').locator('p').first()).toHaveText('Next: point the telescope at a pulsar and press Receiver.');
  await expect(id(page,'guide-companion-details')).toContainText('For a first run, open Pulsar Parameters');
  await toggle.click();await expect(id(page,'guide-companion-details')).toHaveCount(0);
  // Escape closes Step details and leaves the focus on its button.
@@ -166,7 +168,7 @@ test('Cluster HR: from another page, Full guide goes to the cluster database and
  await show(page);await expect(id(page,'cluster-load')).toBeFocused();
  await id(page,'cluster-load').click();
  await expect(strip(page)).toHaveAttribute('data-step','inspect',{timeout:30_000});
- await expect(id(page,'guide-companion-next')).toHaveText('Next: open the reference data values or choose a point to inspect.');
+ await expect(id(page,'guide-companion-next')).toHaveText('Inspect the data');
 });
 
 test('when every control of the step is disabled the first is outlined, and the outline and the focus move once the page enables one',async({page})=>{
@@ -218,6 +220,25 @@ for(const [width,height] of [[1280,800],[800,900],[375,740]] as const)test(`layo
  await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
  const last=await page.evaluate(()=>{const routes=[...document.querySelectorAll('main')].filter(m=>m.getBoundingClientRect().height>0);return Math.max(...routes.map(m=>m.getBoundingClientRect().bottom));});
  expect(last).toBeLessThanOrEqual((await box(page,'guide-companion')).y+1);
+});
+
+// Front NEWCOMER NC3 (review M7): a guide window printed while it is open prints its folded steps (and its other disclosures),
+// and afterwards exactly those fold again; a More detail the visitor opened stays open. Chromium prints for real (page.pdf fires
+// beforeprint and afterprint); Firefox and WebKit, run with --browser, receive the two events as the print dialog sends them.
+test('a guide window printed while open prints every folded step, and folds the same ones again afterwards',async({page,browserName})=>{
+ await openGuide(page,'pulsars');
+ const dialog=guideWindow(page),closed=()=>dialog.evaluate(d=>d.querySelectorAll('details:not([open])').length);
+ const folded=await closed();expect(folded).toBeGreaterThanOrEqual(8);
+ const channels=id(page,'pulsar-lab-step-channels').locator('.lab-step-more');
+ await channels.locator('summary').click();await expect(channels).toHaveAttribute('open','');
+ expect(await closed()).toBe(folded-1);
+ await page.evaluate(()=>{const w=window as unknown as {printedClosed:number};w.printedClosed=-1;addEventListener('beforeprint',()=>{w.printedClosed=document.querySelectorAll('dialog.hubble-lab-dialog[open] details:not([open])').length;});});
+ if(browserName==='chromium')await page.pdf();
+ else await page.evaluate(()=>{dispatchEvent(new Event('beforeprint'));dispatchEvent(new Event('afterprint'));});
+ expect(await page.evaluate(()=>(window as unknown as {printedClosed:number}).printedClosed)).toBe(0);
+ expect(await closed()).toBe(folded-1);
+ await expect(channels).toHaveAttribute('open','');
+ await expect(id(page,'pulsar-lab-step-setup').locator('.lab-step-more')).toHaveAttribute('open','');
 });
 
 test('the strip is not printed, and is inert while a window of the page is modal',async({page})=>{
@@ -289,7 +310,7 @@ test('in Spanish the strip, its actions and the guide\'s line are translated',as
  await expect(id(page,'guide-companion-details-toggle')).toHaveText('Detalles del paso');
  await expect(id(page,'guide-companion-full')).toHaveText('Guía completa');
  await expect(id(page,'guide-companion-hide')).toHaveText('Ocultar');await expect(id(page,'guide-companion-hide')).toHaveAccessibleName('Ocultar esta guía');
- await expect(id(page,'guide-companion-next')).not.toContainText('Next:');
+ await expect(id(page,'guide-companion-next')).toHaveText('Configura el radiotelescopio');
  await show(page);await expect(id(page,'radio-exercise-start')).toBeFocused();
 });
 

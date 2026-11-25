@@ -155,7 +155,7 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
 
  // Answer and reveal.
  await page.getByTestId('objectx-answer').getByLabel('asteroid').check();
- await page.getByLabel('Describe your evidence').fill('A source near the centre moved about 55″ per hour between the two images.');
+ await page.getByTestId('objectx-lab').getByLabel('Describe your evidence').fill('A source near the centre moved about 55″ per hour between the two images.');
  expect(await leaks(page)).toEqual([]);
  // QA1 closure E1: a save before the reveal holds no pair counts or skipped reasons (they named asteroid targets).
  const early=await saveOffline(page,async()=>{const download=page.waitForEvent('download');await button(page,'Save investigation').click();return (await download).path();});

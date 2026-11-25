@@ -38,3 +38,7 @@
 }
 .lab-progress-help{margin-top:14px}
 .lab-progress-help summary{font-size:var(--ov-text-sm);font-weight:500;min-height:24px}
+/* Front NEWCOMER NC3: each guide step's More detail (guideMoreDetail.tsx), below its title, status and button. */
+.lab-step-more{margin-top:8px}
+.lab-step-more summary{font-size:var(--ov-text-sm);font-weight:500;min-height:24px;color:var(--ov-accent-text)}
+.lab-step-more[open]>summary{margin-bottom:4px}

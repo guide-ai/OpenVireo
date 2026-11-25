@@ -121,6 +121,7 @@ import PageBar from './components/PageBar';// Front HEADER
 import InvestigationActions from './components/InvestigationActions';
 import type {Route} from './components/routePages';
 import {HelpMenu as MainHelpMenu} from './help/HelpMenus';
+import {installGuidePrintDetails} from './help/printDetails';
 import {LazyBoundary,RecoveryContext} from './components/LazyBoundary';// Front REL1 review 1 M1
 import AboutDialog from './polish/AboutDialog';// Front P
 import {failureNotice,LanguageSelectSlot,siteFooter,siteHeader,VireoOriginalsSlot,welcomeMain} from './components/AppChrome';// Front LAZY-OBS
@@ -647,6 +648,8 @@ export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={
   // route heading focus, so it wins over the welcome's h1 on a route change.
   const [labListFocus,setLabListFocus]=useState(0);
   useEffect(()=>{if(labListFocus===0)return;const heading=homeView.current?.querySelector<HTMLElement>('#home-labs');heading?.scrollIntoView?.({block:'start'});heading?.focus({preventScroll:true});},[labListFocus]);
+  // Front NEWCOMER NC3: a guide window printed while open prints its folded steps too (help/printDetails.ts).
+  useEffect(()=>installGuidePrintDetails(),[]);
   useEffect(()=>{const update=()=>{observatoryClock.stopMotion();if(projectActivity.current)cancelProject();setView(route());};addEventListener('hashchange',update);return()=>removeEventListener('hashchange',update);},[]);
   const inView=project(selected,pointing,FIELDS[mode]).visible;
   const centered=targetCentered(selected,pointing,FIELDS[mode]);

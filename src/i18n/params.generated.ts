@@ -508,6 +508,7 @@ export interface MessageParameters {
   "lab.saveHelp": never;
   "lab.sspHelp": never;
   "lab.interpretTitle": never;
+  "lab.moreDetail": never;
   "lab.interpretHelp": never;
   "lab.reflect.data": never;
   "lab.reflect.fit": never;

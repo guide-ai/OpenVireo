@@ -154,7 +154,7 @@ test('after the reveal Save writes the revealed header; the earlier file and the
  const before=await save(),beforeText=await readFile(before.path,'latin1');
  expect(beforeText.split('\r\n')[0]).toMatch(/^\*SpHdr\* ObjX-7,.*,0\.000$/);
  await page.getByTestId('objectx-answer').getByLabel('star').check();
- await page.getByLabel('Describe your evidence').fill('Absorption lines of a cool star.');
+ await page.getByTestId('objectx-lab').getByLabel('Describe your evidence').fill('Absorption lines of a cool star.');
  await button(page,'Reveal the identity').click();await button(page,'Reveal the identity').click();
  await expect(page.getByTestId('objectx-reveal')).toContainText('N3730-01103');
  await expect(button(page,'Save spectrum (.SSP)')).toBeEnabled();

@@ -4,6 +4,7 @@ import {t} from './i18n';
 import {PULSAR_LAB_REQUIRED_STEPS,PULSAR_LAB_STEPS,type PulsarLabProgress,type PulsarLabStep} from './core/pulsarLab';
 import {PULSAR_EXERCISE_SCENARIO} from './core/pulsarExerciseStart';
 import {BUNDLED_PULSAR_CATALOG} from './io/bundledPulsarCatalog';
+import {moreDetail,stepTitle} from './guideMoreDetail';
 import './hubble-lab.css';
 import './pulsar-lab.css';
 export type PulsarLabDestination='radio-control'|'pulsar-analysis';
@@ -16,6 +17,8 @@ const READING_STEPS:ReadonlySet<PulsarLabStep>=new Set(['period','delay']);
 /** Front GUIDE-COMPANION: the "Next:" line, shared by the guide and the companion strip (components/GuideCompanion.tsx).
  * Start keeps a Tracking that is off once the panel is on: the line then names the control that finishes setup. */
 export const pulsarNextText=(progress:PulsarLabProgress)=>progress.next==='setup'&&progress.trackingOff?t('pulsarLab.next.tracking'):t(`pulsarLab.next.${progress.next}`);
+/** Front NEWCOMER NC3: a step's title, shared with the companion strip's line. */
+export const pulsarStepTitle=(step:PulsarLabStep)=>t(`pulsarLab.step.${step}.title`);
 /** Front GUIDE-COMPANION: what the guide says under a step's heading and status, shared with the companion strip's Step
  * details. `ids` false (the companion) leaves out the test ids: the closed guide is still in the document. */
 export function pulsarStepBody(step:PulsarLabStep,progress:PulsarLabProgress,ids=true){
@@ -52,17 +55,18 @@ function PulsarLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTM
    {/* Start keeps a Tracking that is off once the panel is on: name the control that finishes setup. */}
    <p className="pulsar-lab-next" data-testid="pulsar-lab-next" data-next={progress.next} data-tracking-off={progress.next==='setup'&&progress.trackingOff||undefined}>
     {pulsarNextText(progress)}</p>
-   <p className="lab-recovery" data-testid="pulsar-lab-backup" data-backup={progress.investigationBackup}>{t('pulsarLab.backup')}</p>
    {progress.recordArmed&&<p className="lab-recovery" data-testid="pulsar-lab-armed">{t('pulsarLab.armed')}</p>}
    <button className="secondary-button" data-testid="pulsar-lab-continue" onClick={()=>go(STEP_DESTINATION[progress.next])}>{t('pulsarLab.continue')}</button>
-   <details className="lab-progress-help"><summary>{t('pulsarLab.progressMeaning')}</summary><p>{t('pulsarLab.progressHelp')}</p></details>
+   <details className="lab-progress-help"><summary>{t('pulsarLab.progressMeaning')}</summary><p>{t('pulsarLab.progressHelp')}</p>
+    {/* Front NEWCOMER NC3: how a backup works is part of what the progress means, below the Next line and Continue. */}
+    <p className="lab-recovery" data-testid="pulsar-lab-backup" data-backup={progress.investigationBackup}>{t('pulsarLab.backup')}</p></details>
   </section>
   <ol className="lab-steps pulsar-lab-steps">
    {PULSAR_LAB_STEPS.map(step=><li key={step} data-testid={`pulsar-lab-step-${step}`} data-done={progress.done[step]} data-next={progress.next===step||undefined}>
-    <h3><span className="pulsar-lab-mark" aria-hidden="true">{progress.done[step]?'✓':'○'}</span> {t(`pulsarLab.step.${step}.title`)}</h3>
+    <h3><span className="pulsar-lab-mark" aria-hidden="true">{progress.done[step]?'✓':'○'}</span> {stepTitle(`pulsar-lab-step-${step}`,pulsarStepTitle(step))}</h3>
     <p className="pulsar-lab-status" data-testid={`pulsar-lab-status-${step}`}>{statusText(step)}</p>
-    {pulsarStepBody(step,progress)}
     <button className="secondary-button" onClick={()=>go(STEP_DESTINATION[step])}>{t(STEP_DESTINATION[step]==='radio-control'?'pulsarLab.goRadio':'pulsarLab.goAnalysis')}</button>
+    {moreDetail(`pulsar-lab-step-${step}`,progress.next===step,pulsarStepBody(step,progress))}
    </li>)}
   </ol>
   <section aria-labelledby="pulsar-lab-data-heading" data-testid="pulsar-lab-data-kinds">

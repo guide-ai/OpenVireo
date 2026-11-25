@@ -8,6 +8,7 @@ import {syntheticFits} from '../../fixtures/fits';
 import en from '../../../src/i18n/en.json' with {type:'json'};
 import {e08Maps,type LanguageText,type E08Maps} from '../languageText';
 import {isPseudo,pseudoName,htmlLangOf,type Pseudo,pseudoStart} from '../../fixtures/pseudoNames';
+import {openAllMoreDetail} from '../../fixtures/moreDetail';
 
 // Front SC12 (docs/I18N.md): the walk of tests/i18n/e08.spec.ts and the helpers it needs, moved here unchanged in behaviour so
 // tests/scripts/walks.scripts.ts can run it under the script pseudo-locales; the spec's header describes it.
@@ -159,7 +160,7 @@ export const measureCard=(page:Page)=>page.locator('section.objectx-measure');
  * whose texts are read (the radio route belongs to another front, so only its Object X card is read). */
 export const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>,string?])[]=[
  ['Object X guide',async(page,lang)=>{const toggle=page.locator('.portal-header .tools-toggle');if(await toggle.isVisible()&&await toggle.getAttribute('aria-expanded')!=='true')await toggle.click();
-  await page.locator('.portal-header nav').getByRole('button',{name:Mx(lang,LE.guideNav,m=>m.objectXLab.guideNav)}).click();await expect(id(page,'objectx-guide')).toBeVisible();}],
+  await page.locator('.portal-header nav').getByRole('button',{name:Mx(lang,LE.guideNav,m=>m.objectXLab.guideNav)}).click();await expect(id(page,'objectx-guide')).toBeVisible();await openAllMoreDetail(page);}],
  ['Object X lab',async(page,lang)=>{await mapButton(id(page,'objectx-guide'),lang,G.return,m=>m.objectXGuide.return).click();await expect(id(page,'objectx-guide')).toBeHidden();
   await expect(id(page,'objectx-target').locator('option')).toHaveCount(18,{timeout:30_000});await openAll(lab(page));}],
  ['reveal needs an answer',async(page,lang)=>{await lab(page).getByLabel(Mx(lang,LE.idLabel,m=>m.objectXLab.idLabel)).fill('42');await id(page,'objectx-target').selectOption(STAR_CODE);

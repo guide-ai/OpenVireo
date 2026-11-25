@@ -7,6 +7,7 @@ import {CLASSIFY_PROGRAM_LITERALS_RESTATED} from '../classifyProgramLiterals';
 import en from '../../../src/i18n/en.json' with {type:'json'};
 import {type LanguageText} from '../languageText';
 import {isPseudo,pseudoName,htmlLangOf,type Pseudo} from '../../fixtures/pseudoNames';
+import {openAllMoreDetail} from '../../fixtures/moreDetail';
 
 // Front SC12 (docs/I18N.md): the walk of tests/i18n/e03.spec.ts and the helpers it needs, moved here unchanged in behaviour so
 // tests/scripts/walks.scripts.ts can run it under the script pseudo-locales; the spec's header describes it.
@@ -107,7 +108,7 @@ export async function gesture(page:Page,s:Locator,x:number,y:number){await s.scr
 
 /** The walk through E03. Each step leaves the screen in the state its texts are read in. */
 export const STEPS:readonly (readonly [string,(page:Page,lang:Lang)=>Promise<void>])[]=[
- ['classification guide',async(page,lang)=>{await tool(page,lang,'classLab.nav');await expect(id(page,'classification-lab-dialog')).toBeVisible();await openAll(id(page,'classification-lab-dialog'));}],
+ ['classification guide',async(page,lang)=>{await tool(page,lang,'classLab.nav');await expect(id(page,'classification-lab-dialog')).toBeVisible();await openAll(id(page,'classification-lab-dialog'));await openAllMoreDetail(page);}],
  ['classification lab',async(page,lang)=>{await id(page,'classification-lab-continue').click();await expect(id(page,'classification-lab-dialog')).toBeHidden();await ready(page,lang);await openAll(main(page));}],
  ['answer required',async(page,lang)=>{await button(main(page),lang,'class.review').click();await expect(main(page).locator('.class-feedback [role=alert]')).toBeVisible();}],
  ['Program List',async page=>{await programButton(page,P.programList).click();await expect(programDialog(page)).toBeVisible();}],

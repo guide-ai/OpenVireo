@@ -4,6 +4,7 @@ import {t,formatNumber} from './i18n';
 import {galaxyIdentity,galaxyDistanceReference} from './core/galaxyIdentity';
 import {HUBBLE_SOURCES} from './core/hubbleAnalysis';
 import type {HubbleLabProgress} from './core/hubbleLab';
+import {moreDetail,stepTitle} from './guideMoreDetail';
 import './hubble-lab.css';
 export type LabDestination='galaxy-exposure'|'spectrum'|'hubble';
 type Phase=HubbleLabProgress['next'];
@@ -17,6 +18,10 @@ export const hubblePhaseDestination=(next:Phase):LabDestination=>next==='acquire
 export const hubbleNextText=(progress:HubbleLabProgress)=>progress.next==='interpret'?t('lab.next.interpretSupported',{supported:progress.total,original:progress.original}):t(`lab.next.${progress.next}`);
 /** The guide's counts line (archived, measured and complete targets), shared with the companion strip. */
 export const hubbleCountsText=(progress:HubbleLabProgress)=>t('lab.counts',{archived:progress.archived,measured:progress.measured,rows:progress.inHubble,total:progress.total});
+/** Front NEWCOMER NC3: an item's plain title, shared with the companion strip's line. */
+export function hubbleItemTitle(item:HubbleGuideItem){
+ switch(item){case 'acquire':return t('lab.acquireTitle');case 'measure':return t('lab.measureTitle');case 'hubble':return t('lab.hubbleTitle');case 'save':return t('lab.saveTitle');case 'interpret':return t('lab.interpretTitle');}
+}
 /** What the guide says under an item's heading, shared with the companion strip's Step details. */
 export function hubbleItemBody(item:HubbleGuideItem){
  switch(item){
@@ -35,11 +40,12 @@ function HubbleLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTM
   <p id="hubble-lab-intro">{t('lab.intro')}</p><details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('lab.introOptions')}</p></details>
   <section className="lab-progress" aria-labelledby="lab-progress-heading"><h3 id="lab-progress-heading">{t('lab.progress')}</h3><p data-testid="lab-progress-counts" role="status">{hubbleCountsText(progress)}</p><p data-testid="lab-original-coverage">{t('lab.coverage',{supported:progress.total,original:progress.original})}</p><p data-testid="lab-next">{hubbleNextText(progress)}</p>{progress.duplicateTargets&&<p className="lab-recovery">{t('lab.duplicate')}</p>}<button className="secondary-button" onClick={()=>go(hubblePhaseDestination(progress.next))}>{t('lab.continue')}</button><details className="lab-progress-help"><summary>{t('lab.progressMeaning')}</summary><p>{t('lab.progressHelp')}</p></details></section>
   <ol className="lab-steps">
-   <li data-next={item==='acquire'||undefined}><h3>{t('lab.acquireTitle')}</h3>{hubbleItemBody('acquire')}<button className="secondary-button" onClick={()=>go('galaxy-exposure')}>{t('lab.goExposure')}</button></li>
-   <li data-next={item==='measure'||undefined}><h3>{t('lab.measureTitle')}</h3>{hubbleItemBody('measure')}<button className="secondary-button" onClick={()=>go('spectrum')}>{t('lab.goAnalyzer')}</button></li>
-   <li data-next={item==='hubble'||undefined}><h3>{t('lab.hubbleTitle')}</h3>{hubbleItemBody('hubble')}<button className="secondary-button" onClick={()=>go('hubble')}>{t('lab.goHubble')}</button></li>
-   <li><h3>{t('lab.saveTitle')}</h3>{hubbleItemBody('save')}</li>
-   <li data-next={item==='interpret'||undefined}><h3>{t('lab.interpretTitle')}</h3>{hubbleItemBody('interpret')}</li>
+   {/* Front NEWCOMER NC3: title and button visible, what the guide says under the item folded under More detail. */}
+   <li data-next={item==='acquire'||undefined}><h3>{stepTitle('hubble-lab-step-acquire',hubbleItemTitle('acquire'))}</h3><button className="secondary-button" onClick={()=>go('galaxy-exposure')}>{t('lab.goExposure')}</button>{moreDetail('hubble-lab-step-acquire',item==='acquire',hubbleItemBody('acquire'))}</li>
+   <li data-next={item==='measure'||undefined}><h3>{stepTitle('hubble-lab-step-measure',hubbleItemTitle('measure'))}</h3><button className="secondary-button" onClick={()=>go('spectrum')}>{t('lab.goAnalyzer')}</button>{moreDetail('hubble-lab-step-measure',item==='measure',hubbleItemBody('measure'))}</li>
+   <li data-next={item==='hubble'||undefined}><h3>{stepTitle('hubble-lab-step-hubble',hubbleItemTitle('hubble'))}</h3><button className="secondary-button" onClick={()=>go('hubble')}>{t('lab.goHubble')}</button>{moreDetail('hubble-lab-step-hubble',item==='hubble',hubbleItemBody('hubble'))}</li>
+   <li><h3>{stepTitle('hubble-lab-step-save',hubbleItemTitle('save'))}</h3>{moreDetail('hubble-lab-step-save',false,hubbleItemBody('save'))}</li>
+   <li data-next={item==='interpret'||undefined}><h3>{stepTitle('hubble-lab-step-interpret',hubbleItemTitle('interpret'))}</h3>{moreDetail('hubble-lab-step-interpret',item==='interpret',hubbleItemBody('interpret'))}</li>
   </ol>
   <section aria-labelledby="lab-targets-heading"><h3 id="lab-targets-heading">{t('lab.targets')}</h3><p>{t('lab.referencesHelp')}</p><ul className="lab-targets">{progress.targets.map(p=>{const identity=galaxyIdentity(p.id),reference=galaxyDistanceReference(p.id);return <li key={p.id} data-testid={`lab-target-${p.id}`}><h4>{p.id} · {identity.label}</h4><dl>{(['archived','measured','inHubble']as const).map(key=><div key={key}><dt>{t(`lab.status.${key}`)}</dt><dd>{t(p[key]?'lab.yes':'lab.no')}</dd></div>)}</dl><p>{t('lab.magnitude',{value:formatNumber(reference.apparentV,{minimumFractionDigits:1,maximumFractionDigits:1}),source:reference.source})}</p></li>;})}</ul></section>
   <details className="lab-troubleshooting"><summary>{t('lab.troubleshooting')}</summary><dl>{(['start','noisy','rows','repeat','files','limits']as const).map(key=><div key={key}><dt>{t(`lab.problem.${key}`)}</dt><dd>{t(`lab.recover.${key}`)}</dd></div>)}</dl></details>

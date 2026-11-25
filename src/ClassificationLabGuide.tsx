@@ -3,10 +3,13 @@ import {sameData} from './renderStability';
 import {t} from './i18n';
 import {CLASSIFICATION_LAB_COUNTED_STEPS,CLASSIFICATION_LAB_STEPS,type ClassificationLabProgress,type ClassificationLabStep} from './core/classificationLab';
 import {CLASSIFICATION_CATALOG} from './core/classification';
+import {moreDetail,stepTitle} from './guideMoreDetail';
 import './hubble-lab.css';
 import './pulsar-lab.css';
 import './pleiades-lab.css';
 
+/** Front NEWCOMER NC3: a step's title (numbered, as the window shows it), shared with the companion strip's line. */
+export const classificationStepTitle=(step:ClassificationLabStep)=>t(`classLab.step.${step}.title`);
 /** Front GUIDE-COMPANION: what the guide says under a step's heading and status, shared with the companion strip's Step
  * details. `ids` false (the companion) leaves out the test ids: the closed guide is still in the document. */
 export function classificationStepBody(step:ClassificationLabStep,ids=true){
@@ -26,8 +29,9 @@ function ClassificationLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefOb
  return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog pleiades-lab-dialog classification-lab-dialog" aria-labelledby="classification-lab-heading" aria-describedby="classification-lab-intro" data-testid="classification-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('classLab.eyebrow')}</div><h2 id="classification-lab-heading">{t('classLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="classification-lab-close" onClick={()=>dialogRef.current?.close()}>{t('classLab.close')}</button></div>
-  <p id="classification-lab-intro">{t('classLab.intro')}</p><details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('classLab.introOptions')}</p></details>
-  <p className="lab-recovery" data-testid="classification-lab-adaptation">{t('classLab.adaptation')}</p>
+  <p id="classification-lab-intro">{t('classLab.intro')}</p><details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('classLab.introOptions')}</p>
+   {/* Front NEWCOMER NC3: the adaptation note is a research note, below the always-visible intro. */}
+   <p className="lab-recovery" data-testid="classification-lab-adaptation">{t('classLab.adaptation')}</p></details>
   <section className="lab-progress" aria-labelledby="classification-lab-progress-heading">
    <h3 id="classification-lab-progress-heading">{t('classLab.progress')}</h3>
    <p data-testid="classification-lab-counts" role="status">{t('classLab.counts',{done:doneCount,total:CLASSIFICATION_LAB_COUNTED_STEPS.length})}</p>
@@ -38,10 +42,10 @@ function ClassificationLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefOb
   </section>
   <ol className="lab-steps pulsar-lab-steps pleiades-lab-steps">
    {CLASSIFICATION_LAB_STEPS.map(step=><li key={step} data-testid={`classification-lab-step-${step}`} data-done={progress.done[step]} data-next={progress.next===step||undefined} data-counted={step!=='save'}>
-    <h3><span className="pleiades-lab-mark" aria-hidden="true" data-done={progress.done[step]}/>{t(`classLab.step.${step}.title`)}</h3>
+    <h3><span className="pleiades-lab-mark" aria-hidden="true" data-done={progress.done[step]}/>{stepTitle(`classification-lab-step-${step}`,classificationStepTitle(step))}</h3>
     <p className="pulsar-lab-status" data-testid={`classification-lab-status-${step}`}>{statusText(step)}</p>
-    {classificationStepBody(step)}
     <button className="secondary-button" onClick={go}>{t('classLab.goClassification')}</button>
+    {moreDetail(`classification-lab-step-${step}`,progress.next===step,classificationStepBody(step))}
    </li>)}
   </ol>
   <details className="lab-troubleshooting"><summary>{t('classLab.troubleshooting')}</summary><dl>{(['load','draft','limit','width','import']as const).map(key=><div key={key}>

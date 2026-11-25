@@ -75,3 +75,8 @@ export function companionTarget(p:CompanionProgress):string{
   default:return p.progress.next;
  }
 }
+
+/** Front NEWCOMER NC3 (plan §2.3, review M5): a step title without the number the classification guide puts before it in every
+ * language («1 · Choose a practice», «1 · 練習を選ぶ»). The strip already says «Step n of m», so it shows the title without it;
+ * the guide's window keeps its numbered titles and no string changes. A title without such a number is returned as it is. */
+export const withoutStepNumber=(title:string):string=>title.replace(/^\s*\d+\s*·\s*/u,'');

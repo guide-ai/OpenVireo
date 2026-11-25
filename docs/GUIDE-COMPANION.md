@@ -24,10 +24,12 @@ had to remember the step, find the page and find the control. The companion keep
   mark that goes back (a save made stale, receivers closed before a capture) takes the strip back with it.
 - **Nothing is stored.** The guide in use is state of the page load; a reload starts without a strip. No answer, expected value
   or grade appears in the strip that the guide does not show; Object X's identity stays hidden as in its guide.
-- **One text, two places.** The strip's line is the guide's own "Next:" line (or the step's title in the LSS and Object X
-  guides, which have none), and Step details is the guide's own step body. Each guide exports them
-  (`hubbleNextText`/`hubbleItemBody`, `lssStepHelp`, `pulsarNextText`/`pulsarStepBody`, `pleiadesStepBody`,
-  `classificationStepBody`, `ClusterLabGuideText.tsx`) and `src/components/guideCompanionContent.tsx` puts them together. The
+- **One text, two places.** The strip's line is the current step's plain title, as the guide's window shows it (Front
+  NEWCOMER NC3, "Plain step titles and More detail" below; before NC3 it was the guide's "Next:" line), and Step details is the
+  guide's "Next:" line followed by the guide's own step body. Each guide exports them
+  (`hubbleItemTitle`/`hubbleNextText`/`hubbleItemBody`, `lssStepHelp`, `pulsarStepTitle`/`pulsarNextText`/`pulsarStepBody`,
+  `pleiadesStepTitle`/`pleiadesStepBody`, `classificationStepTitle`/`classificationStepBody`, `ClusterLabGuideText.tsx`) and
+  `src/components/guideCompanionContent.tsx` puts them together. The
   only strings of the strip itself are `companion` in `src/components/AppShellMessages.ts` (seventeen, in ten languages: ten of the strip and the seven of Restart
   exercise).
 - **Steps done many times show their count.** The Hubble, LSS, Object X and Pleiades guides have steps that take one action
@@ -262,6 +264,46 @@ LAUNCH-1's "Show tracking control" in the tour (the observatory's own tracking s
   look in the Help menu between Take the tour of the site and Websites; `tests/first-look.spec.ts` guards Open dome on the first
   screen at 375 × 700 (as `tests/launch-landing.spec.ts` does) instead of 375 × 667 and 390 × 664, where CI's wider Ubuntu fonts
   left it half on screen in Spanish, Portuguese and French.
+
+## Plain step titles and More detail
+
+Front NEWCOMER NC3 (user decision, 2026-11-24, recorded in AGENTS.md; plan analysis/front-plans/front-newcomer.md §2.3, review
+M2, M5, M7 and m7):
+
+- **Each step of the seven guide windows shows its title, its status and its button**, and folds the rest of what the guide says
+  under the step (body text, formulas, warnings) into a `<details class="lab-step-more">` «More detail» (`src/guideMoreDetail.tsx`
+  `moreDetail` and `stepTitle`, plain functions: the windows render closed on every load and the render budget is unchanged).
+  The current step's More detail is open (`open={step===next}`), the others closed; nothing is deleted, only reordered (the
+  button now comes before the folded text). The summary's visible text is «More detail», and its name adds the step's title
+  (`aria-labelledby="<id>-more <id>-title"`, «More detail Measure the period»), so the 50 summaries are told apart; the status
+  beside the title stays out of that name. One new tab stop per step.
+- **The top of each window:** the classification guide's adaptation note joins the existing Research notes (Hubble, LSS,
+  cluster and Pleiades already kept theirs there); in the progress block, the pulsar guide's backup note and the Pleiades
+  guide's E05 note move into its «What does this progress mean?» disclosure. The intro paragraphs stay visible (the dialogs'
+  `aria-describedby` still points at them) until NC4 replaces them.
+- **Twelve titles were rewritten** in plain words (same keys, ten languages; docs/I18N.md "Plain step titles"): Hubble's five
+  items, cluster HR trial and report, pulsars' delay, Pleiades measure, color and sample, and Object X's measure step.
+- **The strip's line is the step's title** in all seven guides (`companionContent`). The classification guide's «n · » number is
+  left out in the strip only (`withoutStepNumber` in `src/core/guideCompanion.ts`, tested on the ten catalogs), since the strip
+  says «Step n of m»; the window keeps it. Step details opens with the guide's "Next:" line, then the step's body. Kept as the
+  line: the two warning states (Hubble `dataset`, `lab.next.dataset`; pulsars `setup` with Tracking off,
+  `pulsarLab.next.tracking`) and every closing state (Hubble `lab.next.interpretSupported`, `pulsarLab.next.save`,
+  `pleiadesLab.next.save`, `classLab.next.save`; LSS, Object X and cluster `companion.allDone`). This replaces the strip's
+  "Next:" line of the GUIDE-COMPANION record.
+- **Print:** a guide window printed while it is open prints everything it says. `src/help/printDetails.ts`
+  (`installGuidePrintDetails`, installed once by the shell) opens every closed `<details>` of an open guide window on
+  `beforeprint` (More detail, Research notes, What does this progress mean?, Troubleshooting, Sources) and closes exactly those
+  again on `afterprint`. The strip itself is not printed, so its Step details need nothing.
+- **Tests:** `src/guideMoreDetail.test.ts` (server render of each window: one More detail per step, open only on the current
+  step, title, status and button outside it, the summary's name; every body test id still rendered; the strip's line per guide
+  and state; Step details starting with the "Next:" line; `withoutStepNumber` on ten catalogs; the print helper);
+  `tests/guide-companion.spec.ts` (the line is the title; Step details start with the "Next:" line; print of an open guide window
+  opens and restores its details); the walks open every More detail before their checks through
+  `tests/fixtures/moreDetail.ts` `openAllMoreDetail`. The print test runs in Chromium (`page.pdf()` fires both events) and passed
+  with `--browser=firefox` (the two events dispatched); WebKit could not start on the implementer's machine (missing system
+  libraries). A summary named by its step's title is also found by `getByLabel(<title>)`: `tests/object-x-path.spec.ts` and
+  `tests/object-x-spectrum.spec.ts` now look for the Object X answer box («Describe your evidence», also a step title) inside
+  the Object X page.
 
 ## Layout and accessibility
 

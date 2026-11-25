@@ -1,7 +1,8 @@
 import type {RefObject} from 'react';
 import {t} from './i18n';
 import {CLUSTER_LAB_STEPS,type ClusterLabProgress,type ClusterLabStep,type ClusterOwnStatus} from './core/clusterLab';
-import {clusterNextText,clusterStepBody} from './ClusterLabGuideText';
+import {clusterNextText,clusterStepBody,clusterStepTitle} from './ClusterLabGuideText';
+import {moreDetail,stepTitle} from './guideMoreDetail';
 import './hubble-lab.css';
 
 /** WEB-CLUSTER-GUIDE-01: the cluster HR (E05) guide for the database route, with the HubbleLabGuide layout. Every check
@@ -24,10 +25,10 @@ export default function ClusterLabGuide({dialogRef,progress,cluster,onNavigate,o
   </section>
   <ol className="lab-steps">
    {CLUSTER_LAB_STEPS.map(step=><li key={step} data-testid={`cluster-lab-step-${step}`} data-done={progress.done[step]} data-next={progress.next===step||undefined}>
-    <h3><span aria-hidden="true">{progress.done[step]?'✓':'○'}</span> {t(`clusterLab.step.${step}.title`)}</h3>
+    <h3><span aria-hidden="true">{progress.done[step]?'✓':'○'}</span> {stepTitle(`cluster-lab-step-${step}`,clusterStepTitle(step))}</h3>
     <p data-testid={`cluster-lab-status-${step}`}>{t(progress.done[step]?'clusterLab.status.done':'clusterLab.status.notYet')}</p>
-    {clusterStepBody(step)}
     <button className="secondary-button" onClick={()=>go(step)}>{t('clusterLab.go')}</button>
+    {moreDetail(`cluster-lab-step-${step}`,progress.next===step,clusterStepBody(step))}
    </li>)}
   </ol>
   <section aria-labelledby="cluster-lab-preserve-heading" data-testid="cluster-lab-preserve">

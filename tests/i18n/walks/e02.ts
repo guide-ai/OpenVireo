@@ -7,6 +7,7 @@ import en from '../../../src/i18n/en.json' with {type:'json'};
 import {enterInstructorMode} from '../../fixtures/instructor-mode';
 import {type LanguageText} from '../languageText';
 import {isPseudo,pseudoName,htmlLangOf,type Pseudo} from '../../fixtures/pseudoNames';
+import {openAllMoreDetail} from '../../fixtures/moreDetail';
 
 // Front SC12 (docs/I18N.md): the walk of tests/i18n/e02.spec.ts and the helpers it needs, moved here unchanged in behaviour so
 // tests/scripts/walks.scripts.ts can run it under the script pseudo-locales; the spec's header describes it.
@@ -99,7 +100,7 @@ export const SEED_TXT='Object ID    MJD(Days)      RA           Dec     V(km/sec
 export type Context={txt?:Buffer};
 /** The walk through E02. Each step leaves the screen in the state its texts are read in. */
 export const STEPS:readonly (readonly [string,(page:Page,lang:Lang,c:Context)=>Promise<void>])[]=[
- ['LSS lab guide',async(page,lang)=>{await tool(page,lang,'lssLab.nav');await expect(id(page,'lss-lab')).toBeVisible();}],
+ ['LSS lab guide',async(page,lang)=>{await tool(page,lang,'lssLab.nav');await expect(id(page,'lss-lab')).toBeVisible();await openAllMoreDetail(page);}],
  ['LSS survey',async(page,lang)=>{await button(id(page,'lss-lab').locator('[data-testid=lss-lab-step-load]'),lang,'lssLab.goSurvey').click();await expect(id(page,'lss-lab')).toBeHidden();
   await expect(page.getByRole('heading',{name:N(lang,'lss.title')})).toBeVisible();await expect(page.locator('#lss-field')).toBeEnabled({timeout:30_000});}],
  ['field list loaded',async(page,lang)=>{await page.locator('#lss-field').selectOption('1');await button(page,lang,'lss.load').click();await expect(id(page,'lss-rows')).toBeVisible({timeout:30_000});

@@ -3,6 +3,7 @@ import {sameData} from './renderStability';
 import {t} from './i18n';
 import {PLEIADES_LAB_COUNTED_STEPS,PLEIADES_LAB_STEPS,type PleiadesLabProgress,type PleiadesLabStep} from './core/pleiadesLab';
 import {PLEIADES_HTL} from './core/pleiadesHotList';
+import {moreDetail,stepTitle} from './guideMoreDetail';
 import './hubble-lab.css';
 import './pulsar-lab.css';
 import './pleiades-lab.css';
@@ -13,6 +14,8 @@ export type PleiadesLabDestination='observatory'|'hotlist'|'photometer'|'observa
 const STEP_DESTINATION:Readonly<Record<PleiadesLabStep,PleiadesLabDestination>>={list:'hotlist',point:'observatory',activate:'photometer',
  measure:'photometer',record:'photometer',color:'photometer',sample:'photometer',distance:'photometer',save:'photometer'};
 
+/** Front NEWCOMER NC3: a step's title, shared with the companion strip's line. */
+export const pleiadesStepTitle=(step:PleiadesLabStep)=>t(`pleiadesLab.step.${step}.title`);
 /** Front GUIDE-COMPANION: what the guide says under a step's heading and status, shared with the companion strip's Step
  * details. `ids` false (the companion) leaves out the test ids: the closed guide is still in the document. */
 export function pleiadesStepBody(step:PleiadesLabStep,ids=true){
@@ -46,17 +49,18 @@ function PleiadesLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<H
    <p data-testid="pleiades-lab-counts" role="status">{t('pleiadesLab.counts',{done:doneCount,total:PLEIADES_LAB_COUNTED_STEPS.length})}</p>
    <p data-testid="pleiades-lab-coverage">{t('pleiadesLab.coverage',{count:progress.colorTargets,total:progress.sampleTargets})}</p>
    <p className="pulsar-lab-next" data-testid="pleiades-lab-next" data-next={progress.next}>{t(`pleiadesLab.next.${progress.next}`)}</p>
-   <p className="lab-recovery" data-testid="pleiades-lab-e05">{t('pleiadesLab.e05')}</p>
    <button className="secondary-button" data-testid="pleiades-lab-observations" onClick={()=>go('observations')}>{t('pleiadesLab.goObservations')}</button>
    <button className="secondary-button" data-testid="pleiades-lab-continue" onClick={()=>go(STEP_DESTINATION[progress.next])}>{t('pleiadesLab.continue')}</button>
-   <details className="lab-progress-help"><summary>{t('pleiadesLab.progressMeaning')}</summary><p>{t('pleiadesLab.progressHelp')}</p></details>
+   <details className="lab-progress-help"><summary>{t('pleiadesLab.progressMeaning')}</summary><p>{t('pleiadesLab.progressHelp')}</p>
+    {/* Front NEWCOMER NC3: the note on the next exercise (E05) is part of what the progress means. */}
+    <p className="lab-recovery" data-testid="pleiades-lab-e05">{t('pleiadesLab.e05')}</p></details>
   </section>
   <ol className="lab-steps pulsar-lab-steps pleiades-lab-steps">
    {PLEIADES_LAB_STEPS.map(step=><li key={step} data-testid={`pleiades-lab-step-${step}`} data-done={progress.done[step]} data-next={progress.next===step||undefined} data-counted={step!=='save'}>
-    <h3><span className="pleiades-lab-mark" aria-hidden="true" data-done={progress.done[step]}/>{t(`pleiadesLab.step.${step}.title`)}</h3>
+    <h3><span className="pleiades-lab-mark" aria-hidden="true" data-done={progress.done[step]}/>{stepTitle(`pleiades-lab-step-${step}`,pleiadesStepTitle(step))}</h3>
     <p className="pulsar-lab-status" data-testid={`pleiades-lab-status-${step}`}>{statusText(step)}</p>
-    {pleiadesStepBody(step)}
     <button className="secondary-button" onClick={()=>go(STEP_DESTINATION[step])}>{t(STEP_DESTINATION[step]==='hotlist'?'pleiadesLab.goHotList':STEP_DESTINATION[step]==='observatory'?'pleiadesLab.goObservatory':'pleiadesLab.goPhotometer')}</button>
+    {moreDetail(`pleiades-lab-step-${step}`,progress.next===step,pleiadesStepBody(step))}
    </li>)}
   </ol>
   <details className="lab-troubleshooting"><summary>{t('pleiadesLab.troubleshooting')}</summary><dl>{(['card','blocked','start','sky','budget']as const).map(key=><div key={key}>
