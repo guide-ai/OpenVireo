@@ -47,7 +47,14 @@ export default function SiteTour({onClose,onFirstLook,onChooseLab}:{onClose:()=>
   // Scrolled with a margin, so the outline around the part is not cut off at the window's edge.
   // A class, not an inline style, so the part's own inline styles are left untouched (site-tour.css).
   const el=visibleTarget(step.targets);
-  el?.classList.add('site-tour-scrolling');el?.scrollIntoView({block:'nearest',inline:'nearest'});el?.classList.remove('site-tour-scrolling');
+  el?.classList.add('site-tour-scrolling');el?.scrollIntoView({block:'nearest',inline:'nearest'});
+  // From 600 px up, a card that fits neither beside, below nor above the part would cover it (the last step's wide card around
+  // the Exercise guides section of the menu at the top of an 800 × 600 page); the part is then scrolled to the top of the
+  // window, so the card fits below it. On phones the card docks at the bottom by design.
+  const c=card.current,view=viewSize(),clip=el&&c&&view.width>=600?clippedBox(el,view):null;
+  if(el&&c&&clip&&placeTourCard(spotBox(clip,view),{width:c.offsetWidth,height:c.offsetHeight},view,uiDirection()).side==='bottom')
+   el.scrollIntoView({block:'start',inline:'nearest'});
+  el?.classList.remove('site-tour-scrolling');
   measure();
   // Next frame: opening the modal puts focus on the dialog itself. The card gets it, so a screen reader reads the step's
   // number, title and text (review 1 S6).

@@ -264,6 +264,11 @@ LAUNCH-1's "Show tracking control" in the tour (the observatory's own tracking s
   look in the Help menu between Take the tour of the site and Websites; `tests/first-look.spec.ts` guards Open dome on the first
   screen at 375 × 700 (as `tests/launch-landing.spec.ts` does) instead of 375 × 667 and 390 × 664, where CI's wider Ubuntu fonts
   left it half on screen in Spanish, Portuguese and French.
+- **CI fix after NC4 (main run 45592548133):** at 800 × 600 the last card fit neither below nor above the Exercise guides
+  section (the menu at the top of the page left 271 px above it and 199 px below, for a card 286 px tall) and fell back to the
+  bottom over it; the wider card of S1 was not enough there. `components/SiteTour.tsx` now scrolls the part to the top of the
+  window, from 600 px up, whenever the card would otherwise fall back to the bottom, so it fits below the part
+  (`tests/onboarding.spec.ts` 800 × 600). On phones the card still docks at the bottom by design.
 
 ## Plain step titles and More detail
 
