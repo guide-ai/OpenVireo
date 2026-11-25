@@ -7,7 +7,6 @@
  * again. guideTargets.test.ts checks that each name exists in the source and is on the step's page
  * (components/guideCompanionRoute.ts). Pure data: no text, no DOM. New web presentation, not a CLEA resource. */
 import type {CompanionGuide} from '../core/guideCompanion';
-import {FIRST_LOOK_TARGET_ID} from '../core/firstLook';
 
 const id=(name:string)=>`[data-testid="${name}"]`;
 /** Save investigation, in the page bar of every page. */
@@ -117,12 +116,14 @@ export const GUIDE_TARGETS:Readonly<Record<CompanionGuide,Readonly<Record<string
  // script walks name a known layout problem by its nearest data-testid, tests/fixtures/rtlKnown.ts).
  'first-look':Object.freeze({
   dome:[id('dome-open')],
-  // Point telescope once the suggested object is the one selected (the button publishes the selected object's id); before
+  // Point telescope once the suggested object (FIRST_LOOK_TARGET_ID) is the one selected (the button publishes it); before
   // that, the picker. Pointing at another object also completes the step.
-  point:[`#point-target[data-target="${FIRST_LOOK_TARGET_ID}"]`,'#target'],
+  point:['#point-target[data-first-look]','#target'],
   look:['#to-telescope'],
-  // Open spectrum analyzer is there only for an object with a library spectrum; otherwise the picker, to choose one that has.
-  spectrum:['#open-analyzer','#target'],
+  // Open spectrum analyzer, for an object with a library spectrum (outlined while it loads, as other guides' disabled
+  // controls); for an object without one, the picker, to choose one that has (core/guideCompanion.ts companionTarget).
+  spectrum:['#open-analyzer'],
+  'spectrum-choose':['#target'],
   // The closing line: the lab list of the welcome.
   done:['#home-labs'],
  }),

@@ -1,4 +1,12 @@
 import {test,expect,type Page} from '@playwright/test';
+import en from '../src/i18n/en.json' with {type:'json'};
+import es from '../src/i18n/es/es.json' with {type:'json'};
+import pt from '../src/i18n/pt-br/pt-br.json' with {type:'json'};
+import fr from '../src/i18n/fr/fr.json' with {type:'json'};
+import id_ from '../src/i18n/id/id.json' with {type:'json'};
+import hi from '../src/i18n/hi/hi.json' with {type:'json'};
+import ru from '../src/i18n/ru/ru.json' with {type:'json'};
+import {contextLocale,langQuery} from './fixtures/language';
 
 // Front NEWCOMER NC1 (user decision, 2026-11-24; plan analysis/front-plans/front-newcomer.md §2.1): the first look, a guided
 // four-step walk in the observatory shown by the guide companion strip (core/firstLook.ts). It ends on VIREO's original library
@@ -37,7 +45,7 @@ test('the band\'s Guide me starts the first look: four steps with only Show me w
  const dome=id(page,'dome-open');await expect(dome).toBeFocused();
  await dome.click();
  await expect(strip(page)).toHaveAttribute('data-step','point');
- await expect(id(page,'guide-companion-next')).toHaveText('Choose M82 and point the telescope at it');
+ await expect(id(page,'guide-companion-next')).toHaveText('Choose the galaxy M82 and point the telescope at it');
  await expect(page.locator('.first-steps li.current')).toContainText('2 · Choose and point');
  // 2 · M81 is preselected: Show me where outlines the picker first, then Point telescope once M82 is chosen.
  await show(page);
@@ -129,15 +137,15 @@ test('Help › Take a first look from the welcome loads the observatory with the
 test('Spanish at 375 px: the first look in the visitor\'s language, inside the window and under half of it',async({page})=>{
  await page.setViewportSize({width:375,height:740});
  await observatory(page,'?lang=es-419');
- const start=page.getByRole('button',{name:'Guíame (unos 3 min)',exact:true});
- // Under the band, full width on a phone, and inside the window.
+ const start=page.getByRole('button',{name:'Seguir la guía (unos 3 min)',exact:true});
+ // In the heading, on the line of "What works in this version", and inside the window.
  const button=(await start.boundingBox())!;expect(button.x+button.width).toBeLessThanOrEqual(375.5);
  await page.screenshot({path:test.info().outputPath('first-look-band-375-es.png')});
  await start.click();
  await expect(id(page,'guide-companion-lab')).toHaveText('Primer vistazo');await expect(id(page,'guide-companion-step')).toHaveText('Paso 1 de 4');
  await expect(id(page,'guide-companion-next')).toHaveText('Abre la cúpula');
  await id(page,'dome-open').click();
- await expect(id(page,'guide-companion-next')).toHaveText('Elige M82 y apunta el telescopio hacia ella');
+ await expect(id(page,'guide-companion-next')).toHaveText('Elige la galaxia M82 y apunta el telescopio hacia ella');
  const bar=(await strip(page).boundingBox())!;
  expect(bar.x).toBeGreaterThanOrEqual(0);expect(bar.x+bar.width).toBeLessThanOrEqual(375.5);
  expect(bar.y+bar.height).toBeLessThanOrEqual(740.5);expect(bar.height).toBeLessThanOrEqual(740*.45+1);
@@ -150,9 +158,86 @@ test('right to left: the band\'s button and the strip stay inside the window',as
  await page.setViewportSize({width:1280,height:800});
  await observatory(page,'?lang=qps-rtl');
  await expect(page.locator('html')).toHaveAttribute('dir','rtl');
- await page.locator('.first-look-start button').click();
+ await page.locator('.first-look-start').click();
  await expect(strip(page)).toHaveAttribute('data-lab','first-look');
  const bar=(await strip(page).boundingBox())!;
  expect(bar.x).toBeGreaterThanOrEqual(0);expect(bar.x+bar.width).toBeLessThanOrEqual(1280.5);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth)).toBe(true);
+});
+
+test('starting the first look on the observatory puts the focus in the strip: from Guide me by keyboard, and from Help',async({page})=>{
+ await observatory(page);
+ const start=page.getByRole('button',{name:'Guide me (about 3 min)',exact:true});
+ await start.focus();await page.keyboard.press('Enter');
+ await expect(strip(page)).toHaveAttribute('data-lab','first-look');
+ await expect(id(page,'guide-companion-show')).toBeFocused();
+ await id(page,'guide-companion-hide').click();await expect(strip(page)).toHaveCount(0);
+ await id(page,'main-help-menu').click();
+ await page.locator('#main-help-first-look').focus();await page.keyboard.press('Enter');
+ await expect(strip(page)).toHaveAttribute('data-lab','first-look');
+ await expect(id(page,'guide-companion-show')).toBeFocused();
+});
+
+test('while M82\'s library spectrum is still loading, Show me where outlines Open spectrum analyzer, and the outline stays on it once it is enabled',async({page})=>{
+ await observatory(page);
+ await page.route(/NGC3034/,async route=>{await new Promise(r=>setTimeout(r,3000));await route.continue();});
+ await page.getByRole('button',{name:'Guide me (about 3 min)',exact:true}).click();
+ await id(page,'dome-open').click();
+ await page.locator('#target').selectOption('NGC3034');
+ await page.locator('#to-telescope').click();
+ await expect(strip(page)).toHaveAttribute('data-step','spectrum');
+ const analyzer=page.locator('#open-analyzer');
+ await expect(analyzer).toBeDisabled();
+ await id(page,'guide-companion-show').click();
+ const spot=id(page,'guide-companion-spot');await expect(spot).toBeVisible({timeout:15_000});
+ const encloses=async()=>{const a=(await analyzer.boundingBox())!,b=(await spot.boundingBox())!;return b.x<=a.x&&b.y<=a.y&&b.x+b.width>=a.x+a.width&&b.y+b.height>=a.y+a.height;};
+ expect(await encloses()).toBe(true);
+ await expect(analyzer).toBeEnabled({timeout:15_000});
+ await expect(spot).toBeVisible();expect(await encloses()).toBe(true);
+});
+
+test('the closing line\'s outlined lab-list heading keeps its focus without pulling back a scroll of the page',async({page})=>{
+ await page.setViewportSize({width:1280,height:500});
+ await observatory(page);
+ await page.getByRole('button',{name:'Guide me (about 3 min)',exact:true}).click();
+ await id(page,'dome-open').click();
+ await page.locator('#target').selectOption('NGC3034');
+ await page.locator('#to-telescope').click();
+ await page.locator('#open-analyzer').click();
+ await expect(strip(page)).toHaveAttribute('data-step','done');
+ await id(page,'guide-companion-show').click();
+ await expect(id(page,'guide-companion-spot')).toBeVisible({timeout:15_000});
+ await expect(page.locator('#home-labs')).toBeFocused();
+ expect(await page.evaluate(()=>scrollY)).toBeGreaterThan(0);
+ await page.evaluate(()=>window.scrollTo(0,0));
+ // The outline's settle loop runs every 250 ms: a second lets it run several times.
+ await page.waitForTimeout(1000);
+ expect(await page.evaluate(()=>scrollY)).toBe(0);
+ await expect(page.locator('#home-labs')).toBeFocused();
+});
+
+// Review (NC1): Guide me adds no height, so the dome cover's Open dome stays on the first screen of a phone, and a laptop's
+// heading is as tall as without it. (At 360 × 640, Open dome is already below the first screen in Portuguese and Russian
+// without Guide me; that is not this front's.)
+const heading=(page:Page)=>page.locator('.sky-heading').evaluate(el=>el.getBoundingClientRect().height);
+for(const [lang,catalog] of [['en',en],['es-419',es],['pt-BR',pt],['fr',fr],['id',id_],['hi',hi],['ru',ru]] as const)test.describe(()=>{
+ test.use({locale:contextLocale(lang)});
+ for(const [width,height] of [[375,667],[390,664]] as const)
+  test(`${lang} at ${width} × ${height}: Open dome ↗ and Guide me are on the first screen`,async({page})=>{
+   await page.setViewportSize({width,height});
+   await page.goto(`/${langQuery(lang)}#observatory`);
+   await expect(page.locator('.first-look-start')).toBeVisible({timeout:30_000});
+   expect(await page.evaluate(()=>scrollY)).toBe(0);
+   await expect(page.locator('.dome-cover').getByRole('button',{name:`${(catalog as Record<string,string>)['sky.open']} ↗`,exact:true})).toBeInViewport({ratio:1});
+   await expect(page.locator('.first-look-start')).toBeInViewport({ratio:1});
+   expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+  });
+ test(`${lang} at 1280 × 720: Guide me adds no height to the heading`,async({page})=>{
+  await page.setViewportSize({width:1280,height:720});
+  await page.goto(`/${langQuery(lang)}#observatory`);
+  await expect(page.locator('.first-look-start')).toBeInViewport({ratio:1,timeout:30_000});
+  const shown=await heading(page);
+  await page.addStyleTag({content:'.first-look-start{display:none!important}'});
+  expect(await heading(page)).toBe(shown);
+ });
 });

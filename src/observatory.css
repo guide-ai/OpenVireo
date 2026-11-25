@@ -136,11 +136,16 @@
 .first-steps .current{border-color:var(--ov-accent)}
 .first-steps strong{font-size:var(--ov-text-md);font-weight:650;display:block;color:var(--ov-text)}
 .first-steps span{font-size:var(--ov-text-sm);line-height:1.55;color:var(--ov-text-muted);display:block;margin-top:4px}
-/* Front NEWCOMER NC1: Guide me, at the end of the observatory heading, starts the first look (core/firstLook.ts); beside the
-   subtitle from 1300 px up (no height added, so Open dome stays on a laptop's first screen), under it below; text wraps, never cut. */
-.first-look-start{margin:8px 0 0}
-@media(min-width:1300px){.observatory-heading>.first-look-start{position:absolute;inset-inline-end:0;inset-block-end:20px;margin:0;max-inline-size:calc(100% - 800px)}}
-.first-look-start button{max-inline-size:100%;white-space:normal;overflow-wrap:anywhere}
+/* Front NEWCOMER NC1: Guide me starts the first look (core/firstLook.ts). It shares the line of "What works in this version"
+   (both wrap to two lines only when they do not fit), so it adds no height and Open dome stays on the first screen: at the
+   heading's top end beside the title from 1051 px, one under the other; beside the subtitle at its bottom end from 1300 px.
+   Text wraps, never cut. */
+.sky-heading-links{display:flex;flex-wrap:wrap;align-items:center;column-gap:16px}
+.first-look-start{max-inline-size:100%;white-space:normal;overflow-wrap:anywhere;text-align:start}
+@media(min-width:1051px){.sky-heading-links{position:absolute;inset-inline-end:0;top:22px;flex-direction:column;align-items:flex-end}}
+@media(min-width:1300px){.sky-heading-links{display:contents}
+ .sky-heading-links>.text-button:first-child{position:absolute;inset-inline-end:0;top:22px}
+ .sky-heading-links>.first-look-start{position:absolute;inset-inline-end:0;inset-block-end:20px;max-inline-size:calc(100% - 800px);text-align:end}}
 
 .observatory-workspace{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;align-items:start}
 .sky-frame{position:relative}
@@ -238,7 +243,6 @@
  .first-steps li{padding-block:8px 0;padding-inline:0 4px}
  .first-steps strong{font-size:var(--ov-text-sm);line-height:1.35;overflow-wrap:anywhere}
  .first-steps span{display:none}
- .first-look-start button{inline-size:100%}
  .observatory-controls{grid-template-columns:1fr}
  .sky-toolbar,.sky-caption{padding:10px 14px}
  .sky-card .card-heading{padding:16px 14px}
@@ -247,7 +251,9 @@
   * the subtitle stays for screen readers. */
  .dome-icon{display:none}
  .sky-heading{padding:14px 0 10px}
- .sky-heading .sky-subtitle{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+ /* Front NEWCOMER NC1 review: the eyebrow gives its line too, so the links' line (What works in this version, Guide me), which
+    wraps to two lines in the longer languages, adds no height above Open dome. Kept for assistive technology. */
+ .sky-heading .sky-subtitle,.sky-heading>.eyebrow{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
  .dome-cover h2{font-size:22px}
  .dome-cover p{font-size:var(--ov-text-sm);margin:10px 0 0}
  .dome-cover .primary-button{margin-top:4px}

@@ -35,7 +35,7 @@ const BUILT:Readonly<Record<string,string>>={
  * and the keys of a cycle inside a step (core/guideCompanion.ts companionTarget). */
 const STEPS:Readonly<Record<string,readonly string[]>>={
  // Front NEWCOMER NC1: the first look's closing line points at the welcome's lab list.
- 'first-look':[...FIRST_LOOK_STEPS,'done'],
+ 'first-look':[...FIRST_LOOK_STEPS,'spectrum-choose','done'],
  hubble:['acquire','measure','dataset','recipe','inputs','interpret'],
  'large-scale-structure':LSS_LAB_STEPS,
  'object-x':[...OBJECT_X_LAB_STEPS,'image-copy','image-point','image-any'],
@@ -110,6 +110,7 @@ const CYCLE_STATES:Readonly<Record<string,Readonly<Record<string,readonly (reado
   repeat:[['repeat',{imageAction:'clock'}]],
  },
  pulsars:{'setup-tracking':[['setup',{trackingOff:true}]]},
+ 'first-look':{spectrum:[['spectrum',{spectrumAvailable:true}]],'spectrum-choose':[['spectrum',{spectrumAvailable:false}]]},
  pleiades:{
   measure:[['measure',{}],['sample',{sampleNeed:'measure'}]],record:[['record',{}],['sample',{sampleNeed:'record'}]],color:[['color',{}],['sample',{sampleNeed:'color'}]],
   sample:[['sample',{sampleNeed:'done'}],['sample',{}]],
@@ -147,7 +148,8 @@ describe('guide targets are on the page of their step',()=>{
   for(const next of FIRST_LOOK_STEPS)expect(companionPlace(at('first-look',next))).toEqual({route:'observatory'});
   expect(companionPlace(at('first-look','done'))).toEqual({route:'home'});
   // Point telescope only once M82 is the selected object; the picker before that.
-  expect(GUIDE_TARGETS['first-look'].point).toEqual(['#point-target[data-target="NGC3034"]','#target']);
+  expect(GUIDE_TARGETS['first-look'].point).toEqual(['#point-target[data-first-look]','#target']);
+  expect(source).toContain('data-first-look={selected.id===FIRST_LOOK_TARGET_ID||undefined}');
  });
  it('the Hubble workspace steps go to the spectrum page, the LSS wedge step to the survey until records are plotted, and the Pleiades list step opens the hot list',()=>{
   for(const phase of ['dataset','recipe','inputs','interpret','measure'])expect(companionPlace(at('hubble',phase))).toEqual({route:'spectrum'});

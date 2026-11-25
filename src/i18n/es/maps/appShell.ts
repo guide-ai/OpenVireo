@@ -13,9 +13,9 @@ export const APP_SHELL_ES:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
   restart:'Reiniciar ejercicio',restartTitle:'¿Reiniciar este ejercicio?',restartWhat:'El sitio se vuelve a cargar y esta guía se abre en su primer paso.',
   restartLost:'Se pierde todo lo que no hayas guardado: el trabajo de este ejercicio y el de cualquier otra herramienta en esta pestaña.',
   restartSave:'Para conservarlo, cancela y elige primero Guardar investigación.',restartConfirm:'Reiniciar',restartCancel:'Cancelar'}),
- firstLook:Object.freeze({name:'Primer vistazo',dome:'Abre la cúpula',point:'Elige M82 y apunta el telescopio hacia ella',look:'Mírala a través del telescopio',
+ firstLook:Object.freeze({name:'Primer vistazo',dome:'Abre la cúpula',point:'Elige la galaxia M82 y apunta el telescopio hacia ella',look:'Mírala a través del telescopio',
   spectrum:'Abre su espectro',spectrumDetail:'Solo algunos objetos tienen un espectro en la biblioteca de VIREO; M82 tiene uno. Es el espectro original de la biblioteca de VIREO, no una observación nueva.',
-  closing:'Ya diste un primer vistazo. Elige una práctica para seguir adelante.',start:'Guíame (unos 3 min)',help:'Dar un primer vistazo'}),
+  closing:'Ya diste un primer vistazo. Elige una práctica para seguir adelante.',start:'Seguir la guía (unos 3 min)',help:'Dar un primer vistazo'}),
  recovery:Object.freeze({
   updatedTitle:'Se publicó una nueva versión de OpenVireo',
   updated:'Esta parte del sitio no se pudo cargar porque el sitio se actualizó mientras esta página estaba abierta.',

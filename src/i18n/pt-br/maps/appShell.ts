@@ -13,7 +13,7 @@ export const APP_SHELL_PT:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
   restart:'Reiniciar exercício',restartTitle:'Reiniciar este exercício?',restartWhat:'O site é carregado de novo e este guia abre na primeira etapa.',
   restartLost:'Tudo o que você não salvou se perde: o trabalho deste exercício e o de qualquer outra ferramenta nesta aba.',
   restartSave:'Para manter esse trabalho, cancele e escolha primeiro Salvar investigação.',restartConfirm:'Reiniciar',restartCancel:'Cancelar'}),
- firstLook:Object.freeze({name:'Primeira olhada',dome:'Abra a cúpula',point:'Escolha M82 e aponte o telescópio para ela',look:'Observe-a pelo telescópio',
+ firstLook:Object.freeze({name:'Primeira olhada',dome:'Abra a cúpula',point:'Escolha a galáxia M82 e aponte o telescópio para ela',look:'Observe-a pelo telescópio',
   spectrum:'Abra o espectro dela',spectrumDetail:'Só alguns objetos têm um espectro na biblioteca do VIREO; M82 tem um. É o espectro original da biblioteca do VIREO, não uma observação nova.',
   closing:'Você deu uma primeira olhada. Escolha uma prática para ir além.',start:'Seguir o guia (cerca de 3 min)',help:'Dar uma primeira olhada'}),
  recovery:Object.freeze({

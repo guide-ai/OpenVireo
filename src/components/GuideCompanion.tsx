@@ -103,7 +103,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
   const landed=(event:FocusEvent)=>{
    lost.current=false;
    const hold=held.current;
-   if(hold&&hold.token===run.current&&event.target instanceof HTMLHeadingElement)place(hold.el);
+   if(hold&&hold.token===run.current&&event.target instanceof HTMLHeadingElement&&event.target!==hold.el)place(hold.el);
   };
   window.addEventListener('pointerdown',touched,true);window.addEventListener('keydown',touched,true);window.addEventListener('wheel',touched,{capture:true,passive:true});document.addEventListener('focusin',landed);
   return()=>{searching.current=false;held.current=null;window.removeEventListener('pointerdown',touched,true);window.removeEventListener('keydown',touched,true);window.removeEventListener('wheel',touched,true);document.removeEventListener('focusin',landed);};
@@ -133,7 +133,8 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
    if(!hold||hold.token!==run.current||hold.el!==spot)return;
    const found=disabled(spot)?findGuideTarget(selectors):null;
    if(found?.enabled&&found.el!==spot&&revealGuideTarget(found.el)){point(found.el,hold.token);return;}
-   if(document.activeElement instanceof HTMLHeadingElement)place(spot);
+   // A heading that is itself the outlined control (the welcome's lab list) keeps the focus, and the page may scroll away from it.
+   if(document.activeElement instanceof HTMLHeadingElement&&document.activeElement!==spot)place(spot);
   },250);
   window.addEventListener('resize',again);window.addEventListener('scroll',again,true);
   window.addEventListener('pointerdown',clear,true);window.addEventListener('keydown',clear,true);

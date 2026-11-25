@@ -70,6 +70,8 @@ export function companionTarget(p:CompanionProgress):string{
   case 'object-x':{const a=p.progress.imageAction;return a===null?p.progress.next:a==='clock'?'repeat':a==='expose'?'image':`image-${a}`;}// image-copy, image-point, image-any
   case 'pulsars':return p.progress.next==='setup'&&p.progress.trackingOff?'setup-tracking':p.progress.next;
   case 'pleiades':{const need=p.progress.sampleNeed;return need&&need!=='done'?need:p.progress.next;}
+  // The first look's spectrum step: the picker, to choose an object that has one, while the selected object has none.
+  case 'first-look':return p.progress.next==='spectrum'&&!p.progress.spectrumAvailable?'spectrum-choose':p.progress.next;
   default:return p.progress.next;
  }
 }

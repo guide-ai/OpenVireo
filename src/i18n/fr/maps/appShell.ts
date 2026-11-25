@@ -13,9 +13,9 @@ export const APP_SHELL_FR:Translation<typeof APP_SHELL_MESSAGES_EN>=Object.freez
   restart:'Recommencer le TP',restartTitle:'Recommencer ce TP ?',restartWhat:'Le site se recharge et ce guide s’ouvre à sa première étape.',
   restartLost:'Tout ce que vous n’avez pas enregistré est perdu : le travail de ce TP et celui de tout autre outil de cet onglet.',
   restartSave:'Pour le conserver, annulez et choisissez d’abord Enregistrer l’investigation.',restartConfirm:'Recommencer',restartCancel:'Annuler'}),
- firstLook:Object.freeze({name:'Premier aperçu',dome:'Ouvrez la coupole',point:'Choisissez M82 et pointez le télescope vers elle',look:'Regardez-la au télescope',
+ firstLook:Object.freeze({name:'Premier aperçu',dome:'Ouvrez la coupole',point:'Choisissez la galaxie M82 et pointez le télescope vers elle',look:'Regardez-la au télescope',
   spectrum:'Ouvrez son spectre',spectrumDetail:'Seuls certains objets ont un spectre dans la bibliothèque de VIREO ; M82 en a un. C’est le spectre de la bibliothèque d’origine de VIREO, pas une nouvelle observation.',
-  closing:'Voilà votre premier aperçu. Choisissez un TP pour aller plus loin.',start:'Me guider (environ 3 min)',help:'Jeter un premier coup d’œil'}),
+  closing:'Vous avez jeté un premier coup d’œil. Choisissez un TP pour aller plus loin.',start:'Me guider (environ 3 min)',help:'Jeter un premier coup d’œil'}),
  recovery:Object.freeze({
   updatedTitle:'Une nouvelle version d’OpenVireo a été publiée',
   updated:'Cette partie du site n’a pas pu être chargée, car le site a été mis à jour pendant que cette page était ouverte.',

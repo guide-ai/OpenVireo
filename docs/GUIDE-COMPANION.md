@@ -162,20 +162,28 @@ visitor is walked through the observatory in four steps by the same strip, as an
 (`CompanionGuide = LabSlug | 'first-look'` in `src/core/guideCompanion.ts`). It has no window and starts no exercise, so the strip
 shows no Full guide and no Restart exercise for it.
 
-- **Where it starts.** «Guide me (about 3 min)» at the end of the observatory heading, just above its three-step band (shown
-  while the first look is not in use; beside the subtitle from 1300 px up, under it below and full width on a phone; the plan put
-  it under the band, but there it pushed the dome cover's Open dome off a 1440 × 780 first screen in Portuguese and French,
-  which `tests/launch-landing.spec.ts` guards) and Help › «Take a first look», beside the tour (also on the light welcome shell, as the `first-look` intent of
-  `src/home/appGate.ts`). Both call the shell's `companion.firstLook`: the observatory, the strip, and `guideOpened`, so the
-  first-visit tour does not start over it. Opening a lab guide replaces it in the strip, and starting it replaces a lab guide.
+- **Where it starts.** «Guide me (about 3 min)», a compact link-style button in the observatory heading, just above its
+  three-step band, on the line of "What works in this version ↗" (shown while the first look is not in use), and Help › «Take a
+  first look», beside the tour (also on the light welcome shell, as the `first-look` intent of `src/home/appGate.ts`). The plan put
+  it under the band; there, and later on a row of its own, it pushed the dome cover's Open dome off the first screen of a phone
+  and of a 1440 × 780 laptop in the longer languages. Now it adds no height: from 1300 px it sits beside the subtitle at the
+  heading's bottom end, from 1051 px under "What works…" at the heading's top end beside the title, and below that on the same
+  line as "What works…", the two wrapping to two lines only when they do not fit; on a phone (≤ 520 px) the heading's eyebrow is
+  then visually hidden as its subtitle already was (both stay for assistive technology), which pays for that wrap.
+  `tests/first-look.spec.ts` guards Open dome on the first screen at 375 × 667 and 390 × 664 in seven languages and the
+  heading's height at 1280 × 720; `tests/launch-landing.spec.ts` keeps its 1440 × 780 and 375 × 700 guards. Both openers call the
+  shell's `companion.firstLook`: the observatory, the strip, and `guideOpened`, so the first-visit tour does not start over it
+  (its timer checks it again when it fires). On the observatory the focus then goes to the strip's Show me where (the pressed
+  button goes away, or the Help menu closes); from another page the observatory's heading takes it. Opening a lab guide replaces
+  it in the strip, and starting it replaces a lab guide.
 - **Its steps** (`src/core/firstLook.ts`, pure, no rule of its own beyond reading the observatory's state):
 
   | step | done when | Show me where |
   |---|---|---|
   | `dome` | the dome is open | Open dome |
-  | `point` | the dome is open and the selected object is pointed at and centred (the band's step 2) | Point telescope once M82 is the selected object (`#point-target[data-target="NGC3034"]`), else the picker (`#target`) |
+  | `point` | the dome is open and the selected object is pointed at and centred (the band's step 2) | Point telescope once M82 is the selected object (`#point-target[data-first-look]`, a marker the button carries only then), else the picker (`#target`) |
   | `look` | the reference card shows the centred object through the telescope view (`canAccess`) | Switch to telescope view (`#to-telescope`) |
-  | `spectrum` | a library spectrum was shown in the analyser since the first look started (a one-way flag of the tab) | Open spectrum analyzer (`#open-analyzer`), else the picker |
+  | `spectrum` | a library spectrum was shown in the analyser since the first look started (a one-way flag of the tab) | Open spectrum analyzer (`#open-analyzer`), outlined while it is still disabled and loading; for an object without a library spectrum (`spectrumAvailable` false: none, or masked by an unrevealed Object X target), the key `spectrum-choose`: the picker |
   | closing | the spectrum step is done | the welcome's lab list (`#home-labs`, `tabIndex=-1`) |
 
   The current step is the first one not done, so marks go back with the state (closing the dome takes it back to `dome`), except
@@ -185,8 +193,7 @@ shows no Full guide and no Restart exercise for it.
 - **Only `point` names M82**, the one suggested galaxy with both an original library image and an original library spectrum
   (`FIRST_LOOK_TARGET_ID`, NGC 3034, 0.6° from the preselected M81, the path `tests/observatory.spec.ts` already walks). No step
   requires it: M81 completes `look` (its photograph) and then waits on `spectrum`, where Show me where points at the picker and
-  Step details says that M82 has one; NGC 4889 completes `look` with the card's "no verified image" and `spectrum` with its
-  library spectrum. M82 is 13.6° from the nearest Object X target in ObjectX.HTL, far outside every masking radius (0.375° fields,
+  Step details says that M82 has one. M82 is 13.6° from the nearest Object X target in ObjectX.HTL, far outside every masking radius (0.375° fields,
   2° name mask), so the picker never hides it.
 - **Library material, said so.** What the visitor sees is VIREO's original library photograph and spectrum of the object: the
   reference card says these are "not new exposures taken in OpenVireo", the analyser that the spectrum is "not a spectrum
@@ -196,12 +203,15 @@ shows no Full guide and no Restart exercise for it.
   script walks name known layout problems by the nearest data-testid (`tests/fixtures/rtlKnown.ts`).
 - **Strings:** nine, `firstLook` in `src/components/AppShellMessages.ts` (map `appShell`), in ten languages; Step details of
   `dome`, `point` and `look` are the band's own `sky.step1Help..3Help`, and of the closing line `home.labsHint`.
-- **Tests:** `src/core/firstLook.test.ts` (state → step, marks back, the one-way flag, the M81 and NGC 4889 gaps, the band, the
-  companion's step counter); `src/help/guideTargets.test.ts` (its targets exist and are on the observatory, the closing line on the
+- **Tests:** `src/core/firstLook.test.ts` (state → step, marks back, the one-way flag, an object without a spectrum and the
+  `spectrum-choose` key, the band, the companion's step counter); `src/help/guideTargets.test.ts` (its targets exist and are on the observatory, the closing line on the
   welcome, the nine strings in every language); `tests/first-look.spec.ts` (from the band, the four steps with only Show me where
   and the page to M82's library photograph and spectrum, done stays done, the closing line's Show me where on the lab list, Hide;
   M81's spectrum step on the picker, closing the dome, a lab guide replacing it, Help › Take a first look from another page and
-  from the welcome shell; Spanish at 375 px; right to left).
+  from the welcome shell; the focus in the strip after Guide me by keyboard and after Help on the observatory; Show me where while
+  M82's spectrum is held back 3 s, outlining Open spectrum analyzer until it is enabled; a scroll of the page not pulled back while
+  the lab-list heading is outlined (the strip no longer treats an outlined heading as a heading that took the focus away); the
+  first-screen guards; Spanish at 375 px; right to left).
 
 ## Layout and accessibility
 

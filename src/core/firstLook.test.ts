@@ -2,7 +2,7 @@ import {describe,expect,it} from 'vitest';
 import {FIRST_LOOK_STEPS,firstLookProgress,observatoryBandStep,type FirstLookState} from './firstLook';
 import {companionNow,companionTarget} from './guideCompanion';
 
-const START:FirstLookState={open:false,pointedCentred:false,canAccess:false,spectrumSeen:false};
+const START:FirstLookState={open:false,pointedCentred:false,canAccess:false,spectrumSeen:false,spectrumAvailable:true};
 const at=(s:Partial<FirstLookState>)=>firstLookProgress({...START,...s});
 
 describe('first look (Front NEWCOMER NC1): the current step comes from the observatory\'s own state',()=>{
@@ -14,7 +14,7 @@ describe('first look (Front NEWCOMER NC1): the current step comes from the obser
   expect(at({open:true,pointedCentred:true}).next).toBe('look');
   expect(at({open:true,pointedCentred:true,canAccess:true}).next).toBe('spectrum');
   const done=at({open:true,pointedCentred:true,canAccess:true,spectrumSeen:true});
-  expect(done).toEqual({done:{dome:true,point:true,look:true,spectrum:true},next:'done'});
+  expect(done).toEqual({done:{dome:true,point:true,look:true,spectrum:true},next:'done',spectrumAvailable:true});
  });
  it('marks go back with the state: closing the dome or moving away takes the walk back',()=>{
   expect(at({open:false,pointedCentred:true,canAccess:false}).next).toBe('dome');
@@ -28,13 +28,13 @@ describe('first look (Front NEWCOMER NC1): the current step comes from the obser
   expect(at({spectrumSeen:true}).next).toBe('done');
   expect(at({open:true,spectrumSeen:true}).next).toBe('done');
  });
- it('an object without a library spectrum (M81) stays on the spectrum step; one without a photograph (NGC 4889) completes "look" all the same',()=>{
-  // M81: the telescope view shows its photograph (look done); the analyser button is absent, so nothing sets the flag.
-  expect(at({open:true,pointedCentred:true,canAccess:true}).next).toBe('spectrum');
-  // NGC 4889: "look" depends on the telescope view only, not on a photograph being there.
-  const ngc4889=at({open:true,pointedCentred:true,canAccess:true});
-  expect(ngc4889.done.look).toBe(true);
-  expect(at({open:true,pointedCentred:true,canAccess:true,spectrumSeen:true}).next).toBe('done');
+ it('an object without a library spectrum (M81) stays on the spectrum step, and Show me where points at the picker; with one, at Open spectrum analyzer (even while it loads)',()=>{
+  const m81={lab:'first-look',progress:at({open:true,pointedCentred:true,canAccess:true,spectrumAvailable:false})} as const;
+  expect(m81.progress.next).toBe('spectrum');
+  expect(companionTarget(m81)).toBe('spectrum-choose');
+  expect(companionTarget({lab:'first-look',progress:at({open:true,pointedCentred:true,canAccess:true})})).toBe('spectrum');
+  // Only the spectrum step reads it.
+  expect(companionTarget({lab:'first-look',progress:at({open:true,spectrumAvailable:false})})).toBe('point');
  });
  it('the observatory band\'s current item reads the same rule',()=>{
   expect(observatoryBandStep({open:false,pointedCentred:false,canAccess:false})).toBe(0);

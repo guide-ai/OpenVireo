@@ -23,12 +23,17 @@ export type FirstLookState=Readonly<{
  canAccess:boolean;
  /** A library spectrum was shown in the analyser since this first look started (a one-way flag of the tab, never stored). */
  spectrumSeen:boolean;
+ /** The selected object has a library spectrum the reference card offers (not masked by an unrevealed Object X target): Show
+  * me where then points at Open spectrum analyzer, even while it is still loading, and otherwise at the picker. */
+ spectrumAvailable:boolean;
 }>;
 
 export type FirstLookProgress=Readonly<{
  done:Readonly<Record<FirstLookStep,boolean>>;
  /** The current step, or 'done' once the spectrum was seen. */
  next:FirstLookStep|'done';
+ /** As in the state: which control the spectrum step points at (core/guideCompanion.ts companionTarget). */
+ spectrumAvailable:boolean;
 }>;
 
 /** The current step is the first one not done, so marks go back with the state (closing the dome takes the walk back to its
@@ -37,12 +42,12 @@ export type FirstLookProgress=Readonly<{
 export function firstLookProgress(s:FirstLookState):FirstLookProgress{
  const done=Object.freeze({dome:s.open,point:s.open&&s.pointedCentred,look:s.canAccess,spectrum:s.spectrumSeen});
  const next=s.spectrumSeen?'done':FIRST_LOOK_STEPS.find(step=>!done[step])??'spectrum';
- return Object.freeze({done,next});
+ return Object.freeze({done,next,spectrumAvailable:s.spectrumAvailable});
 }
 
 /** The observatory band's three items (`sky.step1..3`, OpenVireo.tsx) read the same rule: 0 open the dome, 1 choose and point,
  * 2 explore an instrument (from a pointed, centred object on). */
-export function observatoryBandStep(s:Omit<FirstLookState,'spectrumSeen'>):0|1|2{
- const next=firstLookProgress({...s,spectrumSeen:false}).next;
+export function observatoryBandStep(s:Omit<FirstLookState,'spectrumSeen'|'spectrumAvailable'>):0|1|2{
+ const next=firstLookProgress({...s,spectrumSeen:false,spectrumAvailable:false}).next;
  return next==='dome'?0:next==='point'?1:2;
 }

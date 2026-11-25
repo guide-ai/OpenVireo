@@ -40,7 +40,7 @@ export const APP_SHELL_MESSAGES_EN:AppShellMessageCatalog=Object.freeze({
   restart:'Restart exercise',restartTitle:'Restart this exercise?',restartWhat:'The site loads again and this guide opens at its first step.',
   restartLost:'Everything you have not saved is lost: the work of this exercise and of every other tool in this tab.',
   restartSave:'To keep it, cancel and choose Save investigation first.',restartConfirm:'Restart',restartCancel:'Cancel'}),
- firstLook:Object.freeze({name:'First look',dome:'Open the dome',point:'Choose M82 and point the telescope at it',look:'Look at it through the telescope',
+ firstLook:Object.freeze({name:'First look',dome:'Open the dome',point:'Choose the galaxy M82 and point the telescope at it',look:'Look at it through the telescope',
   spectrum:'Open its spectrum',spectrumDetail:'Only some objects have a spectrum in VIREO\'s library; M82 has one. It is VIREO\'s original library spectrum, not a new observation.',
   closing:'You have taken a first look. Choose a lab to go further.',start:'Guide me (about 3 min)',help:'Take a first look'}),
  recovery:Object.freeze({
