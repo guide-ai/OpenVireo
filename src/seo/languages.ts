@@ -321,7 +321,7 @@ const JA:SeoLanguage={
    '元のプログラムではなく、Project CLEAと提携しているものでもありません。アプリは、把握しているWeb版の調整を明示しています。'+
    'この日本語の文章は、OpenVireoがWeb向けに翻案したもので、CLEAの文章ではありません。',
   platform:'Windows、Mac、Linux、Chromebookの最新のWebブラウザーで動作します。インストールもアカウントも不要です。',
-  learningResourceType:'インタラクティブな実習',time:'約{low}〜{high}分',quickTime:'短縮版：約{low}〜{high}分',level1:'予備知識は不要',level2:'予備知識が少しあると便利',level3:'難易度高め',startHere:'最初はここから',estimateNote:'所要時間は手順から計算したおおよその見積もりで、利用者で計測したものではありません。'},
+  learningResourceType:'インタラクティブな実習',time:'約{low}–{high}分',quickTime:'短縮版：約{low}–{high}分',level1:'予備知識は不要',level2:'予備知識が少しあると便利',level3:'難易度高め',startHere:'最初はここから',estimateNote:'所要時間は手順から計算したおおよその見積もりで、利用者で計測したものではありません。'},
  labsIndex:{title:'CLEA VIREOの天文実習をオンラインで · OpenVireo',
   description:'ハッブルの法則、大規模構造、恒星のスペクトル、プレアデス星団、星団のHR図、パルサー、天体Xの7つのCLEA VIREO実習を、ブラウザー向けに再構築しました。',
   eyebrow:'CLEA VIREOの実習',heading:'ブラウザーで取り組む天文実習',
