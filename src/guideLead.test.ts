@@ -294,7 +294,8 @@ describe('Front NEWCOMER /labs/ texts: the search pages ask, and never answer',(
 // textbook-neutral: a definition states none of the results of the guides whose window marks its term (by the English snapshot,
 // src/i18n/terms.en.json, whose keys gate every language), in any language, through the same per-language result lists. The
 // windows by key prefix; the cluster guide uses the Pleiades list, as its why-line does. A term no window marks (the HR diagram:
-// the guides name it only as controls) is checked against every list. Allowed, one word each: the dispersion measure's own name
+// the guides name it only as controls; review N2 lists it in Words used beside the main sequence, ZAMS and isochrone) is checked
+// against every list. Allowed, one word each: the dispersion measure's own name
 // (its language's «dispersion» stem). Object X: a definition its window shows names none of the five kinds.
 const TERM_LAB:Readonly<Record<string,LabSlug>>={'lab.':'hubble','lssLab.':'large-scale-structure','classLab.':'stellar-classification',
  'pleiadesLab.':'pleiades','clusterLab.':'cluster-hr','pulsarLab.':'pulsars','objectXGuide.':'object-x'};

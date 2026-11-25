@@ -523,7 +523,7 @@
  "term.spectrum": "Spectre : la lumière d’un objet étalée selon la longueur d’onde, du violet au rouge.",
  "term.absorptionLine": "Raie d’absorption : raie sombre et fine dans un spectre, là où il arrive moins de lumière à une longueur d’onde.",
  "term.caHK": "Raies Ca II K et H et bande G : détails sombres dans la partie violette d’un spectre ; le calcium ionisé produit les raies K et H, et les molécules CH la bande G.",
- "term.magnitude": "Magnitude : mesure de l’éclat apparent d’un objet, sur une échelle où un nombre plus petit signifie un objet plus brillant.",
+ "term.magnitude": "Magnitude : mesure de l’éclat sur une échelle où un nombre plus petit signifie plus brillant ; la magnitude apparente (m) est l’éclat d’un objet tel qu’on le voit, la magnitude absolue (M) celui qu’il aurait vu d’une distance standard.",
  "term.colorIndex": "Indice de couleur (B−V) : magnitude d’une étoile à travers un filtre bleu (B) moins sa magnitude à travers un filtre visuel (V) ; il mesure la couleur de l’étoile.",
  "term.photometer": "Photomètre : instrument qui mesure la quantité de lumière reçue d’une source à travers un filtre choisi.",
  "term.hrDiagram": "Diagramme HR (diagramme couleur–magnitude) : graphique de la magnitude des étoiles en fonction de leur indice de couleur.",

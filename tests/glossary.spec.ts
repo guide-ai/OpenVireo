@@ -73,6 +73,39 @@ test('a term in the companion strip’s Step details opens there, and closing St
  await expect(details).toHaveCount(0);await expect(popover(page)).toHaveCount(0);
 });
 
+// Review N1: a definition never outlives its term. When the step's text is replaced (the page moves the step on and React draws
+// new terms) or the term is removed, the definition closes and the old term reads aria-expanded="false" again; Escape then goes
+// on to the window, as nothing is open.
+test('the definition closes when its term is replaced or removed, and Escape is not taken once nothing is open',async({page})=>{
+ await openGuide(page,'cluster-hr');
+ const step=guideWindow(page).locator('[data-testid="cluster-lab-step-trial"]');
+ await step.locator('summary').click();
+ const term=step.locator('button.term[data-term="isochrone"]');
+ await term.click();await expect(popover(page)).toBeVisible();
+ // Replaced: a new button where the old one was (as a re-render with a new key draws it).
+ await term.evaluate(el=>{(window as unknown as {oldTerm:Element}).oldTerm=el;const copy=el.cloneNode(true) as Element;copy.setAttribute('aria-expanded','false');el.replaceWith(copy);});
+ await expect(popover(page)).toHaveCount(0);
+ expect(await page.evaluate(()=>(window as unknown as {oldTerm:Element}).oldTerm.getAttribute('aria-expanded'))).toBe('false');
+ // Removed.
+ const again=step.locator('button.term[data-term="metallicity"]');
+ await again.click();await expect(popover(page)).toBeVisible();
+ await again.evaluate(el=>el.remove());
+ await expect(popover(page)).toHaveCount(0);
+ await page.keyboard.press('Escape');await expect(guideWindow(page)).toHaveCount(0);
+});
+
+test('in the strip, a definition closes when Step details move to another step',async({page})=>{
+ await openGuide(page,'stellar-classification');
+ await page.keyboard.press('Escape');await expect(guideWindow(page)).toHaveCount(0);
+ await page.getByTestId('guide-companion-details-toggle').click();
+ const details=page.getByTestId('guide-companion-details'),term=details.locator('button.term[data-term="spectrum"]');
+ await term.click();await expect(popover(page)).toBeVisible();
+ // The step's text changes under the open definition (as when the guide moves on): its term is gone.
+ await details.evaluate(el=>{for(const b of el.querySelectorAll('button.term'))b.replaceWith(document.createTextNode(b.textContent??''));});
+ await expect(popover(page)).toHaveCount(0);
+ await expect(details).toBeVisible();
+});
+
 test('at 375 px the definition fits the screen; the close button closes it',async({page})=>{
  await page.setViewportSize({width:375,height:740});
  await openGuide(page,'cluster-hr');

@@ -67,18 +67,22 @@ const text=(dir:string,key:string)=>Object.hasOwn(E,key)?catalog(dir)[key]:mapTe
 
 const ref={current:null},noop=()=>{};
 /** Every key a gloss call names in the seven windows (first step and closing state) and in the strip's Step details. */
-function glossedKeys():string[]{
- const html=(el:ReactElement)=>renderToStaticMarkup(el);
- return [...recordGlossKeys(()=>{for(const closing of [false,true]){
+/** The seven windows (first step and closing state), as markup, in the active language. `objectX` false leaves out the Object X
+ * window, whose map (pickMessages) keeps the language of its first use in a Vitest run. */
+function renderWindows(objectX=true):string{
+ const out:string[]=[],html=(el:ReactElement)=>{out.push(renderToStaticMarkup(el));};
+ for(const closing of [false,true]){
   html(createElement(HubbleLabGuide,{dialogRef:ref,progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),...closing?{next:'interpret' as const}:{}},onNavigate:noop,onNext:noop,onVersion:noop,version:'full' as const}));
   html(createElement(LssLabGuide,{dialogRef:ref,progress:{...lssLabProgress(INITIAL_LSS_LAB_SUMMARY),...closing?{next:'done' as const}:{}},onNavigate:noop,onNext:noop}));
-  html(createElement(ObjectXLabGuide,{dialogRef:ref,progress:{...objectXLabProgress(INITIAL_OBJECT_X_LAB_SUMMARY),...closing?{next:'done' as const}:{}},onNavigate:noop,onNext:noop}));
+  if(objectX)html(createElement(ObjectXLabGuide,{dialogRef:ref,progress:{...objectXLabProgress(INITIAL_OBJECT_X_LAB_SUMMARY),...closing?{next:'done' as const}:{}},onNavigate:noop,onNext:noop}));
   html(createElement(ClassificationLabGuide,{dialogRef:ref,progress:{...classificationLabProgress(EMPTY_CLASSIFICATION_WORKSPACE,EMPTY_CLASSIFICATION_EXERCISE_SUMMARY),...closing?{next:'save' as const}:{}},onNavigate:noop,onNext:noop}));
   html(createElement(ClusterLabGuide,{dialogRef:ref,progress:clusterLabProgress({loaded:true,inspected:closing,validTrial:closing,confirmed:closing,reportOpened:closing}),cluster:null,onNavigate:noop,own:clusterOwnStatus(0,10,false),onNext:noop}));
   html(createElement(PulsarLabGuide,{dialogRef:ref,progress:{...pulsarLabProgress({radio:INITIAL_RADIO_EXERCISE_SUMMARY,analysis:EMPTY_PULSAR_MEASUREMENT_SUMMARY,captureRows:0}),...closing?{next:'save' as const}:{}},onNavigate:noop,onNext:noop}));
   html(createElement(PleiadesLabGuide,{dialogRef:ref,progress:{...pleiadesLabProgress({list:true,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY}),...closing?{next:'save' as const}:{}},onNavigate:noop,onNext:noop,onVersion:noop,version:'full' as const}));
- }})].sort();
+ }
+ return out.join('\n');
 }
+const glossedKeys=():string[]=>[...recordGlossKeys(()=>{renderWindows();})].sort();
 type Snapshot=Record<string,[TermId,string,number][]>;
 function snapshotOf(dir:string,keys:readonly string[]):Snapshot{
  const out:Snapshot={},englishNames=names('en'),own=dir==='en'?englishNames:names(dir),patterns=dir==='en'?ENGLISH_PATTERNS:LANGUAGE_PATTERNS[dir]!;
@@ -154,7 +158,7 @@ describe('Front NEWCOMER NC7: marking',()=>{
   const found=new Set<string>(),step=termScope(found);
   const first=glossText(step,'lssLab.help.record',E['lssLab.help.record']!);
   expect(buttons(first)).toEqual(['caHK','absorptionLine']);
-  expect(renderToStaticMarkup(createElement('p',null,first))).toContain('<button type="button" class="term" aria-expanded="false" data-term="caHK">Ca II K and H lines</button>');
+  expect(renderToStaticMarkup(createElement('p',null,first))).toContain(`<button type="button" class="term" aria-expanded="false" aria-description="${E['term.caHK']}" data-term="caHK">Ca II K and H lines</button>`);
   // First occurrence per step: a second string of the same step leaves an already marked term plain.
   const why=termScope(found);
   expect(buttons(glossText(why,'lab.why',E['lab.why']!))).toEqual(['spectrum']);
@@ -163,12 +167,15 @@ describe('Front NEWCOMER NC7: marking',()=>{
   expect([...found]).toEqual(['caHK','absorptionLine','spectrum']);
   expect(renderToStaticMarkup(createElement('div',null,wordsUsed('w',found)))).toBe(`<div><details class="lab-terms" id="w"><summary>${E['term.wordsHeading']}</summary><ul><li data-term="caHK">${E['term.caHK']}</li><li data-term="absorptionLine">${E['term.absorptionLine']}</li><li data-term="spectrum">${E['term.spectrum']}</li></ul></details></div>`);
   expect(wordsUsed('w',new Set())).toBeNull();
+  // Review N2: a window that marks the main sequence, the ZAMS or an isochrone lists the HR diagram they are defined through.
+  expect(renderToStaticMarkup(createElement('div',null,wordsUsed('w',new Set(['isochrone','metallicity']))))).toContain(`<li data-term="hrDiagram">${E['term.hrDiagram']}</li><li data-term="isochrone">`);
+  expect(renderToStaticMarkup(createElement('div',null,wordsUsed('w',new Set(['spectrum']))))).not.toContain('hrDiagram');
  });
  it('the companion strip’s Step details mark the same terms as the window (LSS record, Object X classify)',()=>{
   const lss=renderToStaticMarkup(createElement('div',null,companionContent({lab:'large-scale-structure',progress:{...lssLabProgress(INITIAL_LSS_LAB_SUMMARY),next:'record'}}).details));
   expect(lss).toContain('data-term="caHK"');expect(lss).toContain('data-term="absorptionLine"');
   const x=renderToStaticMarkup(createElement('div',null,companionContent({lab:'object-x',progress:{...objectXLabProgress(INITIAL_OBJECT_X_LAB_SUMMARY),next:'classify'}}).details));
-  expect(x).toContain('<button type="button" class="term" aria-expanded="false" data-term="spectrum">spectrum</button>');
+  expect(x).toContain(`<button type="button" class="term" aria-expanded="false" aria-description="${E['term.spectrum']}" data-term="spectrum">spectrum</button>`);
  });
  it('leaves a string plain when the rendered text does not hold the matched word (a miss is never a wrong mark)',()=>{
   expect(glossText(termScope(),'lab.why','A different sentence.')).toBe('A different sentence.');
@@ -181,6 +188,18 @@ describe('Front NEWCOMER NC7: marking',()=>{
    const marked=buttons(glossText(termScope(),key,text(dir,key)!));
    expect(marked.sort(),`${dir} ${key}`).toEqual([...new Set(entries.map(e=>e[0]))].sort());
   }
+ });
+ // Review N5/N6: the windows render every string with its real parameters ({n}, {total}, {ut}, {file}); each mark the snapshot
+ // records lands on its matched text there, and nothing else is marked.
+ for(const dir of ['en',...DIRS])it(`${dir}: the rendered windows mark exactly the snapshot’s words, after parameter substitution`,()=>{
+  if(dir!=='en')activateLocale(BUNDLES[dir]!);
+  const html=renderWindows(dir==='en'),unescape=(s:string)=>s.replace(/&#x27;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+  const rendered=new Set([...html.matchAll(/<button type="button" class="term"[^>]* data-term="(\w+)">([^<]*)<\/button>/gu)].map(m=>`${m[1]} ${unescape(m[2]!)}`));
+  const snap=read(snapshotFile(dir)) as Snapshot,mapKey=(key:string)=>dir!=='en'&&key.startsWith('objectXGuide.');
+  const expected=new Set(Object.entries(snap).filter(([key])=>!mapKey(key)).flatMap(([,v])=>v.map(e=>`${e[0]} ${e[1]}`)));
+  expect([...rendered].sort()).toEqual([...expected].sort());
+  // The Object X map strings, from the language's own map.
+  for(const [key,entries] of Object.entries(snap).filter(([key])=>mapKey(key)))expect(buttons(glossText(termScope(),key,text(dir,key)!)).sort(),`${dir} ${key}`).toEqual(entries.map(e=>e[0]).sort());
  });
  // Review M4c: the pseudo-locales take the English snapshot through their own transform.
  const PSEUDO:readonly (readonly [string,LocaleBundle])[]=[['qps',pseudoBundle()],...(Object.keys(PSEUDO_SCRIPT) as (keyof typeof PSEUDO_SCRIPT)[]).map(l=>[l,pseudoScriptBundle(l)] as const)];
@@ -199,7 +218,7 @@ describe('Front NEWCOMER NC7: the definitions',()=>{
   const c=catalog(dir);
   for(const key of KEYS){expect(c[key],`${dir} ${key}`).toBeTruthy();if(dir!=='en')expect(c[key],`${dir} ${key}: untranslated`).not.toBe(E[key]);}
   expect(c['term.label']).toContain('{term}');
-  for(const id of TERM_IDS){const d=c[`term.${id}`]!;expect(d,`${dir} ${id}`).not.toMatch(/[\n\r]/u);expect(d,`${dir} ${id}: a digit`).not.toMatch(/\p{Nd}/u);expect(d.length,`${dir} ${id}`).toBeLessThanOrEqual(200);}
+  for(const id of TERM_IDS){const d=c[`term.${id}`]!;expect(d,`${dir} ${id}`).not.toMatch(/[\n\r]/u);expect(d,`${dir} ${id}: a digit`).not.toMatch(/\p{Nd}/u);expect(d.length,`${dir} ${id}`).toBeLessThanOrEqual(250);}
  });
  it('termDefinition names each term’s key',()=>{for(const id of TERM_IDS)expect(termDefinition(id)).toBe(E[`term.${id}`]);});
 });

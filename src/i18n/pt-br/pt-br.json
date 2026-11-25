@@ -523,7 +523,7 @@
  "term.spectrum": "Espectro: a luz de um objeto separada por comprimento de onda, do violeta ao vermelho.",
  "term.absorptionLine": "Linha de absorção: uma linha escura e estreita em um espectro, onde chega menos luz em um comprimento de onda.",
  "term.caHK": "Linhas Ca II K e H e banda G: feições escuras na parte violeta de um espectro, produzidas pelo cálcio ionizado (K e H) e por moléculas CH (banda G).",
- "term.magnitude": "Magnitude: medida de quão brilhante um objeto parece, numa escala em que um número menor significa mais brilho.",
+ "term.magnitude": "Magnitude: medida do brilho numa escala em que um número menor significa mais brilho; a magnitude aparente (m) é o quanto um objeto parece brilhante, e a magnitude absoluta (M), o quanto pareceria a uma distância padrão.",
  "term.colorIndex": "Índice de cor (B−V): a magnitude de uma estrela com um filtro azul (B) menos a magnitude dela com um filtro visual (V); mede a cor da estrela.",
  "term.photometer": "Fotômetro: instrumento que mede quanta luz chega de uma fonte através de um filtro escolhido.",
  "term.hrDiagram": "Diagrama HR (diagrama cor–magnitude): gráfico da magnitude das estrelas em função do índice de cor delas.",

@@ -523,7 +523,7 @@
   "term.spectrum": "Spectrum: the light of an object spread out by wavelength, from violet to red.",
   "term.absorptionLine": "Absorption line: a narrow dark line in a spectrum, where less light arrives at one wavelength.",
   "term.caHK": "Ca II K and H lines and G band: dark features in the violet part of a spectrum, made by ionized calcium (K and H) and by CH molecules (G band).",
-  "term.magnitude": "Magnitude: a measure of how bright an object looks, on a scale where a smaller number means brighter.",
+  "term.magnitude": "Magnitude: a measure of brightness on a scale where a smaller number means brighter; apparent magnitude (m) is how bright an object looks, absolute magnitude (M) how bright it would look from a standard distance.",
   "term.colorIndex": "Color index (B−V): a star’s magnitude through a blue (B) filter minus its magnitude through a visual (V) filter; it measures the star’s color.",
   "term.photometer": "Photometer: an instrument that measures how much light arrives from a source through a chosen filter.",
   "term.hrDiagram": "HR diagram (color–magnitude diagram): a graph of stars’ magnitudes against their color index.",

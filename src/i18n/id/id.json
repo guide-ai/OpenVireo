@@ -523,7 +523,7 @@
  "term.spectrum": "Spektrum: cahaya suatu objek yang diuraikan menurut panjang gelombang, dari ungu sampai merah.",
  "term.absorptionLine": "Garis serapan: garis gelap yang sempit dalam spektrum, tempat cahaya yang tiba pada satu panjang gelombang lebih sedikit.",
  "term.caHK": "Garis Ca II K dan H serta pita G: fitur gelap di bagian ungu spektrum, yang ditimbulkan oleh kalsium terionisasi (K dan H) dan molekul CH (pita G).",
- "term.magnitude": "Magnitudo: ukuran kecerlangan suatu objek seperti yang tampak; angka yang lebih kecil berarti objek lebih terang.",
+ "term.magnitude": "Magnitudo: ukuran kecerlangan pada skala yang angka lebih kecilnya berarti lebih terang; magnitudo semu (m) adalah seberapa terang suatu objek tampak, magnitudo mutlak (M) seberapa terang ia tampak dari jarak baku.",
  "term.colorIndex": "Indeks warna (B−V): magnitudo bintang melalui filter biru (B) dikurangi magnitudonya melalui filter visual (V); nilainya mengukur warna bintang.",
  "term.photometer": "Fotometer: instrumen yang mengukur banyaknya cahaya yang tiba dari suatu sumber melalui filter yang dipilih.",
  "term.hrDiagram": "Diagram HR (diagram warna–magnitudo): grafik magnitudo bintang terhadap indeks warnanya.",

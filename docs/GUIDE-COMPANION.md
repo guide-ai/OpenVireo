@@ -477,7 +477,7 @@ definition»; plan analysis/front-plans/front-newcomer.md §2.7, review M4, Q11 
   | spectrum | Spectrum: the light of an object spread out by wavelength, from violet to red. |
   | absorptionLine | Absorption line: a narrow dark line in a spectrum, where less light arrives at one wavelength. |
   | caHK | Ca II K and H lines and G band: dark features in the violet part of a spectrum, made by ionized calcium (K and H) and by CH molecules (G band). |
-  | magnitude | Magnitude: a measure of how bright an object looks, on a scale where a smaller number means brighter. |
+  | magnitude | Magnitude: a measure of brightness on a scale where a smaller number means brighter; apparent magnitude (m) is how bright an object looks, absolute magnitude (M) how bright it would look from a standard distance. |
   | colorIndex | Color index (B−V): a star’s magnitude through a blue (B) filter minus its magnitude through a visual (V) filter; it measures the star’s color. |
   | photometer | Photometer: an instrument that measures how much light arrives from a source through a chosen filter. |
   | hrDiagram | HR diagram (color–magnitude diagram): a graph of stars’ magnitudes against their color index. |
@@ -506,29 +506,33 @@ definition»; plan analysis/front-plans/front-newcomer.md §2.7, review M4, Q11 
   VIREO's English originals in parentheses or brackets, and the photometer's and analyser's control names of `CONTROL_KEYS`)
   are never searched, so «Calculate B−V» stays a button's name. The dev pseudo-locales take the English snapshot through their
   own transform. A word the snapshot does not name, or that the rendered text does not hold, stays plain: a miss is never a wrong
-  mark. The HR diagram is defined but marked nowhere today: the guides name it only as controls (VIREO's HR Diagrams menu,
-  Exercise color–magnitude analysis).
+  mark. The HR diagram is marked nowhere: the guides name it only as controls (VIREO's HR Diagrams menu, Exercise color–magnitude
+  analysis); a window that marks the main sequence, the ZAMS or an isochrone lists it in «Words used in this guide» (review N2).
 - **A term is a real button** (`<button type="button" class="term" aria-expanded>`, made by plain functions, not one component per
   term) that reads as part of its sentence: the sentence's font and colour with a dotted underline (kept in forced colours),
   inline so it wraps with the text, and a target of at least 24 px from the window's line height. **One popover**
   (`src/components/TermPopover.tsx`, mounted once in the shell) handles presses by delegation: a click, a tap, Enter or Space
   opens the definition; a second press, a press elsewhere, the popover's × or Escape closes it. Escape closes only the
-  definition: the guide window and Step details wait for the next Escape. Nothing opens on hover or focus (Q12). The focus stays
-  on the term, which is described by the definition's text (`aria-describedby`) while it is open; the popover (`role="note"`,
+  definition, and only an Escape from the definition's own container (review N4): the guide window and Step details wait for the
+  next Escape, and once nothing is open no Escape is taken. Nothing opens on hover or focus (Q12). The focus stays on the term,
+  which carries the definition as its `aria-description` (so a screen reader gives it with the term, review N3) and, while open,
+  is also described by the definition's text (`aria-describedby`); the popover (`role="note"`,
   named «Definition of …») holds no tab stop, so it is no focus trap. It is drawn inside the term's container (the guide
   `<dialog>`, which is in the top layer, or the strip's Step details), below the term or above it when there is no room, from the
-  term's inline start, moved back inside the viewport, at most `min(320px, 90vw)` wide; it follows scrolling and closes when its
-  term leaves the page or its window closes.
+  term's inline start, moved back inside the viewport, at most `min(320px, 90vw)` wide; it follows scrolling, and it closes when
+  its window closes or when a MutationObserver on its container sees its term removed, hidden or replaced (the marks are keyed by
+  term and place, so a step that moves on draws new buttons; review N1).
 - **«Words used in this guide»:** a folded `<details>` at the end of each window, before its Return button, listing the terms
   marked in that window with their definitions, in the glossary's order (one tab stop). Printing opens it with the window's other
   folded parts (`help/printDetails.ts`).
 - Nothing is stored; files the site writes, CLEA's bytes and the export identity are unchanged.
 - **Tests:** `src/help/glossary.test.ts` (each snapshot equals its regeneration and never marks quoted text or names, key-gating,
   longer terms first, inflected and CJK matches, first occurrence per step, the strip's Step details, every language marks its
-  words, the pseudo-locales, nineteen strings per language, no digit); `src/guideLead.test.ts` (no definition states a result,
+  words, the rendered windows marking exactly the snapshot's words after parameter substitution, the pseudo-locales, nineteen
+  strings per language, no digit, the HR diagram beside its three terms); `src/guideLead.test.ts` (no definition states a result,
   with the check biting on textbook pulsar and dispersion-measure lines); `tests/glossary.spec.ts` (press, second press, Enter,
-  Escape, Space, a press elsewhere, focus, no hover opening, Words used and print, the strip's Step details, 375 px, Japanese,
-  qps-rtl).
+  Escape, Space, a press elsewhere, focus, no hover opening, Words used and print, the strip's Step details, a term replaced or
+  removed under its open definition, 375 px, Japanese, qps-rtl).
 
 ## Layout and accessibility
 

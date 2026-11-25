@@ -1,5 +1,5 @@
 import type {ReactNode} from 'react';
-import {activeBundle,t,type MessageKey} from '../i18n';
+import {activeBundle,t,type MessageArgs,type MessageKey} from '../i18n';
 import type {TermSnapshot} from '../i18n/catalog';
 import ENGLISH_TERMS from '../i18n/terms.en.json';
 
@@ -88,23 +88,27 @@ export function glossText(scope:TermScope,key:string,text:string):ReactNode{
  if(!marks.length)return text;
  marks.sort((a,b)=>a.start-b.start);
  const out:ReactNode[]=[];let at=0;
- marks.forEach((m,i)=>{
+ marks.forEach(m=>{
   if(m.start>at)out.push(text.slice(at,m.start));
-  out.push(<button key={i} type="button" className="term" aria-expanded="false" data-term={m.id}>{text.slice(m.start,m.end)}</button>);
+  // Keyed by term and place, so a re-render that moves or replaces a term makes a new button (review N1). The definition is the
+  // button's `aria-description` (review N3), so a screen reader gives it with the term, open or not.
+  out.push(<button key={`${m.id}:${m.start}`} type="button" className="term" aria-expanded="false" aria-description={termDefinition(m.id)} data-term={m.id}>{text.slice(m.start,m.end)}</button>);
   at=m.end;
  });
  if(at<text.length)out.push(text.slice(at));
  return out;
 }
 /** A catalog string with its terms marked (`key` is a catalog key, also a template one: `classLab.step.${step}.help`). */
-export const glossKey=(scope:TermScope,key:MessageKey,values?:Readonly<Record<string,string|number>>):ReactNode=>
- glossText(scope,key,(t as (key:MessageKey,values?:Readonly<Record<string,string|number>>)=>string)(key,values));
+export const glossKey=<K extends MessageKey>(scope:TermScope,key:K,...args:MessageArgs<K>):ReactNode=>glossText(scope,key,t(key,...args));
 
 /** «Words used in this guide»: a folded list, at the end of a window, of the terms marked in it with their definitions (in the
  * order of TERM_IDS). Call it after the window's other text, so `found` is complete; nothing when no term was marked. Printing
  * opens it with the window's other folded parts (help/printDetails.ts). */
+const HR_TERMS:readonly TermId[]=['mainSequence','zams','isochrone'];
 export function wordsUsed(id:string,found:ReadonlySet<string>):ReactNode{
- const ids=TERM_IDS.filter(term=>found.has(term));
+ // Review N2: the main sequence, the ZAMS and an isochrone are defined through the HR diagram, which the guides name only as
+ // controls; a window that marks one of them lists the HR diagram too.
+ const ids=TERM_IDS.filter(term=>found.has(term)||term==='hrDiagram'&&HR_TERMS.some(t=>found.has(t)));
  if(!ids.length)return null;
  return <details className="lab-terms" id={id}><summary>{t('term.wordsHeading')}</summary><ul>{ids.map(term=><li key={term} data-term={term}>{termDefinition(term)}</li>)}</ul></details>;
 }
