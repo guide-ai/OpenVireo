@@ -1097,3 +1097,33 @@ Quick version: about 20–40 min») and the note that the times are computed fro
 intro; the labs index and each language's home page show the facts on every card, «Start here» on Stellar classification, and the
 note under the list. Each row of `src/seo/languages.ts` carries the seven texts in its `ui` (`time`, `quickTime`, `level1`–`level3`,
 `startHere`, `estimateNote`), checked by that language's SEO lint (`src/seo/languages.test.ts`).
+
+## Front NEWCOMER /labs/ texts: the search pages ask, and never answer (2026-11-25)
+
+User decision of 2026-11-25 (AGENTS.md): the /labs/ pages (`src/seo/labs.ts` and the nine `src/seo/labs.<lang>.ts`) stop stating a
+lab's result, as the guide windows' why-lines do (NC4). Only the sentences that stated a result changed; the titles, headings,
+steps, hreflang, JSON-LD shape and page structure are unchanged (`teaches` follows the new learn lists).
+
+| Lab | Before | After |
+|---|---|---|
+| Hubble, intro | …build a Hubble diagram and estimate the expansion rate of the universe. | …build a Hubble diagram and compare speed with distance, as Hubble did. Is the universe standing still, or expanding? Your own graph will tell you. |
+| LSS, description | …measure many galaxy redshifts and plot a wedge diagram of the cosmic web. | …measure galaxy redshifts and map them in a wedge diagram: random, or a cosmic web? |
+| LSS, intro | Walls, filaments and voids appear in your own data. | Are galaxies scattered at random, or do they form a cosmic web? Your own map will tell you. |
+| LSS, learn | What clusters, walls, filaments and voids are. | How to describe what a map of galaxies shows. |
+| Classification, learn | Which absorption lines mark hot and cool stars. | Which absorption lines tell the spectral types apart. |
+| Pulsars, description | Record pulsars … and measure their periods and dispersion. | Time pulsars at two frequencies with a virtual radio telescope. What is a dispersion measure? |
+| Pulsars, intro | The delay between frequencies reveals how much interstellar matter the signal crossed. | What can the delay between the two frequencies tell you, and what is a dispersion measure? Your own timing will show you. |
+| Pulsars, learn | How dispersion delays low-frequency radio signals. / How the dispersion measure hints at a pulsar's distance. | How to time pulses at two radio frequencies. / How to compare your own timings with the original catalogue. |
+| Object X, learn | How motion between images reveals a Solar System body. | How to compare images of the same field taken at different times. |
+
+The search keywords stay on the page as a question or a topic: «Hubble's law» and «expanding», «cosmic web» (now also on the
+Spanish, Portuguese and French pages, which lacked it), «dispersion measure» and «pulsar». The descriptions keep the 110–160
+column limits; to fit, the pulsar descriptions drop «measure their period», which the steps still say.
+
+**Check.** `src/guideLead.test.ts` ("Front NEWCOMER /labs/ texts") runs every language's intros, meta descriptions and learn items
+through the NC4 per-language result lists, clause by clause (a clause ends at . ! ? । : ; or a full-width form). Two exceptions,
+both principled and both tested: a *kept keyword* (per language, one of the lab's own result words: Hubble's expansion, the cosmic
+web, the dispersion measure) passes only inside a clause that ends in a question mark, so «Are galaxies scattered at random, or do
+they form a cosmic web?» passes while «…a wedge diagram of the cosmic web.» fails, and any other result word fails even inside a
+question («Why are there walls and voids…?»); and for Object X a clause that names all five kinds is the lab's own question, while
+naming fewer, or the Solar System, gives the identity away. Each page must still carry its kept keyword somewhere.
