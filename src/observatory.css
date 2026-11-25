@@ -130,6 +130,10 @@
 .home-lab span{font-size:var(--ov-text-sm);font-weight:400;color:var(--ov-text-muted)}
 /* Front NEWCOMER NC6: the computed time and level at the foot of each card, and the one Start here badge before its name. */
 .home-lab .home-lab-facts{margin-top:auto;padding-top:4px;color:var(--ov-text);font-weight:550}
+/* NC6 review N5: a facts line breaks between its parts (« · »), and inside a part only when it alone is wider than the line;
+   the guide windows (hubble-lab.css .lab-facts) use the same parts. */
+.lab-fact{display:inline-block;max-width:100%}
+.home-lab .home-lab-facts .lab-fact{font-size:inherit;font-weight:inherit;color:inherit}
 .home-lab .home-lab-start{padding:1px 8px;border-radius:999px;background:var(--ov-accent);color:var(--ov-accent-contrast);font-size:var(--ov-text-xs);font-weight:650}
 .home-labs-note{font-size:var(--ov-text-sm);color:var(--ov-text-muted);margin:8px 0 0}
 @media(max-width:780px){.home-welcome{padding-top:24px}.home-facts{grid-template-columns:1fr;gap:6px}}

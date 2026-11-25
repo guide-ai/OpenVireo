@@ -69,10 +69,13 @@ export function homeHead(title:string,description:string):string{
  * texts are a range with {low} and {high} (the static pages' minutes are under 1000, so no thousands separator applies). */
 type FactTexts=Readonly<{time:string;quickTime:string;level1:string;level2:string;level3:string}>;
 const minutes=(text:string,m:Minutes)=>text.replace('{low}',String(m[0])).replace('{high}',String(m[1]));
-export function labFactsText(texts:FactTexts,slug:SeoLab['slug']):string{
+const factParts=(texts:FactTexts,slug:SeoLab['slug'])=>{
  const f=LAB_FACTS[slug],level=f.level===1?texts.level1:f.level===2?texts.level2:texts.level3;
- return [minutes(texts.time,f.full),level,...(f.quick?[minutes(texts.quickTime,f.quick)]:[])].join(' · ');
-}
+ return [minutes(texts.time,f.full),level,...(f.quick?[minutes(texts.quickTime,f.quick)]:[])];
+};
+export const labFactsText=(texts:FactTexts,slug:SeoLab['slug']):string=>factParts(texts,slug).join(' · ');
+/** The same line as HTML, each part an inline block (`fact`, public/labs/labs.css), so it breaks only at « · » (NC6 review N5). */
+export const labFactsHtml=(texts:FactTexts,slug:SeoLab['slug']):string=>factParts(texts,slug).map(p=>`<span class="fact">${esc(p)}</span>`).join(' · ');
 /** The English catalog's texts of the same facts (homeBoot reads en.json). */
 const catalogFacts=(text:(key:string)=>string):FactTexts=>({time:text('home.time'),quickTime:text('home.quickTime'),level1:text('home.level1'),level2:text('home.level2'),level3:text('home.level3')});
 
@@ -136,7 +139,7 @@ export function labPage(lab:SeoLab,language:SeoLanguage=ENGLISH,registry:readonl
  const others=language.labs.filter(l=>l.slug!==lab.slug);
  const body=crumbNav(language,[{name:SITE_NAME,path:home},{name:ui.labsCrumb,path:labs}],lab.name)+
   `<p class="eyebrow">${esc(ui.labEyebrow)}</p><h1>${esc(lab.heading)}</h1><p class="lead">${esc(lab.intro)}</p>`+
-  `<p class="facts">${esc(labFactsText(ui,lab.slug))} <span>${esc(ui.estimateNote)}</span></p>`+
+  `<p class="facts">${labFactsHtml(ui,lab.slug)} <span class="note">${esc(ui.estimateNote)}</span></p>`+
   `<p class="cta"><a class="button" href="${esc(openLabHref(language,lab.slug))}">${esc(ui.openLab)}</a> <span>${esc(ui.openLabNote(lab.slug))}</span></p>`+
   `<section><h2>${esc(ui.whatYouDo)}</h2><ol>${lab.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></section>`+
   `<section><h2>${esc(ui.whatYouLearn)}</h2><ul>${lab.learn.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></section>`+
@@ -155,7 +158,7 @@ export const LABS_INDEX_DESCRIPTION=ENGLISH.labsIndex.description;
 
 /** The lab cards of the labs index and of a language's home page. Front NEWCOMER NC6: each with its facts, one with Start here
  * before its name, and the computed-not-measured note under the list. */
-const cards=(language:SeoLanguage)=>`<ul class="cards">${language.labs.map(l=>`<li><a href="${pathOf(language,l.slug)}">${l.slug===START_HERE?`<em class="start">${esc(language.ui.startHere)}</em>`:''}<strong>${esc(l.name)}</strong><span>${esc(l.description)}</span><span class="facts">${esc(labFactsText(language.ui,l.slug))}</span></a></li>`).join('')}</ul>`+
+const cards=(language:SeoLanguage)=>`<ul class="cards">${language.labs.map(l=>`<li><a href="${pathOf(language,l.slug)}">${l.slug===START_HERE?`<em class="start">${esc(language.ui.startHere)}</em>`:''}<strong>${esc(l.name)}</strong><span>${esc(l.description)}</span><span class="facts">${labFactsHtml(language.ui,l.slug)}</span></a></li>`).join('')}</ul>`+
  `<p class="note">${esc(language.ui.estimateNote)}</p>`;
 
 export function labsIndexPage(language:SeoLanguage=ENGLISH,registry:readonly LanguageEntry[]=LANGUAGES):string{

@@ -190,12 +190,12 @@ describe('Front NEWCOMER NC4: the seven windows',()=>{
   // The why-line comes first after the heading, before the research notes and the progress block.
   // Front NEWCOMER NC5: the Hubble and Pleiades windows put their version choice between the two.
   // Front NEWCOMER NC6: the lab's computed time and level, and the computed-not-measured note, follow the why-line.
-  const lead=new RegExp(`<p id="${prefix}-why" class="lab-why">([^<]+)</p><p id="${prefix}-why-facts" class="lab-facts"><span>([^<]+)</span> <span class="lab-facts-note">${E['home.estimateNote']}</span></p>(?:<div class="lab-version">(?:(?!<details).)*)?<details class="research-notes"><summary>${E['notes.summary']}</summary><p>([^<]+)</p>`).exec(open);
+  const lead=new RegExp(`<p id="${prefix}-why" class="lab-why">([^<]+)</p><p id="${prefix}-why-facts" class="lab-facts"><span class="lab-facts-line">((?:<span class="lab-fact">[^<]+</span>(?: · )?)+)</span> <span class="lab-facts-note">${E['home.estimateNote']}</span></p>(?:<div class="lab-version">(?:(?!<details).)*)?<details class="research-notes"><summary>${E['notes.summary']}</summary><p>([^<]+)</p>`).exec(open);
   expect(lead,lab).not.toBeNull();
   expect(lead![1]).toBe(esc(why('en',lab)));
   const f=LAB_FACTS[lab],level=E[`home.level${f.level}`]!,range=(m:readonly number[])=>({low:String(m[0]),high:String(m[1])});
   const fill=(text:string,v:Record<string,string>)=>text.replace(/\{(\w+)\}/g,(_,k:string)=>v[k]!);
-  expect(lead![2]).toBe([fill(E['home.time']!,range(f.full)),level,...(f.quick?[fill(E['home.quickTime']!,range(f.quick))]:[])].join(' · '));
+  expect(lead![2]!.replace(/<[^>]+>/g,'')).toBe([fill(E['home.time']!,range(f.full)),level,...(f.quick?[fill(E['home.quickTime']!,range(f.quick))]:[])].join(' · '));
   expect(open.indexOf(`id="${prefix}-why"`)).toBeLessThan(open.indexOf('class="lab-progress"'));
   expect(open).not.toContain('lab-what-next');
   const next=LAB_NEXT[lab];

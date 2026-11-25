@@ -2,6 +2,7 @@ import {describe,expect,it} from 'vitest';
 import {LAB_SLUGS} from '../seo/labSlugs';
 import {HUBBLE_QUICK_GOAL} from '../core/hubbleLab';
 import {PLEIADES_QUICK_GOAL} from '../core/pleiadesLab';
+import {LSS_LAB_REPEAT_RECORDS} from '../core/lssLab';
 import {LAB_FACTS,QUICK_GOALS,START_HERE,isoDuration} from './labFacts';
 
 // Front NEWCOMER NC6 (plan analysis/front-plans/front-newcomer.md §2.6; user decision of 2026-11-24): the computed rough times,
@@ -18,11 +19,16 @@ describe('lab facts',()=>{
   expect(Object.entries(LAB_FACTS).filter(([,f])=>f.quick).map(([lab])=>lab)).toEqual(['hubble','pleiades']);
   for(const lab of ['hubble','pleiades'] as const){const f=LAB_FACTS[lab];expect(f.quick![1]).toBeLessThanOrEqual(f.full[1]);expect(f.quick![0]).toBeLessThan(f.full[0]);}
   expect(QUICK_GOALS).toEqual({hubble:HUBBLE_QUICK_GOAL,pleiades:PLEIADES_QUICK_GOAL});
+  // LSS's time counts the web guide's own 5-galaxy threshold (review N2).
+  expect(LSS_LAB_REPEAT_RECORDS).toBe(5);
  });
  it('use levels 1–3 and put Start here on Stellar classification, whose full time is among the shortest',()=>{
   for(const f of Object.values(LAB_FACTS))expect([1,2,3]).toContain(f.level);
   expect(START_HERE).toBe('stellar-classification');expect(LAB_SLUGS).toContain(START_HERE);
   const start=LAB_FACTS[START_HERE];expect(start.level).toBe(1);
+  // NC6 review (N1, N2): the levels and full times the review settled.
+  expect(Object.fromEntries(Object.entries(LAB_FACTS).map(([lab,f])=>[lab,[f.level,...f.full]]))).toEqual({hubble:[2,60,120],'large-scale-structure':[2,25,50],
+   'stellar-classification':[1,10,25],pleiades:[2,60,150],'cluster-hr':[3,10,30],pulsars:[3,20,50],'object-x':[3,30,75]});
   for(const f of Object.values(LAB_FACTS))expect(start.full[1]).toBeLessThanOrEqual(f.full[1]);
  });
  it('write ISO 8601 durations for timeRequired',()=>{

@@ -203,7 +203,7 @@ const FR:SeoLanguage={
    'd’origine, avec mention de leur source. Ce n’est pas le programme d’origine et il n’est pas affilié au Project CLEA. '+
    'L’application signale ses adaptations web connues. Ce texte en français est une adaptation web d’OpenVireo, pas un texte du CLEA.',
   platform:'Fonctionne dans un navigateur web récent sous Windows, Mac, Linux ou Chromebook. Rien à installer, aucun compte nécessaire.',
-  learningResourceType:'TP interactif',time:'Environ {low}–{high} min',quickTime:'Version rapide\u202f: environ {low}–{high} min',level1:'Aucune connaissance préalable requise',level2:'Quelques notions aident',level3:'Exigeant',startHere:'Commencez ici',estimateNote:'Les durées sont des estimations approximatives calculées à partir des étapes, et non mesurées auprès de visiteurs.'},
+  learningResourceType:'TP interactif',time:'Environ {low}–{high}\u00a0min',quickTime:'Version rapide\u202f: environ {low}–{high}\u00a0min',level1:'Aucune connaissance préalable requise',level2:'Quelques notions aident',level3:'Exigeant',startHere:'Commencez ici',estimateNote:'Les durées sont des estimations approximatives calculées à partir des étapes, et non mesurées auprès de visiteurs.'},
  labsIndex:{title:'TP d’astronomie CLEA VIREO en ligne · OpenVireo',
   description:'Sept TP de CLEA VIREO reconstruits pour le navigateur : loi de Hubble, structure à grande échelle, spectres, Pléiades, diagrammes HR d’amas, pulsars, Objet X.',
   eyebrow:'TP de CLEA VIREO',heading:'Des TP d’astronomie dans votre navigateur',
@@ -242,7 +242,7 @@ const ID:SeoLanguage={
    'OpenVireo bukan program asli dan tidak berafiliasi dengan Project CLEA. Aplikasi ini menandai adaptasi webnya yang sudah diketahui. '+
    'Teks berbahasa Indonesia ini adalah adaptasi web OpenVireo, bukan teks CLEA.',
   platform:'Berjalan di browser web modern pada Windows, Mac, Linux, atau Chromebook. Tidak perlu memasang apa pun dan tidak perlu akun.',
-  learningResourceType:'Praktikum interaktif',time:'Sekitar {low}–{high} min',quickTime:'Versi cepat: sekitar {low}–{high} min',level1:'Tidak perlu pengetahuan awal',level2:'Sedikit pengetahuan awal membantu',level3:'Menantang',startHere:'Mulai di sini',estimateNote:'Waktu ini perkiraan kasar yang dihitung dari langkah-langkahnya, bukan diukur pada pengunjung.'},
+  learningResourceType:'Praktikum interaktif',time:'Sekitar {low}–{high} min',quickTime:'Versi cepat: sekitar {low}–{high} min',level1:'Tidak perlu pengetahuan awal',level2:'Sedikit pengetahuan awal membantu',level3:'Menantang',startHere:'Mulai di sini',estimateNote:'Perkiraan waktu ini dihitung kasar dari langkah-langkahnya, bukan diukur pada pengunjung.'},
  labsIndex:{title:'Praktikum astronomi CLEA VIREO online · OpenVireo',
   description:'Tujuh praktikum CLEA VIREO yang dibangun ulang untuk browser: hukum Hubble, struktur skala besar, spektrum bintang, Pleiades, diagram HR gugus, pulsar, Objek X.',
   eyebrow:'Praktikum CLEA VIREO',heading:'Praktikum astronomi di browser Anda',
@@ -321,7 +321,7 @@ const JA:SeoLanguage={
    '元のプログラムではなく、Project CLEAと提携しているものでもありません。アプリは、把握しているWeb版の調整を明示しています。'+
    'この日本語の文章は、OpenVireoがWeb向けに翻案したもので、CLEAの文章ではありません。',
   platform:'Windows、Mac、Linux、Chromebookの最新のWebブラウザーで動作します。インストールもアカウントも不要です。',
-  learningResourceType:'インタラクティブな実習',time:'約{low}–{high}分',quickTime:'短縮版：約{low}–{high}分',level1:'予備知識は不要',level2:'予備知識が少しあると便利',level3:'難易度高め',startHere:'最初はここから',estimateNote:'所要時間は手順から計算したおおよその見積もりで、利用者で計測したものではありません。'},
+  learningResourceType:'インタラクティブな実習',time:'約{low}〜{high}分',quickTime:'短縮版：約{low}〜{high}分',level1:'予備知識は不要',level2:'予備知識が少しあると便利',level3:'難易度高め',startHere:'最初はここから',estimateNote:'所要時間は手順から計算したおおよその見積もりで、利用者で計測したものではありません。'},
  labsIndex:{title:'CLEA VIREOの天文実習をオンラインで · OpenVireo',
   description:'ハッブルの法則、大規模構造、恒星のスペクトル、プレアデス星団、星団のHR図、パルサー、天体Xの7つのCLEA VIREO実習を、ブラウザー向けに再構築しました。',
   eyebrow:'CLEA VIREOの実習',heading:'ブラウザーで取り組む天文実習',
@@ -447,7 +447,7 @@ const RU:SeoLanguage={
    'OpenVireo не является оригинальной программой и не связана с Project CLEA. Приложение помечает свои известные веб-адаптации. '+
    'Этот текст на русском языке\u00a0— веб-адаптация OpenVireo, а не текст CLEA.',
   platform:'Работает в современном веб-браузере на Windows, Mac, Linux или Chromebook. Ничего не нужно устанавливать, учётная запись не нужна.',
-  learningResourceType:'Интерактивная лабораторная работа',time:'Около {low}–{high}\u00a0мин',quickTime:'Быстрый вариант: около {low}–{high}\u00a0мин',level1:'Подготовка не нужна',level2:'Базовые знания пригодятся',level3:'Сложный уровень',startHere:'Начните отсюда',estimateNote:'Время\u00a0— примерная оценка, рассчитанная по шагам, а не измеренная на посетителях.'},
+  learningResourceType:'Интерактивная лабораторная работа',time:'Около {low}–{high}\u00a0мин',quickTime:'Быстрый вариант: около {low}–{high}\u00a0мин',level1:'Подготовка не нужна',level2:'Базовые знания пригодятся',level3:'Требует усилий',startHere:'Начните отсюда',estimateNote:'Время\u00a0— примерная оценка, рассчитанная по шагам, а не измеренная на посетителях.'},
  labsIndex:{title:'Лабораторные работы по астрономии CLEA VIREO онлайн · OpenVireo',
   description:'Семь лабораторных работ CLEA VIREO для браузера: закон Хаббла, крупномасштабная структура, спектры звёзд, Плеяды, диаграммы Г\u00a0— Р скоплений, пульсары, Объект X.',
   eyebrow:'Лабораторные работы CLEA VIREO',heading:'Лабораторные работы по астрономии в вашем браузере',

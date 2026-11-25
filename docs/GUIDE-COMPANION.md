@@ -417,8 +417,12 @@ answers Q6 and Q9):
   static /labs/ pages render it.
 - **The times are computed, not measured with visitors**, and every place that shows them says so: «Times are rough estimates
   computed from the steps, not measured with visitors.» (`home.estimateNote`, under the home cards, after each window's facts and
-  on the /labs/ pages). The method, inputs and date are in the table's comment: the visitor actions of each whole-exercise walk,
-  30–60 s per action for the set-up and the first object and 10–20 s for each repeated galaxy or star, plus the real-time waits
+  on the /labs/ pages). The method, inputs and date are in the table's comment. The objects counted: Hubble 13 galaxies (quick
+  3), LSS 5 galaxies (the web guide's own threshold for its repeat step, `LSS_LAB_REPEAT_RECORDS` in `src/core/lssLab.ts`, not
+  an original requirement), Pleiades 24 stars (quick 8), one practice star, one cluster, one pulsar, one Object X target. The
+  visitor actions of each whole-exercise walk count 30–60 s each for the set-up and the first object and 10–20 s for each
+  repeated galaxy or star; the tries a visitor repeats where the walk goes straight to a choice count 30–60 s each (3–5 standard
+  pairs in classification, 5–10 slider or fit trials in cluster HR; review N1); then the real-time waits
   the walks shorten (the Hubble guide's 2–3 min per galaxy exposure, also used for LSS; photometer integrations; the pulsar
   capture; Object X's CCD images and spectrum), rounded outwards to 5 min under an hour and 15 min from an hour up. NC6 departs
   from plan §2.6 in one point: the plan counts 30–60 s for every action, which gave 2–4 hours for the full Hubble list and 3–6
@@ -428,15 +432,15 @@ answers Q6 and Q9):
   | lab | full | quick | level |
   |---|---|---|---|
   | Hubble's law | 60–120 min | 20–40 min (3 galaxies) | 2 Some background helps |
-  | Large-scale structure | 25–50 min | | 1 No background needed |
-  | Stellar classification (Start here) | 5–20 min | | 1 No background needed |
+  | Large-scale structure | 25–50 min | | 2 Some background helps |
+  | Stellar classification (Start here) | 10–25 min | | 1 No background needed |
   | Pleiades photometry | 60–150 min | 35–75 min (8 stars) | 2 Some background helps |
-  | Cluster HR diagrams | 5–20 min | | 3 Challenging |
+  | Cluster HR diagrams | 10–30 min | | 3 Challenging |
   | Pulsars | 20–50 min | | 3 Challenging |
   | Object X | 30–75 min | | 3 Challenging |
 
 - **Home cards:** inside each card's button, under the summary, «About 60–120 min · Some background helps · Quick version: about
-  20–40 min» (`home-lab-<slug>-facts`); on Stellar classification a «Start here» badge before the name (`home-lab-<slug>-start`).
+  20–40 min» (`home-lab-<slug>-facts`; each part an inline block, `lab-fact`, so a line breaks only at « · », review N5); on Stellar classification a «Start here» badge before the name (`home-lab-<slug>-start`).
   The button's `aria-describedby` lists the badge, the summary and the facts; its name stays the lab's name. No new tab stop. The
   card order stays the /labs/ order.
 - **Guide windows:** under the why-line (`<prefix>-why-facts`, `whyLead` in `src/guideLead.tsx`), the same facts line and the
@@ -449,7 +453,7 @@ answers Q6 and Q9):
   mirrors the facts and the note from `en.json`.
 - Nothing is stored and no file changes; no answer, expected value or grade is shown.
 - **Tests:** `src/home/labFacts.test.ts` (every lab, low < high, outward rounding, quick below full and for the cores' goals,
-  levels 1–3, Start here on the shortest level-1 lab, ISO durations); `src/guideLead.test.ts` (each window's facts line after the
+  levels 1–3, the settled levels and full times, Start here on the shortest level-1 lab, ISO durations); `src/guideLead.test.ts` (each window's facts line after the
   why-line); `src/seo/pages.test.ts` and `src/seo/languages.test.ts` (facts and note on every page in every language,
   `timeRequired`, no `educationalLevel`, one Start here on the index, the pre-render); `tests/home.spec.ts` (each card's
   accessible description: badge, summary, facts; one badge; the note; each window's facts line).

@@ -277,6 +277,18 @@
     "script"
    ],
    "reason": "a placeholder label, a full-width colon and the time scale UT only"
+  },
+  "catalog:home.time": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "a range of minutes on a lab card is written with the wave dash, as the catalog's other number ranges are («約20〜40分»; NC6 review N4), not with the English en dash"
+  },
+  "catalog:home.quickTime": {
+   "rules": [
+    "glyphs"
+   ],
+   "reason": "a range of minutes on a lab card is written with the wave dash, as the catalog's other number ranges are («約20〜40分»; NC6 review N4), not with the English en dash"
   }
  }
 }

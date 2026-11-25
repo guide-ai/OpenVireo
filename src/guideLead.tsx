@@ -17,7 +17,7 @@ export const whyLead=(id:string,text:string,lab:LabSlug)=><><p id={id} className
  * quick version's on Hubble and Pleiades), as on its home card, with the note that the times are computed from the steps, not
  * measured with visitors. `id` is the why-line's id; the facts take `<id>-facts`. */
 function labFacts(id:string,lab:LabSlug){
- return <p id={`${id}-facts`} className="lab-facts"><span>{labFactsLine(lab)}</span> <span className="lab-facts-note">{t('home.estimateNote')}</span></p>;
+ return <p id={`${id}-facts`} className="lab-facts"><span className="lab-facts-line">{labFactsLine(lab)}</span> <span className="lab-facts-note">{t('home.estimateNote')}</span></p>;
 }
 
 /** Front NEWCOMER NC5 [W] (plan §2.5; user decision of 2026-11-24): the version choice of the Hubble and Pleiades windows, under

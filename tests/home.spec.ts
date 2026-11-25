@@ -18,9 +18,9 @@ const LABS=[
  {slug:'object-x',name:en['home.objectX'],title:'The quest for Object X'},
 ] as const;
 /** Front NEWCOMER NC6: each card's facts line in English (src/home/labFacts.ts, computed rough times, not measured). */
-const FACTS:Record<string,string>={hubble:'About 60–120 min · Some background helps · Quick version: about 20–40 min','large-scale-structure':'About 25–50 min · No background needed',
- 'stellar-classification':'About 5–20 min · No background needed',pleiades:'About 60–150 min · Some background helps · Quick version: about 35–75 min',
- 'cluster-hr':'About 5–20 min · Challenging',pulsars:'About 20–50 min · Challenging','object-x':'About 30–75 min · Challenging'};
+const FACTS:Record<string,string>={hubble:'About 60–120 min · Some background helps · Quick version: about 20–40 min','large-scale-structure':'About 25–50 min · Some background helps',
+ 'stellar-classification':'About 10–25 min · No background needed',pleiades:'About 60–150 min · Some background helps · Quick version: about 35–75 min',
+ 'cluster-hr':'About 10–30 min · Challenging',pulsars:'About 20–50 min · Challenging','object-x':'About 30–75 min · Challenging'};
 /** The Guides menu button of each lab (the sidebar's Exercise guides section). */
 const MENU:Record<string,string>={hubble:en['lab.nav'],'large-scale-structure':en['lssLab.nav'],'stellar-classification':en['classLab.nav'],pleiades:en['pleiadesLab.nav'],'cluster-hr':'Cluster HR guide',pulsars:en['pulsarLab.nav'],'object-x':'Object X guide'};
 

@@ -3,7 +3,10 @@
  * (src/guideLead.tsx labFacts) and the static /labs/ pages (src/seo/pages.ts, JSON-LD `timeRequired`) render it.
  *
  * Times are computed rough estimates in minutes, never measured with visitors; every place that shows them says so
- * (home.estimateNote). Computed on 2026-11-25 from the whole-exercise Playwright walks:
+ * (home.estimateNote). Computed on 2026-11-25 from the whole-exercise Playwright walks, for these objects: Hubble 13 galaxies
+ * (quick 3, HUBBLE_QUICK_GOAL), LSS 5 galaxies (LSS_LAB_REPEAT_RECORDS in src/core/lssLab.ts, the web guide's own threshold for its
+ * repeat step, not an original requirement), Pleiades 24 stars (quick 8, PLEIADES_QUICK_GOAL), one practice star, one cluster,
+ * one pulsar, one Object X target:
  * - visitor actions (clicks, fills, selects, checks; the walks' test-only detours, assertions, cancels and restores left out):
  *   Hubble 14 per galaxy (select, activate, start, analyse, z step and apply, shift, Record measurement and its two fields, the
  *   guide's Go to galaxy exposure, and the Hubble table's V, source and target) plus 6 to set up and save (7 for the full version,
@@ -14,12 +17,15 @@
  * - 30–60 s per action for the set-up and the first object, and 10–20 s per action for each further galaxy or star, which
  *   repeats a cycle the visitor has just done (plan §2.6 counts 30–60 s for every action; that gave 3–6 hours for the full
  *   Pleiades list, so the repeated cycles are counted at a third of it, a departure the NC6 report names);
+ * - plus the tries a visitor repeats where the walks go straight to a choice, at 30–60 s each (a try is a judgement, not a
+ *   practised cycle): classification compares 3–5 standard pairs where its walk compares one (2–4 more pair choices); cluster HR
+ *   makes 5–10 slider or fit trials (each a slider move and a look at the curves) beyond its walk's typed fit (review N1, NC6);
  * - plus the real-time waits the walks shorten: the Hubble guide's 2–3 min per galaxy exposure (lab.acquisitionTime), used for
  *   the LSS galaxies too; Pleiades integrations of 3 × 1 s per band and sky (about 1 min for 8 stars, 3 for 24); one pulsar
  *   capture (about 1 min); Object X's two 2-minute CCD images and one 2–3 minute spectrum;
  * - rounded outwards to 5 min under an hour and to 15 min from an hour up.
- * Hubble quick 20.7–38.3 → 20–40, full 64.5–116 → 60–120; LSS 25.2–45.3 → 25–50; classification 9–18 → 5–20; Pleiades quick
- * 35.3–69.7 → 35–75, full 74.8–147 → 60–150; cluster HR 9–18 → 5–20; pulsars 24.5–48 → 20–50; Object X 33.5–62 → 30–75.
+ * Hubble quick 20.7–38.3 → 20–40, full 64.5–116 → 60–120; LSS 25.2–45.3 → 25–50; classification 10–22 → 10–25; Pleiades quick
+ * 35.3–69.7 → 35–75, full 74.8–147 → 60–150; cluster HR 11.5–28 → 10–30; pulsars 24.5–48 → 20–50; Object X 33.5–62 → 30–75.
  *
  * Levels: 1 «No background needed» (one page and its own instrument, nothing worked by hand); 2 «Some background helps» (several
  * instruments and pages, a formula or a graph made from many measurements); 3 «Challenging» (a model or catalog to read with
@@ -38,10 +44,10 @@ export type LabFacts=Readonly<{
 
 export const LAB_FACTS:Readonly<Record<LabSlug,LabFacts>>=Object.freeze({
  hubble:{quick:[20,40],full:[60,120],level:2},
- 'large-scale-structure':{full:[25,50],level:1},
- 'stellar-classification':{full:[5,20],level:1},
+ 'large-scale-structure':{full:[25,50],level:2},
+ 'stellar-classification':{full:[10,25],level:1},
  pleiades:{quick:[35,75],full:[60,150],level:2},
- 'cluster-hr':{full:[5,20],level:3},
+ 'cluster-hr':{full:[10,30],level:3},
  pulsars:{full:[20,50],level:3},
  'object-x':{full:[30,75],level:3},
 });

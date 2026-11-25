@@ -48,7 +48,7 @@ describe('lab overview pages',()=>{
    // Front NEWCOMER NC6: timeRequired is the full version's upper bound as an ISO 8601 duration; no school levels (Q9).
    expect(data['@graph'][0].timeRequired).toMatch(/^PT(?:[1-9]\d*H)?(?:[1-5]?\dM)?$/);
    expect(data['@graph'][0].timeRequired).toBe(isoDuration(LAB_FACTS[l.slug].full[1]));expect(data['@graph'][0]).not.toHaveProperty('educationalLevel');
-   expect(html).toContain('<p class="facts">About ');expect(html).toContain('not measured with visitors.</span></p>');
+   expect(html).toContain('<p class="facts"><span class="fact">About ');expect(html).toContain('</span> <span class="note">Times are rough estimates computed from the steps, not measured with visitors.</span></p>');
    // No runnable script and no inline style: the site's CSP (script-src/style-src without 'unsafe-inline') covers the page.
    expect(html.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g,'')).not.toMatch(/<script|style=|<style/);
   }

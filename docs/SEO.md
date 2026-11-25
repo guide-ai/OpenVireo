@@ -162,7 +162,7 @@ search pages (PT-SEO)".
 - **Portuguese pages**: `/pt-br/` (static home: what OpenVireo is, «Abrir o observatório», the seven labs, how it works, the credit),
   `/pt-br/labs/` and `/pt-br/labs/<slug>/` with the English slugs. `<html lang="pt-BR">`, Portuguese titles (≤ 65 characters) and
   descriptions (110–160), self canonical, `og:locale` `pt_BR` with `og:locale:alternate` `en_US` and `es_LA`, Portuguese JSON-LD
-  (`WebApplication` on `/pt-br/`, `ItemList` on the index, `LearningResource` with `inLanguage` `pt-BR`, `educationalLevel` «Ensino
+  (`WebApplication` on `/pt-br/`, `ItemList` on the index, `LearningResource` with `inLanguage` `pt-BR`, `educationalLevel` (historical, removed by NEWCOMER NC6) «Ensino
   médio»/«Ensino superior» and breadcrumbs on each lab, `isBasedOn` crediting Project CLEA, Gettysburg College and the NSF as the
   English pages do). «Abrir a prática» goes to `/?lang=pt-BR#lab=<slug>`. The lab names are the app's own pt-BR names («Classificação
   estelar», «Fotometria das Plêiades», «Objeto X»…). The footer says the text is OpenVireo's web adaptation, not CLEA's.
@@ -218,7 +218,7 @@ search pages (FR-REL+SEO)".
   `/fr/labs/` and `/fr/labs/<slug>/` with the English slugs. `<html lang="fr">`, French titles (47–62 characters) and descriptions
   (154–159), self canonical, `og:locale` `fr_FR` (Open Graph needs a territory; `hreflang` stays `fr`) with `og:locale:alternate`
   `en_US`, `es_LA` and `pt_BR`, French JSON-LD (`WebApplication` on `/fr/`, `ItemList` on the index, `LearningResource` with
-  `inLanguage` `fr`, `learningResourceType` «TP interactif», `educationalLevel` «Lycée»/«Enseignement supérieur» and breadcrumbs on
+  `inLanguage` `fr`, `learningResourceType` «TP interactif», `educationalLevel` (historical, removed by NEWCOMER NC6) «Lycée»/«Enseignement supérieur» and breadcrumbs on
   each lab, `isBasedOn` crediting Project CLEA, Gettysburg College and the NSF as the English pages do). «Ouvrir le TP» goes to
   `/?lang=fr#lab=<slug>`. A lab is a «TP» (decision D4 of the French plan) and the lab names are the app's own French names
   («Classification stellaire», «Photométrie des Pléiades», «Diagrammes HR d’amas», «Objet X»…; «Pulsars» is the same word in both
@@ -273,7 +273,7 @@ PT-SEO's data-driven design as FR-SEO did. Static site only; no new external ser
 - **Indonesian pages**: `/id/` (static home: what OpenVireo is, «Buka observatorium», the seven labs, «Cara kerja», the credit),
   `/id/labs/` and `/id/labs/<slug>/` with the English slugs. `<html lang="id">`, Indonesian titles (49–64 characters) and
   descriptions (146–160), self canonical, `og:locale` `id_ID` with `og:locale:alternate` `en_US`, `es_LA`, `pt_BR` and `fr_FR`,
-  Indonesian JSON-LD (`learningResourceType` «Praktikum interaktif», `educationalLevel` «Sekolah menengah atas»/«Perguruan tinggi»,
+  Indonesian JSON-LD (`learningResourceType` «Praktikum interaktif», `educationalLevel` (historical, removed by NEWCOMER NC6) «Sekolah menengah atas»/«Perguruan tinggi»,
   `isBasedOn` crediting Project CLEA, Gettysburg College and the NSF). «Buka praktikum» goes to `/?lang=id#lab=<slug>`. A lab is a
   «praktikum» (the app's word) and the lab names are the app's own Indonesian names («Hukum Hubble», «Struktur skala besar»,
   «Klasifikasi bintang», «Fotometri Pleiades», «Diagram HR gugus bintang», «Pulsar», «Objek X»). The text addresses the reader as
@@ -325,7 +325,7 @@ search pages (HI-REL+SEO)".
   renderer are unchanged: they render the row.
 - **Hindi pages**: `/hi/` (static home), `/hi/labs/` and `/hi/labs/<slug>/` with the English slugs. `<html lang="hi">`, Hindi titles
   (51–63 characters) and descriptions (146–160), self canonical, `og:locale` `hi_IN` with the other languages' locales as
-  alternates, Hindi JSON-LD (`learningResourceType` «इंटरैक्टिव प्रयोग», `educationalLevel` «हाई स्कूल»/«स्नातक स्तर»,
+  alternates, Hindi JSON-LD (`learningResourceType` «इंटरैक्टिव प्रयोग», `educationalLevel` (historical, removed by NEWCOMER NC6) «हाई स्कूल»/«स्नातक स्तर»,
   `isBasedOn` crediting Project CLEA, Gettysburg College and the NSF). «प्रयोग खोलें» goes to `/?lang=hi#lab=<slug>`. A lab is a
   «प्रयोग», and the lab names are the app's own Hindi names («हबल का नियम», «बृहत् पैमाने की संरचना», «तारों का वर्गीकरण»,
   «कृत्तिका (Pleiades) फ़ोटोमेट्री», «तारागुच्छों के H-R आरेख», «पल्सर», «ऑब्जेक्ट X»). The text addresses the reader as आप
@@ -384,7 +384,7 @@ search pages (JA-REL+SEO)".
 - **Japanese pages**: `/ja/` (static home: what OpenVireo is, «天文台を開く», the seven labs, «仕組み», the credit), `/ja/labs/` and
   `/ja/labs/<slug>/` with the English slugs. `<html lang="ja">`, Japanese titles and descriptions, self canonical, `og:locale`
   `ja_JP` with the other languages' `og:locale:alternate`, Japanese JSON-LD (`learningResourceType` «インタラクティブな実習»,
-  `educationalLevel` «高校»/«大学», `isBasedOn` crediting Project CLEA, Gettysburg College and the NSF as the English pages do).
+  `educationalLevel` (historical, removed by NEWCOMER NC6) «高校»/«大学», `isBasedOn` crediting Project CLEA, Gettysburg College and the NSF as the English pages do).
   «実習を開く» goes to `/?lang=ja#lab=<slug>`. A lab is a «実習» (the ja glossary) and the lab names are the app's own Japanese names
   (`home.hubble` … `home.objectX`: ハッブルの法則, 大規模構造, 恒星のスペクトル分類, プレアデス測光, 星団のHR図, パルサー, 天体X).
   です/ます in sentences, nouns in headings, no second-person pronoun; full-width 。、：（） next to Japanese and no space between
@@ -442,7 +442,7 @@ data-driven design as FR-SEO and ID-SEO did. Static site only; no new external s
 - **Russian pages**: `/ru/` (static home: what OpenVireo is, «Открыть обсерваторию», the seven labs, «Как это работает», the
   credit), `/ru/labs/` and `/ru/labs/<slug>/` with the English slugs. `<html lang="ru">`, Russian titles (48–63 characters) and
   descriptions (149–160), self canonical, `og:locale` `ru_RU` with `og:locale:alternate` `en_US`, `es_LA`, `pt_BR`, `fr_FR`,
-  `id_ID` and `ja_JP`, Russian JSON-LD (`learningResourceType` «Интерактивная лабораторная работа», `educationalLevel` «Старшая школа»/«Высшее
+  `id_ID` and `ja_JP`, Russian JSON-LD (`learningResourceType` «Интерактивная лабораторная работа», `educationalLevel` (historical, removed by NEWCOMER NC6) «Старшая школа»/«Высшее
   образование», `isBasedOn` crediting Project CLEA, Gettysburg College and the NSF). «Открыть работу» goes to `/?lang=ru#lab=<slug>`.
   A lab is a «лабораторная работа», shortened to «работа» (the app's word since RU0), and the lab names are the app's own Russian
   names from its welcome («Закон Хаббла», «Крупномасштабная структура», «Классификация звёзд», «Фотометрия Плеяд», «Диаграммы
@@ -505,7 +505,7 @@ Baidu's webmaster tools would be one). The language rules are in `docs/I18N.md`,
 - **Chinese pages**: `/zh-hans/` (static home: what OpenVireo is, «打开天文台», the seven labs, «使用方式», the credit),
   `/zh-hans/labs/` and `/zh-hans/labs/<slug>/` with the English slugs. `<html lang="zh-Hans">`, Chinese titles (38–47 display
   columns, a Han character counting two) and descriptions (112–120), self canonical, `og:locale` `zh_CN`, Chinese JSON-LD
-  (`learningResourceType` «交互式实验», `educationalLevel` «高中»/«大学本科», `isBasedOn` crediting Project CLEA, Gettysburg College and
+  (`learningResourceType` «交互式实验», `educationalLevel` (historical, removed by NEWCOMER NC6) «高中»/«大学本科», `isBasedOn` crediting Project CLEA, Gettysburg College and
   the NSF). «打开实验» goes to `/?lang=zh-Hans#lab=<slug>`. A lab is a «实验» and an investigation a «探究» (the app's words since
   ZH0), and the lab names are the app's own Chinese names from its welcome («哈勃定律», «大尺度结构», «恒星分类», «昴星团测光»,
   «星团赫罗图», «脉冲星», «天体X»). The text addresses the reader as 你, writes full-width ，。、：；？！（） next to Han with no space
@@ -564,7 +564,7 @@ image, the same data-driven way as ZH-SEO. Static site only; no new external ser
   registry's `pagePath`). `src/seo/pages.ts`, the Vite plugin and the image renderer are unchanged.
 - **Traditional Chinese pages**: `/zh-hant/` (static home: what OpenVireo is, «開啟天文台», the seven labs, «使用方式», the credit),
   `/zh-hant/labs/` and `/zh-hant/labs/<slug>/` with the English slugs. `<html lang="zh-Hant">`, self canonical, `og:locale`
-  `zh_TW`, JSON-LD in Traditional Chinese (`learningResourceType` «互動式實驗», `educationalLevel` «高中»/«大學»). «開啟實驗» goes to
+  `zh_TW`, JSON-LD in Traditional Chinese (`learningResourceType` «互動式實驗», `educationalLevel` (historical, removed by NEWCOMER NC6) «高中»/«大學»). «開啟實驗» goes to
   `/?lang=zh-Hant#lab=<slug>`. Adapted by Opus from the Simplified Chinese pages with OpenVireo's English pages as the source, to
   Taiwan's standard (user decision of 2026-11-19): 你, 「」 quotes, Taiwan vocabulary («線上», «資料», «程式», «執行», «網址»,
   «不用安裝»), the zh-Hant glossary's terms («哈伯定律», «紅移», «楔形圖», «等值寬度», «主序», «色散量», «CCD相機», «光譜分析器», «電波望遠鏡»)
@@ -1086,3 +1086,14 @@ Each finding was checked against the source before the fix.
 
 Second look by the same reviewer over `54ce3142`: ship. Its one remaining nit is applied: in Spanish, Portuguese, French and
 Indonesian the telescopes close the sentence (as in Russian), so the topics cannot be read as describing the telescopes.
+
+## Front NEWCOMER NC6: time, level and Start here (2026-11-25)
+
+User decision of 2026-11-24 (AGENTS.md; plan analysis/front-plans/front-newcomer.md §2.6, Q9). Every lab page's `LearningResource`
+gains `timeRequired`, the full version's computed upper bound as an ISO 8601 duration (`PT2H`, `PT30M`; `src/home/labFacts.ts`),
+and loses `educationalLevel` in every language: the audience is the general public, not school levels. The `educationalLevel`
+values named in the sections above are historical. The lab pages show the facts line («About 60–120 min · Some background helps ·
+Quick version: about 20–40 min») and the note that the times are computed from the steps, not measured with visitors, under each
+intro; the labs index and each language's home page show the facts on every card, «Start here» on Stellar classification, and the
+note under the list. Each row of `src/seo/languages.ts` carries the seven texts in its `ui` (`time`, `quickTime`, `level1`–`level3`,
+`startHere`, `estimateNote`), checked by that language's SEO lint (`src/seo/languages.test.ts`).
