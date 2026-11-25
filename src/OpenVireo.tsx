@@ -620,8 +620,6 @@ export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={
     const ok=file?await analyzerController.current?.restoreSessionFile(file):await analyzerController.current?.saveSession();
     if(id!==projectEpoch.current)return false;projectRunning.current=false;setProjectLocalBusy(false);
     const blocked=lastRadioBlock();
-    // Front NEWCOMER NC5: a restored investigation starts with the default version, as a reload does (the choice is in no file).
-    if(ok&&file)setLabVersions(DEFAULT_LAB_VERSIONS);
     if(ok){setProjectNotice(t(file?'project.restored':'project.saved'));setObjectXSaved(file?objectXPendingRestore.current:objectXCurrent.current);setLssSavedRecords(file?(lssPendingRestoreCount.current??-1):(lssCurrent.current?.records.length??-1));}
     else if(blocked)setProjectError(radioBlockText(blocked));
     else setProjectError(t(file?(analyzerController.current?.lastRestoreResources?.()?'session.restoreResourcesError':analyzerController.current?.lastRestoreListLimit?.()?'session.observationListLimit':'project.restoreError'):'project.saveError'));
@@ -1105,11 +1103,11 @@ export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={
   const areaTextFailed=useSyncExternalStore(subscribeAreaFailures,areaFailed);
   return <TrackingShortcutContext.Provider value={stable.revealTracking}><RecoveryContext.Provider value={recovery}><TestModeContext.Provider value={testMode}><VireoOptionsContext.Provider value={vireoOptions}><ObservationListContext.Provider value={observationListAccess}><ObservationListValue.Provider value={observationList}>{header}{pageBar}{/* ES1 review 1 C1: the Spanish chunk could not be used. */languageFailed&&failureNotice('language-failure','language',languageFailed)}{/* Front ES-SPLIT: a route area's text could not be used; that part stays English. */areaTextFailed&&failureNotice('area-failure','area',uiLanguage())}{tour&&<SiteTour onClose={()=>{setTour(false);requestAnimationFrame(()=>document.querySelector<HTMLElement>('[data-testid="main-help-menu"]')?.focus());}} onFirstLook={()=>{setTour(false);companion.firstLook();}} onChooseLab={()=>{setTour(false);companion.chooseLab();}}/>}
   {instructorGate.open&&<InstructorModeBanner demonstrationMode={demonstrationMode} onLeave={stable.leaveInstructor} inert={hostInert} leaveRef={instructorLeave}/>}{instructorAsk&&<InstructorModeConfirm onAnswer={stable.answerInstructor}/>}{scopeBoxes[0]&&<ScopeAccessBox key={scopeBoxes[0].id} box={scopeBoxes[0].box} opener={scopeBoxes[0].opener} onAnswer={answerScopeBox}/>}
-  <HubbleLabGuide dialogRef={labGuide} progress={labProgress} onNavigate={stable.hubbleGuide} onNext={companion.next} onVersion={companion.version}/>
+  <HubbleLabGuide dialogRef={labGuide} progress={labProgress} version={labVersions.hubble} onNavigate={stable.hubbleGuide} onNext={companion.next} onVersion={companion.version}/>
   <PulsarLabGuide dialogRef={pulsarGuide} progress={pulsarProgress} onNavigate={stable.navigate} onNext={companion.next}/>
   <LssLabGuide dialogRef={lssGuide} progress={lssProgress} onNavigate={stable.navigate} onNext={companion.next}/>
   <ObjectXLabGuide dialogRef={objectXGuide} progress={objectXProgress} onNavigate={stable.navigate} onNext={companion.next}/>
-  <PleiadesLabGuide dialogRef={pleiadesGuide} progress={pleiadesProgress} onNavigate={stable.pleiadesGuide} onNext={companion.next} onVersion={companion.version}/>
+  <PleiadesLabGuide dialogRef={pleiadesGuide} progress={pleiadesProgress} version={labVersions.pleiades} onNavigate={stable.pleiadesGuide} onNext={companion.next} onVersion={companion.version}/>
   <ClassificationLabGuide dialogRef={classificationGuide} progress={classificationProgress} onNavigate={stable.classificationGuide} onNext={companion.next}/>
   {((view==='star-exposure'&&!compatibleStar)||(view==='galaxy-exposure'&&!compatibleGalaxy)||(view==='sky-exposure'&&!compatibleSky)||(view==='photometer'&&!compatiblePhotometer))&&<OpticalCompatibility workspace={optical} busy={projectBusy} onUseSupported={()=>applyOptical({...optical,draftIndex:0})}/>}
   {['observatory','sky-exposure','star-exposure','galaxy-exposure'].includes(view)&&<div inert={projectBusy}><RunningClock limitSlewing={opticalOptions.limitSlewing} site={siteOverrides[optical.selectedIndex]} utc={siteClock.utc} pointing={pointing} statusOnly={view!=='observatory'} access={currentAccess} state={observatoryClock.state} running={observatoryClock.running} limited={observatoryClock.limited} index={optical.selectedIndex} {...runningClockHandlers} /></div>}

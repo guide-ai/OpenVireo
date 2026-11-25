@@ -37,9 +37,9 @@ export const pleiadesStepDestination=(step:PleiadesLabStep):PleiadesLabDestinati
 /** WEB-PLEIADES-GUIDE-01: the Pleiades photometry (E04) guide, with the PulsarLabGuide layout. Every mark is recomputed from the
  * current state by pleiadesLabProgress; nothing is stored. The guide explains the paper-and-overlay procedure; it computes no
  * magnitude, color or distance itself, and it does not mark the whole E05 exercise complete. */
-function PleiadesLabGuide({dialogRef,progress,onNavigate,onNext,onVersion}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:PleiadesLabProgress;onNavigate:(destination:PleiadesLabDestination)=>void;/** Front NEWCOMER NC4: opens another lab's guide (What next); a stable callback. */onNext:(lab:LabSlug)=>void;/** Front NEWCOMER NC5: chooses the quick or full version (core/labVersion.ts); a stable callback. */onVersion:(lab:VersionedLab,version:LabVersion)=>void}){
+function PleiadesLabGuide({dialogRef,progress,version,onNavigate,onNext,onVersion}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:PleiadesLabProgress;/** Front NEWCOMER NC5 review (S1): the version the visitor chose, from the shell's state. */version:LabVersion;onNavigate:(destination:PleiadesLabDestination)=>void;/** Front NEWCOMER NC4: opens another lab's guide (What next); a stable callback. */onNext:(lab:LabSlug)=>void;/** Front NEWCOMER NC5: chooses the quick or full version (core/labVersion.ts); a stable callback. */onVersion:(lab:VersionedLab,version:LabVersion)=>void}){
  function go(destination:PleiadesLabDestination){dialogRef.current?.close();onNavigate(destination);}
- const doneCount=PLEIADES_LAB_COUNTED_STEPS.filter(s=>progress.done[s]).length,version:LabVersion=progress.goal<PLEIADES_SAMPLE_TARGETS?'quick':'full';
+ const doneCount=PLEIADES_LAB_COUNTED_STEPS.filter(s=>progress.done[s]).length;
  /** The guide's counts line, in its progress block and as What next's recap (Front NEWCOMER NC4). */
  const counts=t('pleiadesLab.counts',{done:doneCount,total:PLEIADES_LAB_COUNTED_STEPS.length});
  const statusText=(step:PleiadesLabStep)=>step==='save'?t('pleiadesLab.status.save')
@@ -78,4 +78,4 @@ function PleiadesLabGuide({dialogRef,progress,onNavigate,onNext,onVersion}:{dial
  </dialog>;
 }
 // Front Perf: the closed guide re-renders only when its progress (plain data), ref or handler changes.
-export default memo(PleiadesLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&a.onNext===b.onNext&&a.onVersion===b.onVersion&&sameData(a.progress,b.progress));
+export default memo(PleiadesLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&a.onNext===b.onNext&&a.onVersion===b.onVersion&&a.version===b.version&&sameData(a.progress,b.progress));

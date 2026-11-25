@@ -35,13 +35,13 @@ const render=(el:ReactElement)=>renderToStaticMarkup(el);
 const steps=(html:string)=>{const list=/<ol class="lab-steps[^"]*">([\s\S]*?)<\/ol>/.exec(html)![1];return list.split(/(?=<li(?: [^>]*)?><h3)/).filter(s=>s.startsWith("<li"));};
 
 const WINDOWS:readonly (readonly [string,string,number,()=>string])[]=[
- ['hubble','hubble-lab-step',5,()=>render(createElement(HubbleLabGuide,{dialogRef:ref,progress:hubbleLabProgress([],[],EMPTY_HUBBLE),onNavigate:noop,onNext:noop,onVersion:noop}))],
+ ['hubble','hubble-lab-step',5,()=>render(createElement(HubbleLabGuide,{dialogRef:ref,progress:hubbleLabProgress([],[],EMPTY_HUBBLE),onNavigate:noop,onNext:noop,onVersion:noop,version:'full' as const}))],
  ['large-scale-structure','lss-lab-step',LSS_LAB_STEPS.length,()=>render(createElement(LssLabGuide,{dialogRef:ref,progress:lssLabProgress(INITIAL_LSS_LAB_SUMMARY),onNavigate:noop,onNext:noop}))],
  ['object-x','objectx-guide-step',OBJECT_X_LAB_STEPS.length,()=>render(createElement(ObjectXLabGuide,{dialogRef:ref,progress:objectXLabProgress(INITIAL_OBJECT_X_LAB_SUMMARY),onNavigate:noop,onNext:noop}))],
  ['stellar-classification','classification-lab-step',CLASSIFICATION_LAB_STEPS.length,()=>render(createElement(ClassificationLabGuide,{dialogRef:ref,progress:classificationLabProgress(EMPTY_CLASSIFICATION_WORKSPACE,EMPTY_CLASSIFICATION_EXERCISE_SUMMARY),onNavigate:noop,onNext:noop}))],
  ['cluster-hr','cluster-lab-step',CLUSTER_LAB_STEPS.length,()=>render(createElement(ClusterLabGuide,{dialogRef:ref,progress:clusterLabProgress({loaded:true,inspected:false,validTrial:false,confirmed:false,reportOpened:false}),cluster:null,onNavigate:noop,own:clusterOwnStatus(0,10,false)}))],
  ['pulsars','pulsar-lab-step',PULSAR_LAB_STEPS.length,()=>render(createElement(PulsarLabGuide,{dialogRef:ref,progress:pulsarLabProgress({radio:INITIAL_RADIO_EXERCISE_SUMMARY,analysis:EMPTY_PULSAR_MEASUREMENT_SUMMARY,captureRows:0}),onNavigate:noop,onNext:noop}))],
- ['pleiades','pleiades-lab-step',PLEIADES_LAB_STEPS.length,()=>render(createElement(PleiadesLabGuide,{dialogRef:ref,progress:pleiadesLabProgress({list:true,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY}),onNavigate:noop,onNext:noop,onVersion:noop}))],
+ ['pleiades','pleiades-lab-step',PLEIADES_LAB_STEPS.length,()=>render(createElement(PleiadesLabGuide,{dialogRef:ref,progress:pleiadesLabProgress({list:true,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY}),onNavigate:noop,onNext:noop,onVersion:noop,version:'full' as const}))],
 ];
 
 describe('Front NEWCOMER NC3: plain step titles, detail folded under More detail',()=>{
@@ -79,7 +79,7 @@ describe('Front NEWCOMER NC3: plain step titles, detail folded under More detail
 
 describe('Front NEWCOMER NC3 review: texts kept where they explain something',()=>{
  it('Hubble opens Save your work together with Interpret; it stays closed before',()=>{
-  const save=(next:HubbleLabProgress['next'])=>/<details class="lab-step-more" open=""><summary aria-labelledby="hubble-lab-step-save-more/.test(render(createElement(HubbleLabGuide,{dialogRef:ref,progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),next},onNavigate:noop,onNext:noop,onVersion:noop})));
+  const save=(next:HubbleLabProgress['next'])=>/<details class="lab-step-more" open=""><summary aria-labelledby="hubble-lab-step-save-more/.test(render(createElement(HubbleLabGuide,{dialogRef:ref,progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),next},onNavigate:noop,onNext:noop,onVersion:noop,version:'full' as const})));
   expect(save('acquire')).toBe(false);expect(save('inputs')).toBe(false);expect(save('interpret')).toBe(true);
  });
  it('the pulsar backup note is in the body of Save the investigation; the Pleiades E05 note is beside Data from Observations',()=>{

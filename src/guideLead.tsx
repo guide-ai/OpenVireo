@@ -13,12 +13,13 @@ import type {LabVersion} from './core/labVersion';
 export const whyLead=(id:string,text:string)=><p id={id} className="lab-why">{text}</p>;
 
 /** Front NEWCOMER NC5 [W] (plan §2.5; user decision of 2026-11-24): the version choice of the Hubble and Pleiades windows, under
- * the why-line. A native radio group (one tab stop, arrows move between the two) whose change the window's counts line announces
- * (its `role="status"`); the shared note says that the quick version is a web suggestion, a part of the original exercise, and the
+ * the why-line. A native radio group (one tab stop, arrows move between the two); a change is announced by the radio button's own
+ * checked state, as every native radio group (NC5 review N3: the counts line does not always change). The shared note says that the quick version is a web suggestion, a part of the original exercise, and the
  * full version the original. Once the quick version is finished (`quickDone`: the guide's closing state while quick is chosen) it
  * says so and offers Continue with the full exercise, which chooses Full and leaves the focus on its radio button (the pressed
  * button goes away). `id` prefixes the ids and the radio name; `labels` are the lab's own quick and full labels; `tip` is an
- * extra line (Hubble's). The choice is held by the shell (core/labVersion.ts) and never stored; nothing here is an answer,
+ * extra line (Hubble's). `version` is the shell's own state, never derived from the progress, which follows it one effect later
+ * (NC5 review S1). The choice is held by the shell (core/labVersion.ts) and never stored; nothing here is an answer,
  * expected value or grade. */
 export function versionChoice(id:string,version:LabVersion,labels:Readonly<{quick:string;full:string}>,onChange:(version:LabVersion)=>void,quickDone:boolean,tip?:string){
  const radio=(value:LabVersion)=><label className="lab-version-option"><input type="radio" id={`${id}-version-${value}`} name={`${id}-version`} value={value} checked={version===value} onChange={()=>onChange(value)}/>{labels[value]}</label>;

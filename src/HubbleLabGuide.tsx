@@ -36,9 +36,9 @@ export function hubbleItemBody(item:HubbleGuideItem){
   case 'interpret':return <><p>{t('lab.interpretHelp')}</p><ul>{(['data','fit','errors','environment']as const).map(key=><li key={key}>{t(`lab.reflect.${key}`)}</li>)}</ul></>;
  }
 }
-function HubbleLabGuide({dialogRef,progress,onNavigate,onNext,onVersion}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:HubbleLabProgress;onNavigate:(destination:LabDestination)=>void;/** Front NEWCOMER NC4: opens another lab's guide (What next); a stable callback. */onNext:(lab:LabSlug)=>void;/** Front NEWCOMER NC5: chooses the quick or full version (core/labVersion.ts); a stable callback. */onVersion:(lab:VersionedLab,version:LabVersion)=>void}){
+function HubbleLabGuide({dialogRef,progress,version,onNavigate,onNext,onVersion}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:HubbleLabProgress;/** Front NEWCOMER NC5 review (S1): the version the visitor chose, from the shell's state (the progress follows it one effect later). */version:LabVersion;onNavigate:(destination:LabDestination)=>void;/** Front NEWCOMER NC4: opens another lab's guide (What next); a stable callback. */onNext:(lab:LabSlug)=>void;/** Front NEWCOMER NC5: chooses the quick or full version (core/labVersion.ts); a stable callback. */onVersion:(lab:VersionedLab,version:LabVersion)=>void}){
  function go(destination:LabDestination){dialogRef.current?.close();onNavigate(destination);}
- const item=hubblePhaseItem(progress.next),version:LabVersion=progress.goal<progress.total?'quick':'full';
+ const item=hubblePhaseItem(progress.next);
  return <dialog ref={dialogRef} className="hubble-lab-dialog" aria-labelledby="hubble-lab-heading" aria-describedby="hubble-lab-why">
   <div className="lab-heading"><div><div className="eyebrow">{t('lab.eyebrow')}</div><h2 id="hubble-lab-heading">{t('lab.title')}</h2></div><button className="secondary-button" autoFocus onClick={()=>dialogRef.current?.close()}>{t('lab.close')}</button></div>
   {whyLead('hubble-lab-why',t('lab.why'))}{versionChoice('hubble-lab',version,{quick:t('lab.version.quick',{count:HUBBLE_QUICK_GOAL}),full:t('lab.version.full',{count:progress.total})},v=>onVersion('hubble',v),version==='quick'&&progress.next==='interpret',t('lab.version.tip'))}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('lab.intro')}</p><p>{t('lab.introOptions')}</p></details>
@@ -59,4 +59,4 @@ function HubbleLabGuide({dialogRef,progress,onNavigate,onNext,onVersion}:{dialog
  </dialog>;
 }
 // Front Perf: the closed guide re-renders only when its progress (plain data), ref or handler changes.
-export default memo(HubbleLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&a.onNext===b.onNext&&a.onVersion===b.onVersion&&sameData(a.progress,b.progress));
+export default memo(HubbleLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&a.onNext===b.onNext&&a.onVersion===b.onVersion&&a.version===b.version&&sameData(a.progress,b.progress));

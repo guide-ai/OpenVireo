@@ -374,7 +374,9 @@ answer Q5):
   admitted stars, the visitor's choice. It is a web suggestion, a part of the original exercise; the full version is the original
   (13 galaxies, 24 stars). Quick opens by default (Q5). LSS keeps its 5-galaxy suggestion; the other labs have none.
 - **The choice is tab state** (`labVersions` in the shell, `src/core/labVersion.ts`), like the guide in use: nothing is stored, no
-  file changes, and a reload, Restart exercise or a successful Restore starts with the default again.
+  file changes, and a reload or Restart exercise starts with the default again. A Restore (the page bar's or the analyser's)
+  keeps the tab's version: review N2 departs here from plan §2.5, which reset it, because a reset made a restored full
+  investigation read «You finished the quick version».
 - **The progress functions take a goal** with the full version as default, so every other caller keeps its behaviour:
   `hubbleLabProgress(archive,measurements,workspace,goal)` (passed by the shell to `SpectrumInstrument` as `labGoal`) and
   `pleiadesLabProgress({…,goal})`. Hubble: an archived unmeasured galaxy is still measured first; `acquire` lasts while fewer than
@@ -390,9 +392,11 @@ answer Q5):
   your own confirmed B−V: 9 (goal 8)». Nine strings became goal-neutral once instead of quick copies (`lab.counts`,
   `lab.next.acquire`, `lab.next.measure`, `lab.next.interpretSupported` with `{count}`, `lab.recipeHelp`, `pleiadesLab.coverage`,
   `pleiadesLab.status.sample`, `pleiadesLab.next.sample`, `pleiadesLab.step.sample.help` with `{total}` = 24).
-- **The window:** under the why-line, a native radio group (legend «Version», one tab stop, arrows between the two; its change is
-  announced by the counts line's `role="status"`), described by the shared note; Hubble adds the tip «Galaxies from different
-  groups make a clearer graph.» (`versionChoice` in `src/guideLead.tsx`, a plain function, as the windows render closed on every
+- **The window:** under the why-line, a native radio group (legend «Version», one tab stop, arrows between the two; a change is
+  announced by the radio button's own checked state, review N3), described by the shared note; Hubble adds the tip «Galaxies
+  from different groups (UM-I, CorBor, Peg, Coma, Boo) make a clearer graph.», with the group labels of the galaxy selector (N6).
+  The windows take the chosen version from the shell's state (`version` prop), not from the progress, which follows it one effect
+  later (review S1: the radio flicked back for a frame). (`versionChoice` in `src/guideLead.tsx`, a plain function, as the windows render closed on every
   load). **The strip** shows «Quick version» beside the lab's name while quick is chosen (`companionQuick`, read from the goal the
   progress was computed with, so it never disagrees with the counts); its counts line is the guide's, with the goal.
 - **Tests:** `src/core/labVersion.test.ts` (both cores at the quick goal and the default: measure before the next acquire, the

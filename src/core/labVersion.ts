@@ -2,7 +2,8 @@
  * Hubble's law and Pleiades photometry, each offer a quick version (any 3 different supported galaxies, any 8 admitted stars,
  * the visitor's choice) beside the full one, which is the original exercise. The quick version is a web suggestion, a part of the
  * original exercise; it opens by default (answer Q5). The choice is state of the tab, held by the shell like the guide in use:
- * it is never stored and never written to a file, so a reload, Restart exercise or Restore starts with the default again.
+ * it is never stored and never written to a file, so a reload or Restart exercise starts with the default again, while a Restore
+ * keeps the tab's version (NC5 review N2, a departure from plan §2.5, which reset it).
  * Pure: no React, i18n, clock or I/O. */
 import {GALAXY_TARGETS} from './galaxyIdentity';
 import {HUBBLE_QUICK_GOAL} from './hubbleLab';

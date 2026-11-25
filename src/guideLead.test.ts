@@ -170,13 +170,13 @@ const noop=()=>{};
 const html=(el:ReactElement)=>renderToStaticMarkup(el);
 /** Each window at its first step and in its closing state. */
 const WINDOWS:readonly (readonly [LabSlug,string,(closing:boolean)=>string])[]=[
- ['hubble','hubble-lab',c=>html(createElement(HubbleLabGuide,{dialogRef:ref,progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),...c?{next:'interpret' as const}:{}},onNavigate:noop,onNext:noop,onVersion:noop}))],
+ ['hubble','hubble-lab',c=>html(createElement(HubbleLabGuide,{dialogRef:ref,progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),...c?{next:'interpret' as const}:{}},onNavigate:noop,onNext:noop,onVersion:noop,version:'full' as const}))],
  ['large-scale-structure','lss-lab',c=>html(createElement(LssLabGuide,{dialogRef:ref,progress:{...lssLabProgress(INITIAL_LSS_LAB_SUMMARY),...c?{next:'done' as const}:{}},onNavigate:noop,onNext:noop}))],
  ['object-x','objectx-lab',c=>html(createElement(ObjectXLabGuide,{dialogRef:ref,progress:{...objectXLabProgress(INITIAL_OBJECT_X_LAB_SUMMARY),...c?{next:'done' as const}:{}},onNavigate:noop,onNext:noop}))],
  ['stellar-classification','classification-lab',c=>html(createElement(ClassificationLabGuide,{dialogRef:ref,progress:{...classificationLabProgress(EMPTY_CLASSIFICATION_WORKSPACE,EMPTY_CLASSIFICATION_EXERCISE_SUMMARY),...c?{next:'save' as const}:{}},onNavigate:noop,onNext:noop}))],
  ['cluster-hr','cluster-lab',c=>html(createElement(ClusterLabGuide,{dialogRef:ref,progress:clusterLabProgress({loaded:true,inspected:c,validTrial:c,confirmed:c,reportOpened:c}),cluster:null,onNavigate:noop,own:clusterOwnStatus(0,10,false),onNext:noop}))],
  ['pulsars','pulsar-lab',c=>html(createElement(PulsarLabGuide,{dialogRef:ref,progress:{...pulsarLabProgress({radio:INITIAL_RADIO_EXERCISE_SUMMARY,analysis:EMPTY_PULSAR_MEASUREMENT_SUMMARY,captureRows:0}),...c?{next:'save' as const}:{}},onNavigate:noop,onNext:noop}))],
- ['pleiades','pleiades-lab',c=>html(createElement(PleiadesLabGuide,{dialogRef:ref,progress:{...pleiadesLabProgress({list:true,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY}),...c?{next:'save' as const}:{}},onNavigate:noop,onNext:noop,onVersion:noop}))],
+ ['pleiades','pleiades-lab',c=>html(createElement(PleiadesLabGuide,{dialogRef:ref,progress:{...pleiadesLabProgress({list:true,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY}),...c?{next:'save' as const}:{}},onNavigate:noop,onNext:noop,onVersion:noop,version:'full' as const}))],
 ];
 const NAME:Readonly<Record<LabSlug,string>>={hubble:E['home.hubble']!,'large-scale-structure':E['home.lss']!,'stellar-classification':E['home.classification']!,
  pleiades:E['home.pleiades']!,'cluster-hr':E['home.clusterHr']!,pulsars:E['home.pulsars']!,'object-x':E['home.objectX']!};
@@ -216,8 +216,8 @@ describe('Front NEWCOMER NC5: the version choice',()=>{
   expect(c['lab.next.interpretSupported']).toContain('{count}');
   expect(c['pleiadesLab.step.sample.help']).toContain('{total}');
  });
- const hubble=(goal:number,closing:boolean)=>html(createElement(HubbleLabGuide,{dialogRef:ref,progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE,goal),...closing?{next:'interpret' as const}:{}},onNavigate:noop,onNext:noop,onVersion:noop}));
- const pleiades=(goal:number,closing:boolean)=>html(createElement(PleiadesLabGuide,{dialogRef:ref,progress:{...pleiadesLabProgress({list:true,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY,goal}),...closing?{next:'save' as const}:{}},onNavigate:noop,onNext:noop,onVersion:noop}));
+ const hubble=(goal:number,closing:boolean)=>html(createElement(HubbleLabGuide,{dialogRef:ref,progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE,goal),...closing?{next:'interpret' as const}:{}},onNavigate:noop,onNext:noop,onVersion:noop,version:goal<13?'quick' as const:'full' as const}));
+ const pleiades=(goal:number,closing:boolean)=>html(createElement(PleiadesLabGuide,{dialogRef:ref,progress:{...pleiadesLabProgress({list:true,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY,goal}),...closing?{next:'save' as const}:{}},onNavigate:noop,onNext:noop,onVersion:noop,version:goal<24?'quick' as const:'full' as const}));
  it('Hubble: a radio group under the why-line, the shared note and the tip; the goal in the counts; Continue with the full exercise once the quick version is done',()=>{
   const quick=hubble(3,false),full=hubble(13,false);
   expect(quick).toContain(`<legend>${E['lab.version.legend']}</legend>`);
