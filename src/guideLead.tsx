@@ -10,8 +10,8 @@ import {labFactsLine} from './home/labFactsText';
  * (tests/render-budget.spec.ts).
  * The why-line asks the question the visitor will answer, then says what they will do; it never states the lab's result, not
  * even qualitatively (src/guideLead.test.ts checks every language). It is the dialog's description (`aria-describedby`); the
- * guide's former intro is a research note below it. */
-export const whyLead=(id:string,text:string,lab:LabSlug)=><><p id={id} className="lab-why">{text}</p>{labFacts(id,lab)}</>;
+ * guide's former intro is a research note below it. Front NEWCOMER NC7: `text` may carry glossary terms (help/glossary.tsx). */
+export const whyLead=(id:string,text:ReactNode,lab:LabSlug)=><><p id={id} className="lab-why">{text}</p>{labFacts(id,lab)}</>;
 
 /** Front NEWCOMER NC6 [W] (plan §2.6): under the why-line, the lab's computed rough time and level (the full exercise's, and the
  * quick version's on Hubble and Pleiades), as on its home card, with the note that the times are computed from the steps, not

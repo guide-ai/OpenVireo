@@ -5,6 +5,7 @@ import {PLEIADES_LAB_COUNTED_STEPS,PLEIADES_LAB_STEPS,PLEIADES_QUICK_GOAL,PLEIAD
 import {PLEIADES_HTL} from './core/pleiadesHotList';
 import {moreDetail,stepTitle} from './guideMoreDetail';
 import {versionChoice,whatNext,whyLead} from './guideLead';
+import {glossKey,termScope,wordsUsed} from './help/glossary';
 import type {LabVersion,VersionedLab} from './core/labVersion';
 import type {LabSlug} from './seo/labSlugs';
 import './hubble-lab.css';
@@ -22,13 +23,15 @@ export const pleiadesStepTitle=(step:PleiadesLabStep)=>t(`pleiadesLab.step.${ste
 /** Front GUIDE-COMPANION: what the guide says under a step's heading and status, shared with the companion strip's Step
  * details. `ids` false (the companion) leaves out the test ids: the closed guide is still in the document. Front NEWCOMER NC5:
  * the sample step's help names the full version's star count. */
-export function pleiadesStepBody(step:PleiadesLabStep,ids=true){
+export function pleiadesStepBody(step:PleiadesLabStep,ids=true,found?:Set<string>){
  const id=(name:string)=>ids?name:undefined;
+ // Front NEWCOMER NC7: the step's glossary terms (help/glossary.tsx), each marked once; the formula stays plain text.
+ const g=termScope(found);
  return <>
-    <p>{step==='sample'?t('pleiadesLab.step.sample.help',{total:PLEIADES_SAMPLE_TARGETS}):t(`pleiadesLab.step.${step}.help`)}</p>
-    {step==='sample'&&<p className="lab-recovery" data-testid={id('pleiades-lab-fit-minimum')}>{t('pleiadesLab.step.sample.minimum')}</p>}
+    <p>{step==='sample'?glossKey(g,'pleiadesLab.step.sample.help',{total:PLEIADES_SAMPLE_TARGETS}):glossKey(g,`pleiadesLab.step.${step}.help`)}</p>
+    {step==='sample'&&<p className="lab-recovery" data-testid={id('pleiades-lab-fit-minimum')}>{glossKey(g,'pleiadesLab.step.sample.minimum')}</p>}
     {step==='distance'&&<p data-testid={id('pleiades-lab-distance-formula')}>{t('pleiadesLab.step.distance.formula')}</p>}
-    {step==='distance'&&<p>{t('pleiadesLab.step.distance.optional')}</p>}
+    {step==='distance'&&<p>{glossKey(g,'pleiadesLab.step.distance.optional')}</p>}
  </>;
 }
 /** Where each step is carried out (the companion's Show me where goes there too). */
@@ -42,13 +45,15 @@ function PleiadesLabGuide({dialogRef,progress,version,onNavigate,onNext,onVersio
  const doneCount=PLEIADES_LAB_COUNTED_STEPS.filter(s=>progress.done[s]).length;
  /** The guide's counts line, in its progress block and as What next's recap (Front NEWCOMER NC4). */
  const counts=t('pleiadesLab.counts',{done:doneCount,total:PLEIADES_LAB_COUNTED_STEPS.length});
+ /** Front NEWCOMER NC7: the glossary terms marked in this window, for its «Words used in this guide». */
+ const found=new Set<string>();
  const statusText=(step:PleiadesLabStep)=>step==='save'?t('pleiadesLab.status.save')
   :step==='sample'?t('pleiadesLab.status.sample',{count:progress.colorTargets,total:progress.goal})
   :t(progress.done[step]?'pleiadesLab.status.done':'pleiadesLab.status.notYet');
  return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog pleiades-lab-dialog" aria-labelledby="pleiades-lab-heading" aria-describedby="pleiades-lab-why" data-testid="pleiades-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('pleiadesLab.eyebrow')}</div><h2 id="pleiades-lab-heading">{t('pleiadesLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="pleiades-lab-close" onClick={()=>dialogRef.current?.close()}>{t('pleiadesLab.close')}</button></div>
-  {whyLead('pleiades-lab-why',t('pleiadesLab.why'),'pleiades')}
+  {whyLead('pleiades-lab-why',glossKey(termScope(found),'pleiadesLab.why'),'pleiades')}
   {versionChoice('pleiades-lab',version,{quick:t('pleiadesLab.version.quick',{count:PLEIADES_QUICK_GOAL}),full:t('pleiadesLab.version.full',{count:PLEIADES_SAMPLE_TARGETS})},v=>onVersion('pleiades',v),version==='quick'&&progress.next==='save')}
   <details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('pleiadesLab.intro')}</p><p className="lab-recovery" data-testid="pleiades-lab-adaptation">{t('pleiadesLab.adaptation')}</p></details>
   <section className="lab-progress" aria-labelledby="pleiades-lab-progress-heading">
@@ -66,7 +71,7 @@ function PleiadesLabGuide({dialogRef,progress,version,onNavigate,onNext,onVersio
     <h3><span className="pleiades-lab-mark" aria-hidden="true" data-done={progress.done[step]}/>{stepTitle(`pleiades-lab-step-${step}`,pleiadesStepTitle(step))}</h3>
     <p className="pulsar-lab-status" data-testid={`pleiades-lab-status-${step}`}>{statusText(step)}</p>
     <button className="secondary-button" onClick={()=>go(STEP_DESTINATION[step])}>{t(STEP_DESTINATION[step]==='hotlist'?'pleiadesLab.goHotList':STEP_DESTINATION[step]==='observatory'?'pleiadesLab.goObservatory':'pleiadesLab.goPhotometer')}</button>
-    {moreDetail(`pleiades-lab-step-${step}`,progress.next===step,pleiadesStepBody(step))}
+    {moreDetail(`pleiades-lab-step-${step}`,progress.next===step,pleiadesStepBody(step,true,found))}
    </li>)}
   </ol>
   {progress.next==='save'&&whatNext('pleiades-lab','pleiades',next=>{dialogRef.current?.close();onNext(next);},counts)}
@@ -74,6 +79,7 @@ function PleiadesLabGuide({dialogRef,progress,version,onNavigate,onNext,onVersio
    <dt>{t(`pleiadesLab.problem.${key}`)}</dt><dd>{t(`pleiadesLab.recover.${key}`)}</dd></div>)}</dl></details>
   <details className="lab-sources"><summary>{t('pleiadesLab.sources')}</summary><p>{t('pleiadesLab.sourceHelp')}</p>
    <ul><li data-testid="pleiades-lab-source-file">{t('pleiadesLab.sourceFile',{name:PLEIADES_HTL.name,bytes:PLEIADES_HTL.bytes,sha256:PLEIADES_HTL.sha256})}</li><li>{t('pleiadesLab.archiveMember',{member:PLEIADES_HTL.archiveMember,sha256:PLEIADES_HTL.archiveSha256})}</li></ul><p>{t('pleiadesLab.limits')}</p></details>
+  {wordsUsed('pleiades-lab-terms',found)}
   <button className="secondary-button" onClick={()=>dialogRef.current?.close()}>{t('pleiadesLab.return')}</button>
  </dialog>;
 }

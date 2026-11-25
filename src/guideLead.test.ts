@@ -10,6 +10,7 @@ import {LAB_SLUGS,type LabSlug} from './seo/labSlugs';
 import {LAB_NEXT} from './home/labNext';
 import {LAB_FACTS} from './home/labFacts';
 import {OBJECT_X_GUIDE_EN,OBJECT_X_LAB_EN} from './objectx/ObjectXMessages';
+import TERMS_EN from './i18n/terms.en.json';
 import HubbleLabGuide from './HubbleLabGuide';
 import LssLabGuide from './LssLabGuide';
 import ObjectXLabGuide from './ObjectXLabGuide';
@@ -289,6 +290,44 @@ describe('Front NEWCOMER /labs/ texts: the search pages ask, and never answer',(
  });
 });
 
+// Front NEWCOMER NC7 (plan §2.7; user decision of 2026-11-24): the glossary definitions (`term.*`, help/glossary.tsx) are
+// textbook-neutral: a definition states none of the results of the guides whose window marks its term (by the English snapshot,
+// src/i18n/terms.en.json, whose keys gate every language), in any language, through the same per-language result lists. The
+// windows by key prefix; the cluster guide uses the Pleiades list, as its why-line does. A term no window marks (the HR diagram:
+// the guides name it only as controls) is checked against every list. Allowed, one word each: the dispersion measure's own name
+// (its language's «dispersion» stem). Object X: a definition its window shows names none of the five kinds.
+const TERM_LAB:Readonly<Record<string,LabSlug>>={'lab.':'hubble','lssLab.':'large-scale-structure','classLab.':'stellar-classification',
+ 'pleiadesLab.':'pleiades','clusterLab.':'cluster-hr','pulsarLab.':'pulsars','objectXGuide.':'object-x'};
+const TERM_IDS=Object.keys(en).filter(k=>/^term\.(?!label$|close$|wordsHeading$)/u.test(k)).map(k=>k.slice('term.'.length));
+const termLabs=(id:string):LabSlug[]=>{
+ const labs=new Set<LabSlug>();
+ for(const [key,entries] of Object.entries(TERMS_EN as Record<string,(string|number)[][]>))if(entries.some(e=>e[0]===id)){const prefix=Object.keys(TERM_LAB).find(p=>key.startsWith(p));if(prefix)labs.add(TERM_LAB[prefix]!);}
+ return labs.size?[...labs]:LAB_SLUGS.filter(lab=>lab!=='object-x');
+};
+const TERM_ALLOWED:Readonly<Record<string,(dir:string)=>readonly string[]>>={dispersionMeasure:dir=>kept(dir,'pulsars')};
+const definitionStates=(dir:string,id:string,text:string)=>termLabs(id).flatMap(lab=>statesResult(dir,lab,text)).filter(stem=>!(TERM_ALLOWED[id]?.(dir)??[]).includes(stem));
+describe('Front NEWCOMER NC7: the glossary definitions never answer',()=>{
+ it('sixteen terms; the Hubble, LSS, classification, cluster, pulsar and Object X windows each mark some',()=>{
+  expect(TERM_IDS).toHaveLength(16);
+  const marked=new Set(TERM_IDS.flatMap(termLabs));
+  for(const lab of LAB_SLUGS)expect(marked.has(lab),lab).toBe(true);
+ });
+ for(const dir of DIRS)it(`${dir}: each definition states none of the results of the guides that show it`,()=>{
+  const c=catalog(dir);
+  for(const id of TERM_IDS){
+   const text=c[`term.${id}`]!;
+   expect(definitionStates(dir,id,text),`${dir} ${id}: ${text}`).toEqual([]);
+  }
+ });
+ it('the check bites: a textbook pulsar or dispersion measure that explains the result is caught',()=>{
+  expect(definitionStates('en','pulsar','Pulsar: a rapidly rotating neutron star.')).toEqual(['neutron','rotat']);
+  expect(definitionStates('en','dispersionMeasure','Dispersion measure (DM): the number of free electrons along the line of sight.')).toEqual(['electron']);
+  expect(definitionStates('en','spectrum','Spectrum: the light of a quasar spread out by wavelength.')).toEqual(['quasar']);
+  expect(definitionStates('en','mainSequence','Main sequence: the band where hot young stars lie.')).toEqual(['hot$','young']);
+  expect(definitionStates('ru','redshift','Красное смещение растёт с расстоянием.')).toEqual(['растёт']);
+ });
+});
+
 describe('Front NEWCOMER NC4: What next',()=>{
  // NC4 review (N6): Stellar classification, the Start-here lab (plan Q6), is where a visitor begins, so no lab suggests it.
  it('every lab suggests another lab; every lab but Stellar classification, the Start-here lab, is suggested',()=>{
@@ -329,9 +368,10 @@ describe('Front NEWCOMER NC4: the seven windows',()=>{
   // The why-line comes first after the heading, before the research notes and the progress block.
   // Front NEWCOMER NC5: the Hubble and Pleiades windows put their version choice between the two.
   // Front NEWCOMER NC6: the lab's computed time and level, and the computed-not-measured note, follow the why-line.
-  const lead=new RegExp(`<p id="${prefix}-why" class="lab-why">([^<]+)</p><p id="${prefix}-why-facts" class="lab-facts"><span class="lab-facts-line">((?:<span class="lab-fact">[^<]+</span>(?: · )?)+)</span> <span class="lab-facts-note">${E['home.estimateNote']}</span></p>(?:<div class="lab-version">(?:(?!<details).)*)?<details class="research-notes"><summary>${E['notes.summary']}</summary><p>([^<]+)</p>`).exec(open);
+  // Front NEWCOMER NC7: the why-line may mark glossary terms (<button class="term">), so its text is read without tags.
+  const lead=new RegExp(`<p id="${prefix}-why" class="lab-why">((?:(?!</p>).)+)</p><p id="${prefix}-why-facts" class="lab-facts"><span class="lab-facts-line">((?:<span class="lab-fact">[^<]+</span>(?: · )?)+)</span> <span class="lab-facts-note">${E['home.estimateNote']}</span></p>(?:<div class="lab-version">(?:(?!<details).)*)?<details class="research-notes"><summary>${E['notes.summary']}</summary><p>([^<]+)</p>`).exec(open);
   expect(lead,lab).not.toBeNull();
-  expect(lead![1]).toBe(esc(why('en',lab)));
+  expect(lead![1]!.replace(/<[^>]+>/g,'')).toBe(esc(why('en',lab)));
   const f=LAB_FACTS[lab],level=E[`home.level${f.level}`]!,range=(m:readonly number[])=>({low:String(m[0]),high:String(m[1])});
   const fill=(text:string,v:Record<string,string>)=>text.replace(/\{(\w+)\}/g,(_,k:string)=>v[k]!);
   expect(lead![2]!.replace(/<[^>]+>/g,'')).toBe([fill(E['home.time']!,range(f.full)),level,...(f.quick?[fill(E['home.quickTime']!,range(f.quick))]:[])].join(' · '));

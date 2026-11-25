@@ -6,6 +6,7 @@ import {PULSAR_EXERCISE_SCENARIO} from './core/pulsarExerciseStart';
 import {BUNDLED_PULSAR_CATALOG} from './io/bundledPulsarCatalog';
 import {moreDetail,stepTitle} from './guideMoreDetail';
 import {whatNext,whyLead} from './guideLead';
+import {glossKey,termScope,wordsUsed} from './help/glossary';
 import type {LabSlug} from './seo/labSlugs';
 import './hubble-lab.css';
 import './pulsar-lab.css';
@@ -23,18 +24,20 @@ export const pulsarNextText=(progress:PulsarLabProgress)=>progress.next==='setup
 export const pulsarStepTitle=(step:PulsarLabStep)=>t(`pulsarLab.step.${step}.title`);
 /** Front GUIDE-COMPANION: what the guide says under a step's heading and status, shared with the companion strip's Step
  * details. `ids` false (the companion) leaves out the test ids: the closed guide is still in the document. */
-export function pulsarStepBody(step:PulsarLabStep,progress:PulsarLabProgress,ids=true){
+export function pulsarStepBody(step:PulsarLabStep,progress:PulsarLabProgress,ids=true,found?:Set<string>){
  const id=(name:string)=>ids?name:undefined;
+ // Front NEWCOMER NC7: the step's glossary terms (help/glossary.tsx), each marked once; the formulas stay plain text.
+ const g=termScope(found);
  return <>
-    <p>{step==='setup'?t('pulsarLab.step.setup.help',{ut:PULSAR_EXERCISE_SCENARIO.ut}):step==='catalog'?t('pulsarLab.step.catalog.help',{file:BUNDLED_PULSAR_CATALOG.name}):t(`pulsarLab.step.${step}.help`)}</p>
-    {step==='channels'&&<p className="lab-recovery" data-testid={id('pulsar-lab-add-disarms')}>{t('pulsarLab.step.channels.disarm')}</p>}
-    {step==='channels'&&<p>{t('pulsarLab.step.channels.factor')}</p>}
+    <p>{step==='setup'?glossKey(g,'pulsarLab.step.setup.help',{ut:PULSAR_EXERCISE_SCENARIO.ut}):step==='catalog'?glossKey(g,'pulsarLab.step.catalog.help',{file:BUNDLED_PULSAR_CATALOG.name}):glossKey(g,`pulsarLab.step.${step}.help`)}</p>
+    {step==='channels'&&<p className="lab-recovery" data-testid={id('pulsar-lab-add-disarms')}>{glossKey(g,'pulsarLab.step.channels.disarm')}</p>}
+    {step==='channels'&&<p>{glossKey(g,'pulsarLab.step.channels.factor')}</p>}
     {step==='period'&&<p data-testid={id('pulsar-lab-period-formula')}>{t('pulsarLab.step.period.formula')}</p>}
-    {step==='delay'&&<><p data-testid={id('pulsar-lab-delay-formula')}><code>{t('pulsarLab.step.delay.formula')}</code></p><p>{t('pulsarLab.step.delay.source')}</p></>}
-    {step==='investigation'&&<p className="lab-recovery" data-testid={id('pulsar-lab-investigation-note')} data-investigation={progress.investigation}>{t('pulsarLab.step.investigation.note')}</p>}
+    {step==='delay'&&<><p data-testid={id('pulsar-lab-delay-formula')}><code>{t('pulsarLab.step.delay.formula')}</code></p><p>{glossKey(g,'pulsarLab.step.delay.source')}</p></>}
+    {step==='investigation'&&<p className="lab-recovery" data-testid={id('pulsar-lab-investigation-note')} data-investigation={progress.investigation}>{glossKey(g,'pulsarLab.step.investigation.note')}</p>}
     {/* Front NEWCOMER NC3 review (N1a): how Save investigation and Restore work belongs to the step that saves the investigation. */}
-    {step==='investigation'&&<p className="lab-recovery" data-testid={id('pulsar-lab-backup')} data-backup={progress.investigationBackup}>{t('pulsarLab.backup')}</p>}
-    {step==='save'&&<p data-testid={id('pulsar-lab-save-optional')}>{t('pulsarLab.step.save.optional')}</p>}
+    {step==='investigation'&&<p className="lab-recovery" data-testid={id('pulsar-lab-backup')} data-backup={progress.investigationBackup}>{glossKey(g,'pulsarLab.backup')}</p>}
+    {step==='save'&&<p data-testid={id('pulsar-lab-save-optional')}>{glossKey(g,'pulsarLab.step.save.optional')}</p>}
  </>;
 }
 /** Where each step is carried out (the companion's Show me where goes there too). */
@@ -47,6 +50,8 @@ function PulsarLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRef:RefObj
  const doneCount=PULSAR_LAB_REQUIRED_STEPS.filter(s=>progress.done[s]).length;
  /** The guide's counts line, in its progress block and as What next's recap (Front NEWCOMER NC4). */
  const counts=t('pulsarLab.counts',{done:doneCount,total:PULSAR_LAB_REQUIRED_STEPS.length});
+ /** Front NEWCOMER NC7: the glossary terms marked in this window, for its «Words used in this guide». */
+ const found=new Set<string>();
  const statusText=(step:PulsarLabStep)=>step==='save'
   ?t(progress.done.save?'pulsarLab.status.saveCopy':'pulsarLab.status.saveNone')
   :step==='investigation'?t(`pulsarLab.status.investigation.${progress.investigation}`)
@@ -54,7 +59,7 @@ function PulsarLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRef:RefObj
  return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog" aria-labelledby="pulsar-lab-heading" aria-describedby="pulsar-lab-why" data-testid="pulsar-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('pulsarLab.eyebrow')}</div><h2 id="pulsar-lab-heading">{t('pulsarLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="pulsar-lab-close" onClick={()=>dialogRef.current?.close()}>{t('pulsarLab.close')}</button></div>
-  {whyLead('pulsar-lab-why',t('pulsarLab.why'),'pulsars')}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('pulsarLab.intro')}</p></details>
+  {whyLead('pulsar-lab-why',glossKey(termScope(found),'pulsarLab.why'),'pulsars')}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('pulsarLab.intro')}</p></details>
   <section className="lab-progress" aria-labelledby="pulsar-lab-progress-heading">
    <h3 id="pulsar-lab-progress-heading">{t('pulsarLab.progress')}</h3>
    <p data-testid="pulsar-lab-counts" role="status">{counts}</p>
@@ -70,7 +75,7 @@ function PulsarLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRef:RefObj
     <h3><span className="pulsar-lab-mark" aria-hidden="true">{progress.done[step]?'✓':'○'}</span> {stepTitle(`pulsar-lab-step-${step}`,pulsarStepTitle(step))}</h3>
     <p className="pulsar-lab-status" data-testid={`pulsar-lab-status-${step}`}>{statusText(step)}</p>
     <button className="secondary-button" onClick={()=>go(STEP_DESTINATION[step])}>{t(STEP_DESTINATION[step]==='radio-control'?'pulsarLab.goRadio':'pulsarLab.goAnalysis')}</button>
-    {moreDetail(`pulsar-lab-step-${step}`,progress.next===step,pulsarStepBody(step,progress))}
+    {moreDetail(`pulsar-lab-step-${step}`,progress.next===step,pulsarStepBody(step,progress,true,found))}
    </li>)}
   </ol>
   {progress.next==='save'&&whatNext('pulsar-lab','pulsars',next=>{dialogRef.current?.close();onNext(next);},counts)}
@@ -82,6 +87,7 @@ function PulsarLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRef:RefObj
    <dt>{t(`pulsarLab.problem.${key}`)}</dt><dd>{t(`pulsarLab.recover.${key}`)}</dd></div>)}</dl></details>
   <details className="lab-sources"><summary>{t('pulsarLab.sources')}</summary><p>{t('pulsarLab.sourceHelp')}</p>
    <ul><li>{BUNDLED_PULSAR_CATALOG.name}<br/>{t('pulsarParameters.reference.sha')} <code>{BUNDLED_PULSAR_CATALOG.sha256}</code></li></ul><p>{t('pulsarLab.limits')}</p></details>
+  {wordsUsed('pulsar-lab-terms',found)}
   <button className="secondary-button" onClick={()=>dialogRef.current?.close()}>{t('pulsarLab.return')}</button>
  </dialog>;
 }

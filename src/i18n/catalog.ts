@@ -71,6 +71,8 @@ function build(messages:Readonly<Partial<Record<MessageKey,string>>>,language:st
 export type I18n=ReturnType<typeof build>;
 /** What a non-English load registers before the app is imported (docs/I18N.md). The Spanish bundle arrives with ES1 in
  * src/i18n/es/; the dev-only pseudo-locale is src/i18n/pseudo.ts. */
+/** Front NEWCOMER NC7: a glossary snapshot, catalog key (or Object X guide map path) → [term id, matched text, occurrence]. */
+export type TermSnapshot=Readonly<Record<string,readonly (readonly (string|number)[])[]>>;
 export type LocaleBundle=Readonly<{
  language:Exclude<UiLanguage,'en'>;
  /** Catalog text by key. A released language's catalog is complete (checked statically); a split module holds part of it and
@@ -80,6 +82,9 @@ export type LocaleBundle=Readonly<{
  maps?:BundleMaps;
  /** VIREO's own literals by normalised original (src/i18n/vireo.ts). */
  originals?:Readonly<Record<string,string>>;
+ /** Front NEWCOMER NC7: the language's reviewed glossary snapshot (src/i18n/<dir>/terms.json; src/help/glossary.tsx), catalog key →
+  * [term, matched text, occurrence], in the core module. */
+ terms?:TermSnapshot;
  /** Dev-only pseudo-locale: derive a map or an original that the bundle does not list. */
  deriveMap?:<T>(english:T)=>T;
  deriveOriginal?:(text:string)=>string;

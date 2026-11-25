@@ -64,6 +64,7 @@ import PulsarLabGuide from './PulsarLabGuide';
 import LssLabGuide from './LssLabGuide';
 import ObjectXLabGuide from './ObjectXLabGuide';
 import GuideCompanion from './components/GuideCompanion';
+import TermPopover from './components/TermPopover';
 import {companionPlace} from './components/guideCompanionRoute';
 import type {CompanionGuide,CompanionProgress} from './core/guideCompanion';
 import {FIRST_LOOK_TARGET_ID,firstLookProgress,observatoryBandStep} from './core/firstLook';
@@ -1151,6 +1152,8 @@ export default function OpenVireo({handoff}:{handoff?:RefObject<ShellHandoff>}={
   <div inert={projectBusy} ref={variableStarsView} hidden={view!=='variable-stars'}>{variableStarsVisited&&<LazyBoundary fallback={<p>{VARIABLE_STARS.loading}</p>}><VariableStarsRoute active={view==='variable-stars'&&!projectBusy} openRequest={variableOpen} monochromeDisplays={sessionOptions.monochromeDisplays} printInColor={sessionOptions.printInColor}/></LazyBoundary>}</div>
   <div inert={projectBusy} ref={lssView} hidden={view!=='lss-survey'}>{(lssVisited||view==='lss-survey')&&<LazyBoundary fallback={<p>{t('lss.loading')}</p>}><LssSurvey freeRecord={lssFreeRequest} wedgeShown={wedgeVisited} spectralRange={spectralRange} onSpectralRange={setSpectralRange} computeRedshiftVelocity={sessionOptions.computeRedshiftVelocity} timeDependentData={sessionOptions.timeDependentData} active={view==='lss-survey'&&!projectBusy} editMode={editMode} restored={lssRestore} {...lssHandlers} initialTelescope={optical.selectedIndex as 0|1|2} wedgeAck={wedgeAck} /></LazyBoundary>}</div>
   <div inert={projectBusy} ref={imageView} hidden={view!=='images'}>{imageVisited&&<LazyBoundary fallback={<p>{t('fits.loading')}</p>}><FitsImageLab active={view==='images'} busy={projectBusy}/></LazyBoundary>}</div>
+  {/* Front NEWCOMER NC7: the one popover of the guides' glossary terms (help/glossary.tsx). */}
+  <TermPopover/>
   {companionProgress&&<GuideCompanion progress={companionProgress} inert={hostInert||projectBusy} onGo={companion.go} onFull={companion.full} onHide={companion.hide} onNext={companion.next}/>}
   <AboutDialog dialogRef={about}/></ObservationListValue.Provider></ObservationListContext.Provider></VireoOptionsContext.Provider></TestModeContext.Provider></RecoveryContext.Provider></TrackingShortcutContext.Provider>;
 }

@@ -4,6 +4,7 @@ import {CLUSTER_LAB_STEPS,type ClusterLabProgress,type ClusterLabStep,type Clust
 import {clusterNextText,clusterStepBody,clusterStepTitle} from './ClusterLabGuideText';
 import {moreDetail,stepTitle} from './guideMoreDetail';
 import {whatNext,whyLead} from './guideLead';
+import {glossKey,termScope,wordsUsed} from './help/glossary';
 import type {LabSlug} from './seo/labSlugs';
 import './hubble-lab.css';
 
@@ -15,10 +16,12 @@ export default function ClusterLabGuide({dialogRef,progress,cluster,onNavigate,o
  function go(step:ClusterLabStep){dialogRef.current?.close();onNavigate(step);}
  /** The guide's counts line, in its progress block and as What next's recap (Front NEWCOMER NC4). */
  const counts=t('clusterLab.counts',{done:progress.doneCount,total:CLUSTER_LAB_STEPS.length});
+ /** Front NEWCOMER NC7: the glossary terms marked in this window, for its «Words used in this guide». */
+ const found=new Set<string>();
  return <dialog ref={dialogRef} className="hubble-lab-dialog cluster-lab-dialog" aria-labelledby="cluster-lab-heading" aria-describedby="cluster-lab-why" data-testid="cluster-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('clusterLab.eyebrow')}</div><h2 id="cluster-lab-heading">{t('clusterLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="cluster-lab-close" onClick={()=>dialogRef.current?.close()}>{t('clusterLab.close')}</button></div>
-  {whyLead('cluster-lab-why',t('clusterLab.why'),'cluster-hr')}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('clusterLab.intro')}</p><p>{t('clusterLab.introOptions')}</p></details>
+  {whyLead('cluster-lab-why',glossKey(termScope(found),'clusterLab.why'),'cluster-hr')}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('clusterLab.intro')}</p><p>{t('clusterLab.introOptions')}</p></details>
   <section className="lab-progress" aria-labelledby="cluster-lab-progress-heading">
    <h3 id="cluster-lab-progress-heading">{t('clusterLab.progress')}</h3>
    <p data-testid="cluster-lab-counts" role="status">{counts}</p>
@@ -32,7 +35,7 @@ export default function ClusterLabGuide({dialogRef,progress,cluster,onNavigate,o
     <h3><span aria-hidden="true">{progress.done[step]?'✓':'○'}</span> {stepTitle(`cluster-lab-step-${step}`,clusterStepTitle(step))}</h3>
     <p data-testid={`cluster-lab-status-${step}`}>{t(progress.done[step]?'clusterLab.status.done':'clusterLab.status.notYet')}</p>
     <button className="secondary-button" onClick={()=>go(step)}>{t('clusterLab.go')}</button>
-    {moreDetail(`cluster-lab-step-${step}`,progress.next===step,clusterStepBody(step))}
+    {moreDetail(`cluster-lab-step-${step}`,progress.next===step,clusterStepBody(step,found))}
    </li>)}
   </ol>
   <section aria-labelledby="cluster-lab-preserve-heading" data-testid="cluster-lab-preserve">
@@ -49,6 +52,7 @@ export default function ClusterLabGuide({dialogRef,progress,cluster,onNavigate,o
    {onOpenOwn&&<button className="secondary-button" data-testid="cluster-lab-own-open" onClick={()=>{dialogRef.current?.close();onOpenOwn();}}>{t('clusterLab.own.open')}</button>}
    <p className="lab-recovery">{t('clusterLab.limits')}</p>
   </section>
+  {wordsUsed('cluster-lab-terms',found)}
   <button className="secondary-button" onClick={()=>dialogRef.current?.close()}>{t('clusterLab.return')}</button>
  </dialog>;
 }

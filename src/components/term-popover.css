@@ -1,0 +1,23 @@
+/* Front NEWCOMER NC7: glossary terms (help/glossary.tsx) and their definition (TermPopover.tsx). A term is a real button that reads
+   as part of its sentence: inherited font and colour, a dotted underline (kept in forced colours, where text decoration stays), no
+   box; inline, so a term of several words wraps with its sentence («main sequence» across two lines), and the sentence's line height (1.6–1.7) gives it a target of at
+   least 24 px. The guide window's own `button` rules (40 px tall, small text) are overridden. Logical properties only (RT5). */
+button.term,.hubble-lab-dialog button.term,.guide-companion button.term{display:inline;min-height:0;margin:0;padding:0;border:0;border-radius:2px;background:none;color:inherit;max-width:100%;overflow-wrap:anywhere;
+ font:inherit;letter-spacing:inherit;text-align:inherit;white-space:normal;cursor:help;
+ text-decoration:underline dotted;text-decoration-thickness:1.5px;text-underline-offset:.22em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+button.term:hover,button.term[aria-expanded=true]{text-decoration-style:solid;color:var(--ov-accent-text)}
+button.term:focus-visible{outline:2px solid var(--ov-focus);outline-offset:2px}
+@media(forced-colors:active){button.term{color:LinkText}button.term[aria-expanded=true]{outline:1px solid LinkText}}
+/* The definition: fixed to the viewport (placed by TermPopover.tsx), inside its container so the modal guide window does not cover
+   it; at most min(320px, 90vw) wide, and its text wraps. */
+.term-popover{position:fixed;z-index:30;box-sizing:border-box;inset-inline-start:0;inset-block-start:0;width:max-content;max-width:min(320px,90vw);
+ margin:0;padding-block:10px;padding-inline:12px 34px;background:var(--ov-surface-raised);color:var(--ov-text);border:1px solid var(--ov-border-strong);
+ border-radius:var(--ov-radius-md);box-shadow:var(--ov-shadow-md)}
+.term-popover p,.hubble-lab-dialog .term-popover p,.guide-companion-details .term-popover p{margin:0;font-size:var(--ov-text-sm);line-height:1.7;color:var(--ov-text);overflow-wrap:anywhere}
+.term-popover button.term-popover-close,.hubble-lab-dialog .term-popover button.term-popover-close{position:absolute;inset-block-start:4px;inset-inline-end:4px;min-width:24px;min-height:24px;
+ padding:0;border:0;border-radius:var(--ov-radius-sm);background:none;color:var(--ov-text-muted);font-size:18px;display:grid;place-items:center;cursor:pointer}
+.term-popover button.term-popover-close:hover{color:var(--ov-text);background:var(--ov-surface-hover)}
+/* «Words used in this guide» at the end of each guide window. */
+.lab-terms{margin-block-start:18px}
+.lab-terms summary{font-size:var(--ov-text-sm);font-weight:500;min-height:24px}
+.lab-terms ul{padding-inline-start:20px}

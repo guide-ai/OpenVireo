@@ -16,7 +16,8 @@
     "test:pages": "playwright test -c playwright.pages.config.ts",
     "test-fonts": "node scripts/test-fonts.mjs",
     "test:test-fonts": "node scripts/test-fonts.test.mjs",
-    "test:scripts": "playwright test -c playwright.scripts.config.ts"
+    "test:scripts": "playwright test -c playwright.scripts.config.ts",
+    "i18n:terms": "OPENVIREO_REFRESH_PINS=1 vitest run src/help/glossary.test.ts"
   },
   "dependencies": {
     "react": "19.3.1",

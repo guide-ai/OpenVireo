@@ -56,7 +56,8 @@ describe('Front NEWCOMER NC3: plain step titles, detail folded under More detail
    const before=li.slice(0,at),details=li.slice(at);
    expect(before).toMatch(/<h3>[\s\S]*<span id="[a-z-]+-title">[^<]+<\/span>/);
    // The Go/Continue button is never folded (Hubble's save and interpret items and LSS/Object X save have none).
-   expect(details).not.toMatch(/<button/);
+   // Front NEWCOMER NC7: a glossary term (<button class="term">) is part of the text; no step button is inside.
+   expect(details).not.toMatch(/<button(?! type="button" class="term")/);
    const isOpen=/^<details class="lab-step-more" open=""/.test(details);
    if(isOpen){open++;expect(li).toMatch(/^<li[^>]* data-next="true"/);}
    else expect(li).not.toMatch(/^<li[^>]* data-next="true"/);

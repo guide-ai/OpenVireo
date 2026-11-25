@@ -5,6 +5,7 @@ import {CLASSIFICATION_LAB_COUNTED_STEPS,CLASSIFICATION_LAB_STEPS,type Classific
 import {CLASSIFICATION_CATALOG} from './core/classification';
 import {moreDetail,stepTitle} from './guideMoreDetail';
 import {whatNext,whyLead} from './guideLead';
+import {glossKey,termScope,wordsUsed} from './help/glossary';
 import type {LabSlug} from './seo/labSlugs';
 import './hubble-lab.css';
 import './pulsar-lab.css';
@@ -14,10 +15,12 @@ import './pleiades-lab.css';
 export const classificationStepTitle=(step:ClassificationLabStep)=>t(`classLab.step.${step}.title`);
 /** Front GUIDE-COMPANION: what the guide says under a step's heading and status, shared with the companion strip's Step
  * details. `ids` false (the companion) leaves out the test ids: the closed guide is still in the document. */
-export function classificationStepBody(step:ClassificationLabStep,ids=true){
+export function classificationStepBody(step:ClassificationLabStep,ids=true,found?:Set<string>){
+ // Front NEWCOMER NC7: the step's glossary terms (help/glossary.tsx), each marked once in the step; `found` collects the window's.
+ const g=termScope(found);
  return <>
-    <p>{t(`classLab.step.${step}.help`)}</p>
-    {step==='inspect'&&<ul data-testid={ids?'classification-lab-tools':undefined}><li>{t('classLab.step.inspect.table')}</li><li>{t('classLab.step.inspect.width')}</li><li>{t('classLab.step.inspect.reverse')}</li></ul>}
+    <p>{glossKey(g,`classLab.step.${step}.help`)}</p>
+    {step==='inspect'&&<ul data-testid={ids?'classification-lab-tools':undefined}><li>{glossKey(g,'classLab.step.inspect.table')}</li><li>{glossKey(g,'classLab.step.inspect.width')}</li><li>{glossKey(g,'classLab.step.inspect.reverse')}</li></ul>}
  </>;
 }
 
@@ -29,11 +32,13 @@ function ClassificationLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRe
  /** The guide's counts line, in its progress block and as What next's recap (Front NEWCOMER NC4). */
  const counts=t('classLab.counts',{done:doneCount,total:CLASSIFICATION_LAB_COUNTED_STEPS.length});
  const practice=CLASSIFICATION_CATALOG.practice.find(p=>p.id===progress.practiceId);
+ /** Front NEWCOMER NC7: the glossary terms marked in this window, for its «Words used in this guide». */
+ const found=new Set<string>();
  const statusText=(step:ClassificationLabStep)=>step==='save'?t('classLab.status.save'):t(progress.done[step]?'classLab.status.done':'classLab.status.notYet');
  return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog pleiades-lab-dialog classification-lab-dialog" aria-labelledby="classification-lab-heading" aria-describedby="classification-lab-why" data-testid="classification-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('classLab.eyebrow')}</div><h2 id="classification-lab-heading">{t('classLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="classification-lab-close" onClick={()=>dialogRef.current?.close()}>{t('classLab.close')}</button></div>
-  {whyLead('classification-lab-why',t('classLab.why'),'stellar-classification')}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('classLab.intro')}</p><p>{t('classLab.introOptions')}</p>
+  {whyLead('classification-lab-why',glossKey(termScope(found),'classLab.why'),'stellar-classification')}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('classLab.intro')}</p><p>{t('classLab.introOptions')}</p>
    {/* Front NEWCOMER NC3: the adaptation note is a research note (NC4: with the former intro, below the why-line). */}
    <p className="lab-recovery" data-testid="classification-lab-adaptation">{t('classLab.adaptation')}</p></details>
   <section className="lab-progress" aria-labelledby="classification-lab-progress-heading">
@@ -49,7 +54,7 @@ function ClassificationLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRe
     <h3><span className="pleiades-lab-mark" aria-hidden="true" data-done={progress.done[step]}/>{stepTitle(`classification-lab-step-${step}`,classificationStepTitle(step))}</h3>
     <p className="pulsar-lab-status" data-testid={`classification-lab-status-${step}`}>{statusText(step)}</p>
     <button className="secondary-button" onClick={go}>{t('classLab.goClassification')}</button>
-    {moreDetail(`classification-lab-step-${step}`,progress.next===step,classificationStepBody(step))}
+    {moreDetail(`classification-lab-step-${step}`,progress.next===step,classificationStepBody(step,true,found))}
    </li>)}
   </ol>
   {progress.next==='save'&&whatNext('classification-lab','stellar-classification',next=>{dialogRef.current?.close();onNext(next);},counts)}
@@ -57,6 +62,7 @@ function ClassificationLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRe
    <dt>{t(`classLab.problem.${key}`)}</dt><dd>{t(`classLab.recover.${key}`)}</dd></div>)}</dl></details>
   <details className="lab-sources"><summary>{t('classLab.sources')}</summary><p>{t('classLab.sourceHelp')}</p>
    <ul><li data-testid="classification-lab-dataset">{t('classLab.dataset',{fingerprint:CLASSIFICATION_CATALOG.fingerprint})}</li><li>{t('classLab.lineList',{sha256:CLASSIFICATION_CATALOG.lineListSha256})}</li></ul><p>{t('classLab.limits')}</p></details>
+  {wordsUsed('classification-lab-terms',found)}
   <button className="secondary-button" onClick={()=>dialogRef.current?.close()}>{t('classLab.return')}</button>
  </dialog>;
 }

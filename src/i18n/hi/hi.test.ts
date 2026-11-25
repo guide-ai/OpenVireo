@@ -83,6 +83,8 @@ const HI4_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E04_E05_PREFIXES.test
 const HI5_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(radio|radioRoute|radioAccess|radioReceiver|radioSimOptions|pulsarParameters)\./.test(k));
 /** HI6's area: exercise E06 (the recorded pulsar analysis route, the Pulsar guide, `.PLR`) and E08's saved-images route (`fits`), as FR6's. */
 const HI6_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>/^(pulsarLab|plr|fits)\./.test(k));
+/** Front NEWCOMER NC7: the glossary's definitions and its three strings (help/glossary.tsx), shown in every guide window. */
+const TERM_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>k.startsWith('term.'));
 const HI3_KEYS=(Object.keys(en) as MessageKey[]).filter(k=>E03_PREFIXES.test(k)||k==='continuity.restoreExposure'||k==='ssp.header');
 /** PT1's keys outside those prefixes that the observatory files render (the classification and Pleiades guides' pointing
  * steps, the photometer card, the continuity notes the route shows): 104 keys, pinned so a lost key fails. */
@@ -119,7 +121,7 @@ describe('Front HI0: the Hindi (hi) bundle',()=>{
   for(const key of Object.keys(hi))expect(Object.hasOwn(en,key),key).toBe(true);
   expect(SHELL_KEYS.length).toBe(131);expect(HOME_KEYS.length).toBe(34);/* 34 since Front NEWCOMER NC6 (the lab facts: home.time … home.estimateNote) */
   expect([...SHELL_KEYS,...HOME_KEYS,...FOOTER_KEYS].filter(k=>!Object.hasOwn(hi,k))).toEqual([]);
-  expect(Object.keys(hi).length).toBe(new Set([...SHELL_KEYS,...HOME_KEYS,...FOOTER_KEYS,...HI1_KEYS,...HI1_GUIDE_KEYS,...HI2_KEYS,...HI3_KEYS,...HI4_KEYS,...HI5_KEYS,...HI6_KEYS]).size);
+  expect(Object.keys(hi).length).toBe(new Set([...SHELL_KEYS,...HOME_KEYS,...FOOTER_KEYS,...HI1_KEYS,...HI1_GUIDE_KEYS,...HI2_KEYS,...HI3_KEYS,...HI4_KEYS,...HI5_KEYS,...HI6_KEYS,...TERM_KEYS]).size);expect(TERM_KEYS).toHaveLength(19);
  });
  it('Front HI1: the catalog covers the observatory (every key of its instruments\' prefixes) and the guide keys it renders',()=>{
   expect(HI1_KEYS.length).toBeGreaterThan(450);

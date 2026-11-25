@@ -304,10 +304,13 @@ export function moduleCode(plan,name,{root=ROOT,dev=false}={}){
   return lines.join('\n')+'\n';
  }
  lines.push(`import originals from ${JSON.stringify(path.join(root,`${languageDir(plan.language)}/originals.json`))};`);
+ // Front NEWCOMER NC7: the language's glossary snapshot (src/help/glossary.tsx), when it has one, rides in the core with the originals.
+ const terms=existsSync(path.join(root,`${languageDir(plan.language)}/terms.json`));
+ if(terms)lines.push(`import terms from ${JSON.stringify(path.join(root,`${languageDir(plan.language)}/terms.json`))};`);
  // Front SC8: an empty area of a partial language resolves at once to an empty part, with no chunk.
  const areas=plan.modules.filter(m=>m.kind==='area').map(m=>`${JSON.stringify(m.name)}:()=>${m.empty?`Promise.resolve({default:Object.freeze({language:${JSON.stringify(tag)},area:${JSON.stringify(m.name)},messages:{},maps:{}})})`:`import(${JSON.stringify(moduleId(tag,m.name))})`}`);
  const keyModules=dev?`,keyModules:Object.freeze(${JSON.stringify(Object.fromEntries(Object.entries(plan.keyModule).filter(([,m])=>m!==CORE)))})`:'';
- lines.push(`export default Object.freeze({language:${JSON.stringify(tag)},messages:Object.freeze(${messages}),maps:Object.freeze({${maps.join(',')}}),originals,areas:Object.freeze({${areas.join(',')}}),mapModules:Object.freeze(${JSON.stringify(plan.mapAreas)}),complete:${plan.complete}${keyModules}});`);
+ lines.push(`export default Object.freeze({language:${JSON.stringify(tag)},messages:Object.freeze(${messages}),maps:Object.freeze({${maps.join(',')}}),originals,${terms?'terms,':''}areas:Object.freeze({${areas.join(',')}}),mapModules:Object.freeze(${JSON.stringify(plan.mapAreas)}),complete:${plan.complete}${keyModules}});`);
  return lines.join('\n')+'\n';
 }
 export const loadersCode=(languages)=>`export default Object.freeze({${languages.map(l=>`${JSON.stringify(l.tag)}:()=>import(${JSON.stringify(moduleId(l.tag,CORE))})`).join(',')}});\n`;
@@ -317,7 +320,7 @@ export function estimateModule(plan,name,root=ROOT){
  const module=plan.modules.find(m=>m.name===name);
  const parts=[JSON.stringify(subset(plan.catalog,module.keys))];
  for(const id of module.maps)parts.push(read(root,plan.manifest[id].file).replace(/^import type .*$/gm,''));
- if(module.originals)parts.push(read(root,`${languageDir(plan.language)}/originals.json`));
+ if(module.originals){parts.push(read(root,`${languageDir(plan.language)}/originals.json`));if(existsSync(path.join(root,`${languageDir(plan.language)}/terms.json`)))parts.push(read(root,`${languageDir(plan.language)}/terms.json`));}
  const raw=Buffer.from(parts.join('\n'));return {raw:raw.length,gzip:gzipSync(raw,{level:9}).length};
 }
 

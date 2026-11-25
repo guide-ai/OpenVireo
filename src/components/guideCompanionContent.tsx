@@ -5,6 +5,7 @@ import {hubbleCountsText,hubbleItemBody,hubbleItemTitle,hubbleNextText,hubblePha
 import {lssCountsText,lssStepHelp} from '../LssLabGuide';
 import {OBJECT_X_LAB_STEPS} from '../core/objectXLab';
 import {OBJECT_X_GUIDE,OBJECT_X_LAB} from '../objectx/ObjectXMessages';
+import {objectXStepHelp} from '../ObjectXLabGuide';
 import {classificationStepBody,classificationStepTitle} from '../ClassificationLabGuide';
 import {clusterNextText,clusterStepBody,clusterStepTitle} from '../ClusterLabGuideText';
 import {pulsarNextText,pulsarStepBody,pulsarStepTitle} from '../PulsarLabGuide';
@@ -53,8 +54,8 @@ export function companionContent(p:CompanionProgress):CompanionContent{
   }
   case 'object-x':{
    const next=p.progress.next,name=OBJECT_X_LAB.guideNav,counts=OBJECT_X_GUIDE.counts(OBJECT_X_LAB_STEPS.filter(step=>p.progress.done[step]).length,OBJECT_X_LAB_STEPS.length,p.progress.summary.imagesOfTarget);
-   if(next==='done')return {name,line:SHELL.companion.allDone,details:<p>{OBJECT_X_GUIDE.steps.save[1]}</p>,target,closing:true,counts};
-   const [title,help]=OBJECT_X_GUIDE.steps[next];return {name,line:title,details:<p>{help}</p>,target,closing:false,counts};
+   if(next==='done')return {name,line:SHELL.companion.allDone,details:<p>{objectXStepHelp('save')}</p>,target,closing:true,counts};
+   return {name,line:OBJECT_X_GUIDE.steps[next][0],details:<p>{objectXStepHelp(next)}</p>,target,closing:false,counts};
   }
   case 'stellar-classification':{
    const next=p.progress.next,name=t('classLab.nav'),body=classificationStepBody(next,false);
