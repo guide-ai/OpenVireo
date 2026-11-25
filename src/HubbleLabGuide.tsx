@@ -5,6 +5,8 @@ import {galaxyIdentity,galaxyDistanceReference} from './core/galaxyIdentity';
 import {HUBBLE_SOURCES} from './core/hubbleAnalysis';
 import type {HubbleLabProgress} from './core/hubbleLab';
 import {moreDetail,stepTitle} from './guideMoreDetail';
+import {whatNext,whyLead} from './guideLead';
+import type {LabSlug} from './seo/labSlugs';
 import './hubble-lab.css';
 export type LabDestination='galaxy-exposure'|'spectrum'|'hubble';
 type Phase=HubbleLabProgress['next'];
@@ -32,12 +34,12 @@ export function hubbleItemBody(item:HubbleGuideItem){
   case 'interpret':return <><p>{t('lab.interpretHelp')}</p><ul>{(['data','fit','errors','environment']as const).map(key=><li key={key}>{t(`lab.reflect.${key}`)}</li>)}</ul></>;
  }
 }
-function HubbleLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:HubbleLabProgress;onNavigate:(destination:LabDestination)=>void}){
+function HubbleLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:HubbleLabProgress;onNavigate:(destination:LabDestination)=>void;/** Front NEWCOMER NC4: opens another lab's guide (What next); a stable callback. */onNext:(lab:LabSlug)=>void}){
  function go(destination:LabDestination){dialogRef.current?.close();onNavigate(destination);}
  const item=hubblePhaseItem(progress.next);
- return <dialog ref={dialogRef} className="hubble-lab-dialog" aria-labelledby="hubble-lab-heading" aria-describedby="hubble-lab-intro">
+ return <dialog ref={dialogRef} className="hubble-lab-dialog" aria-labelledby="hubble-lab-heading" aria-describedby="hubble-lab-why">
   <div className="lab-heading"><div><div className="eyebrow">{t('lab.eyebrow')}</div><h2 id="hubble-lab-heading">{t('lab.title')}</h2></div><button className="secondary-button" autoFocus onClick={()=>dialogRef.current?.close()}>{t('lab.close')}</button></div>
-  <p id="hubble-lab-intro">{t('lab.intro')}</p><details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('lab.introOptions')}</p></details>
+  {whyLead('hubble-lab-why',t('lab.why'))}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('lab.intro')}</p><p>{t('lab.introOptions')}</p></details>
   <section className="lab-progress" aria-labelledby="lab-progress-heading"><h3 id="lab-progress-heading">{t('lab.progress')}</h3><p data-testid="lab-progress-counts" role="status">{hubbleCountsText(progress)}</p><p data-testid="lab-original-coverage">{t('lab.coverage',{supported:progress.total,original:progress.original})}</p><p data-testid="lab-next">{hubbleNextText(progress)}</p>{progress.duplicateTargets&&<p className="lab-recovery">{t('lab.duplicate')}</p>}<button className="secondary-button" onClick={()=>go(hubblePhaseDestination(progress.next))}>{t('lab.continue')}</button><details className="lab-progress-help"><summary>{t('lab.progressMeaning')}</summary><p>{t('lab.progressHelp')}</p></details></section>
   <ol className="lab-steps">
    {/* Front NEWCOMER NC3: title and button visible, what the guide says under the item folded under More detail. */}
@@ -47,6 +49,7 @@ function HubbleLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTM
    <li><h3>{stepTitle('hubble-lab-step-save',hubbleItemTitle('save'))}</h3>{/* Item 4 has no mark; its advice opens with interpret, the step that ends with saving (NC3 review N1c). */}{moreDetail('hubble-lab-step-save',item==='interpret',hubbleItemBody('save'))}</li>
    <li data-next={item==='interpret'||undefined}><h3>{stepTitle('hubble-lab-step-interpret',hubbleItemTitle('interpret'))}</h3>{moreDetail('hubble-lab-step-interpret',item==='interpret',hubbleItemBody('interpret'))}</li>
   </ol>
+  {progress.next==='interpret'&&whatNext('hubble-lab','hubble',next=>{dialogRef.current?.close();onNext(next);},hubbleCountsText(progress))}
   <section aria-labelledby="lab-targets-heading"><h3 id="lab-targets-heading">{t('lab.targets')}</h3><p>{t('lab.referencesHelp')}</p><ul className="lab-targets">{progress.targets.map(p=>{const identity=galaxyIdentity(p.id),reference=galaxyDistanceReference(p.id);return <li key={p.id} data-testid={`lab-target-${p.id}`}><h4>{p.id} · {identity.label}</h4><dl>{(['archived','measured','inHubble']as const).map(key=><div key={key}><dt>{t(`lab.status.${key}`)}</dt><dd>{t(p[key]?'lab.yes':'lab.no')}</dd></div>)}</dl><p>{t('lab.magnitude',{value:formatNumber(reference.apparentV,{minimumFractionDigits:1,maximumFractionDigits:1}),source:reference.source})}</p></li>;})}</ul></section>
   <details className="lab-troubleshooting"><summary>{t('lab.troubleshooting')}</summary><dl>{(['start','noisy','rows','repeat','files','limits']as const).map(key=><div key={key}><dt>{t(`lab.problem.${key}`)}</dt><dd>{t(`lab.recover.${key}`)}</dd></div>)}</dl></details>
   <details className="lab-sources"><summary>{t('lab.sources')}</summary><p>{t('lab.sourceHelp')}</p><ul>{Object.entries(HUBBLE_SOURCES).map(([key,source])=><li key={key}>{source.name}<br/>SHA-256 <code>{source.sha256}</code></li>)}</ul><p>{t('lab.limitsExtended')}</p></details>
@@ -54,4 +57,4 @@ function HubbleLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTM
  </dialog>;
 }
 // Front Perf: the closed guide re-renders only when its progress (plain data), ref or handler changes.
-export default memo(HubbleLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&sameData(a.progress,b.progress));
+export default memo(HubbleLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&a.onNext===b.onNext&&sameData(a.progress,b.progress));

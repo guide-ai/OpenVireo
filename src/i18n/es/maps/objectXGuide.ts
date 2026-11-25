@@ -6,6 +6,7 @@ import type {Translation} from '../../maps';
 export const OBJECT_X_GUIDE_ES:Translation<typeof OBJECT_X_GUIDE_EN>=Object.freeze({
  eyebrow:'Guía del ejercicio E08',title:'En busca del Objeto X',
  intro:'Solo recibes un identificador y coordenadas. Usa los instrumentos para decidir qué tipo de objeto es y luego revela su identidad. Los pasos se actualizan a medida que trabajas; nada juzga tu respuesta antes de la revelación.',
+ why:'¿Qué tipo de objeto hay en las coordenadas que recibes? Lo decidirás con los instrumentos del observatorio antes de que se revele su identidad.',
  counts:(done,total,images)=>`${done} de ${total} pasos · ${images} imágenes de tu objeto`,
  done:'(hecho)',todo:'(pendiente)',
  steps:Object.freeze({

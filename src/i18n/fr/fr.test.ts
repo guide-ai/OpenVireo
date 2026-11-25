@@ -154,11 +154,11 @@ describe('Front FR0: the French (fr) bundle',()=>{
   expect(FR2_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
  });
  it('Front FR3: the catalog covers exercise E03 (every key of its prefixes, continuity.restoreExposure and ssp.header)',()=>{
-  expect(FR3_KEYS.length).toBe(772);// Front LAUNCH-2: classLab.introOptions
+  expect(FR3_KEYS.length).toBe(773);// Front LAUNCH-2: classLab.introOptions // 773: Front NEWCOMER NC4 adds classLab.why
   expect(FR3_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
  });
  it('Front FR4: the catalog covers exercises E04 and E05 (every key of their prefixes)',()=>{
-  expect(FR4_KEYS.length).toBe(651);// 650: Front LAUNCH-1 adds pleiadesLab.goHotList; 651: Front LAUNCH-2 adds clusterLab.introOptions
+  expect(FR4_KEYS.length).toBe(653);// 650: Front LAUNCH-1 adds pleiadesLab.goHotList; 651: Front LAUNCH-2 adds clusterLab.introOptions // 653: Front NEWCOMER NC4 adds pleiadesLab.why and clusterLab.why
   expect(FR4_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
  });
  it('Front FR5: the catalog covers the radio telescope (every key of its six prefixes)',()=>{
@@ -166,7 +166,7 @@ describe('Front FR0: the French (fr) bundle',()=>{
   expect(FR5_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
  });
  it('Front FR6: the catalog covers E06 and E08 (every key of their prefixes), and with them every en.json key',()=>{
-  expect(FR6_KEYS.length).toBe(137);
+  expect(FR6_KEYS.length).toBe(138);// 138: Front NEWCOMER NC4 adds pulsarLab.why
   expect(FR6_KEYS.filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
   expect(Object.keys(en).filter(k=>!Object.hasOwn(fr,k))).toEqual([]);
  });

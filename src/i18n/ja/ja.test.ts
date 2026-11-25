@@ -157,11 +157,11 @@ describe('Front JA0: the Japanese (ja) bundle',()=>{
   expect(JA2_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
  });
  it('Front JA3: the catalog covers exercise E03 (every key of its prefixes, continuity.restoreExposure and ssp.header)',()=>{
-  expect(JA3_KEYS.length).toBe(772);
+  expect(JA3_KEYS.length).toBe(773); // 773: Front NEWCOMER NC4 adds classLab.why
   expect(JA3_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
  });
  it('Front JA4: the catalog covers E04 and E05 (every key of their prefixes)',()=>{
-  expect(JA4_KEYS.length).toBe(651);
+  expect(JA4_KEYS.length).toBe(653); // 653: Front NEWCOMER NC4 adds pleiadesLab.why and clusterLab.why
   expect(JA4_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
  });
  it('Front JA5: the catalog covers the radio telescope (every key of its prefixes)',()=>{
@@ -169,7 +169,7 @@ describe('Front JA0: the Japanese (ja) bundle',()=>{
   expect(JA5_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
  });
  it('Front JA6: the catalog covers E06 and E08 (every key of their prefixes), and with them every en.json key',()=>{
-  expect(JA6_KEYS.length).toBe(137);
+  expect(JA6_KEYS.length).toBe(138);// 138: Front NEWCOMER NC4 adds pulsarLab.why
   expect(JA6_KEYS.filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
   expect(Object.keys(en).filter(k=>!Object.hasOwn(ja,k))).toEqual([]);
  });

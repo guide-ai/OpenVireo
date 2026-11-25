@@ -5,6 +5,8 @@ import {PULSAR_LAB_REQUIRED_STEPS,PULSAR_LAB_STEPS,type PulsarLabProgress,type P
 import {PULSAR_EXERCISE_SCENARIO} from './core/pulsarExerciseStart';
 import {BUNDLED_PULSAR_CATALOG} from './io/bundledPulsarCatalog';
 import {moreDetail,stepTitle} from './guideMoreDetail';
+import {whatNext,whyLead} from './guideLead';
+import type {LabSlug} from './seo/labSlugs';
 import './hubble-lab.css';
 import './pulsar-lab.css';
 export type PulsarLabDestination='radio-control'|'pulsar-analysis';
@@ -40,20 +42,22 @@ export const pulsarStepDestination=(step:PulsarLabStep):PulsarLabDestination=>ST
 
 /** WEB-PULSAR-GUIDE-01: the Pulsars (E06) guide, with the HubbleLabGuide layout. Every check mark is recomputed from the current
  * state by pulsarLabProgress; nothing is stored. The guide explains manual arithmetic; it computes no measurement itself. */
-function PulsarLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:PulsarLabProgress;onNavigate:(destination:PulsarLabDestination)=>void}){
+function PulsarLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:PulsarLabProgress;onNavigate:(destination:PulsarLabDestination)=>void;/** Front NEWCOMER NC4: opens another lab's guide (What next); a stable callback. */onNext:(lab:LabSlug)=>void}){
  function go(destination:PulsarLabDestination){dialogRef.current?.close();onNavigate(destination);}
  const doneCount=PULSAR_LAB_REQUIRED_STEPS.filter(s=>progress.done[s]).length;
+ /** The guide's counts line, in its progress block and as What next's recap (Front NEWCOMER NC4). */
+ const counts=t('pulsarLab.counts',{done:doneCount,total:PULSAR_LAB_REQUIRED_STEPS.length});
  const statusText=(step:PulsarLabStep)=>step==='save'
   ?t(progress.done.save?'pulsarLab.status.saveCopy':'pulsarLab.status.saveNone')
   :step==='investigation'?t(`pulsarLab.status.investigation.${progress.investigation}`)
   :progress.done[step]?t(READING_STEPS.has(step)?'pulsarLab.status.recorded':'pulsarLab.status.done'):t('pulsarLab.status.notYet');
- return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog" aria-labelledby="pulsar-lab-heading" aria-describedby="pulsar-lab-intro" data-testid="pulsar-lab-dialog">
+ return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog" aria-labelledby="pulsar-lab-heading" aria-describedby="pulsar-lab-why" data-testid="pulsar-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('pulsarLab.eyebrow')}</div><h2 id="pulsar-lab-heading">{t('pulsarLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="pulsar-lab-close" onClick={()=>dialogRef.current?.close()}>{t('pulsarLab.close')}</button></div>
-  <p id="pulsar-lab-intro">{t('pulsarLab.intro')}</p>
+  {whyLead('pulsar-lab-why',t('pulsarLab.why'))}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('pulsarLab.intro')}</p></details>
   <section className="lab-progress" aria-labelledby="pulsar-lab-progress-heading">
    <h3 id="pulsar-lab-progress-heading">{t('pulsarLab.progress')}</h3>
-   <p data-testid="pulsar-lab-counts" role="status">{t('pulsarLab.counts',{done:doneCount,total:PULSAR_LAB_REQUIRED_STEPS.length})}</p>
+   <p data-testid="pulsar-lab-counts" role="status">{counts}</p>
    {/* Start keeps a Tracking that is off once the panel is on: name the control that finishes setup. */}
    <p className="pulsar-lab-next" data-testid="pulsar-lab-next" data-next={progress.next} data-tracking-off={progress.next==='setup'&&progress.trackingOff||undefined}>
     {pulsarNextText(progress)}</p>
@@ -69,6 +73,7 @@ function PulsarLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTM
     {moreDetail(`pulsar-lab-step-${step}`,progress.next===step,pulsarStepBody(step,progress))}
    </li>)}
   </ol>
+  {progress.next==='save'&&whatNext('pulsar-lab','pulsars',next=>{dialogRef.current?.close();onNext(next);},counts)}
   <section aria-labelledby="pulsar-lab-data-heading" data-testid="pulsar-lab-data-kinds">
    <h3 id="pulsar-lab-data-heading">{t('pulsarLab.data.heading')}</h3>
    <dl className="pulsar-lab-kinds">{(['reference','model','supplied'] as const).map(k=><div key={k}><dt>{t(`pulsarLab.data.${k}.term`)}</dt><dd>{t(`pulsarLab.data.${k}.help`)}</dd></div>)}</dl>
@@ -81,4 +86,4 @@ function PulsarLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTM
  </dialog>;
 }
 // Front Perf: the closed guide re-renders only when its progress (plain data), ref or handler changes.
-export default memo(PulsarLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&sameData(a.progress,b.progress));
+export default memo(PulsarLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&a.onNext===b.onNext&&sameData(a.progress,b.progress));

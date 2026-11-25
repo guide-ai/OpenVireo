@@ -38,7 +38,18 @@ test('guided journey: verified practice, atlas comparison, line table, wide EW, 
  // Fresh browser context: reload-equivalent Restore recomputes steps, line row and width value.
  const context=await browser.newContext(),fresh=await context.newPage();fresh.on('pageerror',e=>errors.push(e.message));await fresh.goto('/#classification');await practice(fresh,'u1');await fresh.getByLabel('Restore complete investigation JSON (up to 16 MiB)',{exact:true}).setInputFiles({name:'e03.json',mimeType:'application/json',buffer:saved});await expect(fresh.getByRole('heading',{name:'Classification records · 1',exact:true})).toBeVisible();await practice(fresh,'u1');
  await expect(table(fresh).getByRole('radio',{name:lineName(12),exact:true})).toBeChecked();await expect(fresh.getByLabel('Displayed wavelength range',{exact:true})).toHaveText('3700–4700 Å · 1×');await expect(fresh.getByLabel('Proposed spectral type',{exact:true})).toHaveValue('Trial type A');await expect(fresh.getByRole('heading',{name:'Width records · 1',exact:true})).toBeVisible();await fresh.getByRole('button',{name:'Recompute this width',exact:true}).click();expect(await widthText(fresh)).toBe(width);await counts(fresh,4,'save');await expect(fresh.getByLabel('Reverse trace displays',{exact:true})).not.toBeChecked();expect(await save(fresh)).toEqual(saved);
- await context.close();expect(errors).toEqual([]);
+ await context.close();
+ // Front NEWCOMER NC4: once every counted step is done, What next suggests Pleiades photometry, in the strip's Step details and at
+ // the end of the window; its button opens that lab's guide, whose why-line describes it.
+ const strip=page.getByTestId('guide-companion'),pleiades=page.getByTestId('pleiades-lab-dialog');
+ await expect(strip).toHaveAttribute('data-all-done','true');await strip.getByTestId('guide-companion-details-toggle').click();
+ const stripNext=strip.locator('.lab-what-next');await expect(stripNext).toContainText('What next');await expect(stripNext).toContainText('A lab to try next: Pleiades photometry.');
+ await stripNext.getByRole('button',{name:'Open its guide',exact:true}).click();await expect(pleiades).toBeVisible();await expect(pleiades.getByRole('button',{name:'Close Pleiades lab guide',exact:true})).toBeFocused();
+ await expect(pleiades).toHaveAccessibleDescription(JSON.parse(readFileSync(new URL('../src/i18n/en.json',import.meta.url),'utf8'))['pleiadesLab.why']);await expect(pleiades.locator('.lab-what-next')).toHaveCount(0);
+ await page.keyboard.press('Escape');await expect(pleiades).not.toBeVisible();
+ await openGuide(page);const windowNext=guide(page).getByRole('region',{name:'What next',exact:true});await expect(windowNext).toContainText('4 of 4 steps done');await expect(windowNext).toContainText('A lab to try next: Pleiades photometry.');
+ await windowNext.getByRole('button',{name:'Open its guide',exact:true}).click();await expect(guide(page)).not.toBeVisible();await expect(pleiades).toBeVisible();await expect(strip).toHaveAttribute('data-lab','pleiades');
+ expect(errors).toEqual([]);
 });
 
 test('all 25 original practices load verified sources and keep per-source drafts and own records',async({page})=>{

@@ -155,6 +155,7 @@ export type ObjectXLabMessages=typeof OBJECT_X_LAB_EN;
 export const OBJECT_X_GUIDE_EN=Object.freeze({
  eyebrow:'Exercise E08 guide',title:'The quest for Object X',
  intro:'You get only an identifier and coordinates. Use the instruments to decide what kind of object it is, then reveal its identity. The steps update as you work; nothing judges your answer before the reveal.',
+ why:'What kind of object lies at the coordinates you are given? You will decide with the observatory’s instruments, before its identity is revealed.',
  counts:(done:number,total:number,images:number)=>`${done} of ${total} steps · ${images} images of your object`,
  done:'(done)',todo:'(to do)',
  steps:Object.freeze({

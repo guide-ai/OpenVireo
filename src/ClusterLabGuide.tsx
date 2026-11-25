@@ -3,21 +3,25 @@ import {t} from './i18n';
 import {CLUSTER_LAB_STEPS,type ClusterLabProgress,type ClusterLabStep,type ClusterOwnStatus} from './core/clusterLab';
 import {clusterNextText,clusterStepBody,clusterStepTitle} from './ClusterLabGuideText';
 import {moreDetail,stepTitle} from './guideMoreDetail';
+import {whatNext,whyLead} from './guideLead';
+import type {LabSlug} from './seo/labSlugs';
 import './hubble-lab.css';
 
 /** WEB-CLUSTER-GUIDE-01: the cluster HR (E05) guide for the database route, with the HubbleLabGuide layout. Every check
  * mark is recomputed from the current state by clusterLabProgress; nothing is stored. Saving is listed as instructions
  * without a check mark. The own-observation route (phase1 item1.9) is shown as separate live status with a link; it is
  * never one of the counted database steps and never marks the whole E05 exercise complete. */
-export default function ClusterLabGuide({dialogRef,progress,cluster,onNavigate,own,onOpenOwn}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:ClusterLabProgress;cluster:string|null;onNavigate:(step:ClusterLabStep)=>void;own:ClusterOwnStatus;onOpenOwn?:()=>void}){
+export default function ClusterLabGuide({dialogRef,progress,cluster,onNavigate,own,onOpenOwn,onNext}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:ClusterLabProgress;cluster:string|null;onNavigate:(step:ClusterLabStep)=>void;own:ClusterOwnStatus;onOpenOwn?:()=>void;/** Front NEWCOMER NC4: opens another lab's guide (What next); without it, What next is not shown. */onNext?:(lab:LabSlug)=>void}){
  function go(step:ClusterLabStep){dialogRef.current?.close();onNavigate(step);}
- return <dialog ref={dialogRef} className="hubble-lab-dialog cluster-lab-dialog" aria-labelledby="cluster-lab-heading" aria-describedby="cluster-lab-intro" data-testid="cluster-lab-dialog">
+ /** The guide's counts line, in its progress block and as What next's recap (Front NEWCOMER NC4). */
+ const counts=t('clusterLab.counts',{done:progress.doneCount,total:CLUSTER_LAB_STEPS.length});
+ return <dialog ref={dialogRef} className="hubble-lab-dialog cluster-lab-dialog" aria-labelledby="cluster-lab-heading" aria-describedby="cluster-lab-why" data-testid="cluster-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('clusterLab.eyebrow')}</div><h2 id="cluster-lab-heading">{t('clusterLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="cluster-lab-close" onClick={()=>dialogRef.current?.close()}>{t('clusterLab.close')}</button></div>
-  <p id="cluster-lab-intro">{t('clusterLab.intro')}</p><details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('clusterLab.introOptions')}</p></details>
+  {whyLead('cluster-lab-why',t('clusterLab.why'))}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('clusterLab.intro')}</p><p>{t('clusterLab.introOptions')}</p></details>
   <section className="lab-progress" aria-labelledby="cluster-lab-progress-heading">
    <h3 id="cluster-lab-progress-heading">{t('clusterLab.progress')}</h3>
-   <p data-testid="cluster-lab-counts" role="status">{t('clusterLab.counts',{done:progress.doneCount,total:CLUSTER_LAB_STEPS.length})}</p>
+   <p data-testid="cluster-lab-counts" role="status">{counts}</p>
    <p data-testid="cluster-lab-active">{cluster===null?t('clusterLab.noDataset'):t('clusterLab.dataset',{cluster})}</p>
    <p className="cluster-lab-next" data-testid="cluster-lab-next" data-next={progress.next}>{clusterNextText(progress.next)}</p>
    {progress.next!=='preserve'&&<button className="secondary-button" data-testid="cluster-lab-continue" onClick={()=>{if(progress.next!=='preserve')go(progress.next);}}>{t('clusterLab.continue')}</button>}
@@ -35,6 +39,7 @@ export default function ClusterLabGuide({dialogRef,progress,cluster,onNavigate,o
    <h3 id="cluster-lab-preserve-heading">{t('clusterLab.preserve.heading')}</h3>
    <p>{t('clusterLab.preserve.save')}</p><p>{t('clusterLab.preserve.restore')}</p>
   </section>
+  {progress.next==='preserve'&&onNext&&whatNext('cluster-lab','cluster-hr',next=>{dialogRef.current?.close();onNext(next);},counts)}
   <section aria-labelledby="cluster-lab-own-heading" data-testid="cluster-lab-own">
    <h3 id="cluster-lab-own-heading">{t('clusterLab.own.heading')}</h3>
    <p>{t('clusterLab.own.help')}</p>

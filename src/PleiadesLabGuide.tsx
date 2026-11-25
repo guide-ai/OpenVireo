@@ -4,6 +4,8 @@ import {t} from './i18n';
 import {PLEIADES_LAB_COUNTED_STEPS,PLEIADES_LAB_STEPS,type PleiadesLabProgress,type PleiadesLabStep} from './core/pleiadesLab';
 import {PLEIADES_HTL} from './core/pleiadesHotList';
 import {moreDetail,stepTitle} from './guideMoreDetail';
+import {whatNext,whyLead} from './guideLead';
+import type {LabSlug} from './seo/labSlugs';
 import './hubble-lab.css';
 import './pulsar-lab.css';
 import './pleiades-lab.css';
@@ -33,20 +35,22 @@ export const pleiadesStepDestination=(step:PleiadesLabStep):PleiadesLabDestinati
 /** WEB-PLEIADES-GUIDE-01: the Pleiades photometry (E04) guide, with the PulsarLabGuide layout. Every mark is recomputed from the
  * current state by pleiadesLabProgress; nothing is stored. The guide explains the paper-and-overlay procedure; it computes no
  * magnitude, color or distance itself, and it does not mark the whole E05 exercise complete. */
-function PleiadesLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:PleiadesLabProgress;onNavigate:(destination:PleiadesLabDestination)=>void}){
+function PleiadesLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:PleiadesLabProgress;onNavigate:(destination:PleiadesLabDestination)=>void;/** Front NEWCOMER NC4: opens another lab's guide (What next); a stable callback. */onNext:(lab:LabSlug)=>void}){
  function go(destination:PleiadesLabDestination){dialogRef.current?.close();onNavigate(destination);}
  const doneCount=PLEIADES_LAB_COUNTED_STEPS.filter(s=>progress.done[s]).length;
+ /** The guide's counts line, in its progress block and as What next's recap (Front NEWCOMER NC4). */
+ const counts=t('pleiadesLab.counts',{done:doneCount,total:PLEIADES_LAB_COUNTED_STEPS.length});
  const statusText=(step:PleiadesLabStep)=>step==='save'?t('pleiadesLab.status.save')
   :step==='sample'?t('pleiadesLab.status.sample',{count:progress.colorTargets,total:progress.sampleTargets})
   :t(progress.done[step]?'pleiadesLab.status.done':'pleiadesLab.status.notYet');
- return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog pleiades-lab-dialog" aria-labelledby="pleiades-lab-heading" aria-describedby="pleiades-lab-intro" data-testid="pleiades-lab-dialog">
+ return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog pleiades-lab-dialog" aria-labelledby="pleiades-lab-heading" aria-describedby="pleiades-lab-why" data-testid="pleiades-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('pleiadesLab.eyebrow')}</div><h2 id="pleiades-lab-heading">{t('pleiadesLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="pleiades-lab-close" onClick={()=>dialogRef.current?.close()}>{t('pleiadesLab.close')}</button></div>
-  <p id="pleiades-lab-intro">{t('pleiadesLab.intro')}</p>
-  <details className="research-notes"><summary>{t('notes.summary')}</summary><p className="lab-recovery" data-testid="pleiades-lab-adaptation">{t('pleiadesLab.adaptation')}</p></details>
+  {whyLead('pleiades-lab-why',t('pleiadesLab.why'))}
+  <details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('pleiadesLab.intro')}</p><p className="lab-recovery" data-testid="pleiades-lab-adaptation">{t('pleiadesLab.adaptation')}</p></details>
   <section className="lab-progress" aria-labelledby="pleiades-lab-progress-heading">
    <h3 id="pleiades-lab-progress-heading">{t('pleiadesLab.progress')}</h3>
-   <p data-testid="pleiades-lab-counts" role="status">{t('pleiadesLab.counts',{done:doneCount,total:PLEIADES_LAB_COUNTED_STEPS.length})}</p>
+   <p data-testid="pleiades-lab-counts" role="status">{counts}</p>
    <p data-testid="pleiades-lab-coverage">{t('pleiadesLab.coverage',{count:progress.colorTargets,total:progress.sampleTargets})}</p>
    <p className="pulsar-lab-next" data-testid="pleiades-lab-next" data-next={progress.next}>{t(`pleiadesLab.next.${progress.next}`)}</p>
    <p className="lab-recovery" data-testid="pleiades-lab-e05">{t('pleiadesLab.e05')}</p>
@@ -62,6 +66,7 @@ function PleiadesLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<H
     {moreDetail(`pleiades-lab-step-${step}`,progress.next===step,pleiadesStepBody(step))}
    </li>)}
   </ol>
+  {progress.next==='save'&&whatNext('pleiades-lab','pleiades',next=>{dialogRef.current?.close();onNext(next);},counts)}
   <details className="lab-troubleshooting"><summary>{t('pleiadesLab.troubleshooting')}</summary><dl>{(['card','blocked','start','sky','budget']as const).map(key=><div key={key}>
    <dt>{t(`pleiadesLab.problem.${key}`)}</dt><dd>{t(`pleiadesLab.recover.${key}`)}</dd></div>)}</dl></details>
   <details className="lab-sources"><summary>{t('pleiadesLab.sources')}</summary><p>{t('pleiadesLab.sourceHelp')}</p>
@@ -70,4 +75,4 @@ function PleiadesLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<H
  </dialog>;
 }
 // Front Perf: the closed guide re-renders only when its progress (plain data), ref or handler changes.
-export default memo(PleiadesLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&sameData(a.progress,b.progress));
+export default memo(PleiadesLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&a.onNext===b.onNext&&sameData(a.progress,b.progress));

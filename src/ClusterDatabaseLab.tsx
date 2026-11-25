@@ -6,6 +6,7 @@ import './photometer.css';
 import './cluster-database-hr.css';
 import NativeClusterAnalysis,{type DatabaseHrProgress} from './NativeClusterAnalysis';
 import ClusterLabGuide from './ClusterLabGuide';
+import type {LabSlug} from './seo/labSlugs';
 import {addClusterLabWitness,clusterLabProgress,clusterOwnStatus,retainClusterLabWitness,EMPTY_CLUSTER_LAB_WITNESS,type ClusterLabProgress,type ClusterLabStep} from './core/clusterLab';
 import type {PhotometerState} from './core/photometer';
 import {pleiadesPoints} from './core/pleiadesAnalysis';
@@ -37,7 +38,7 @@ import {vireo,vireoMenuItem} from './i18n/vireo';
 import {POSSIBLE_MEMBER_CAPTION} from './core/clusterHrSelect';
 import {CLUSTER_HR_CAPTIONS} from './core/clusterHrCaptions';
 const EMPTY_EXCLUDED_IDS:readonly string[]=Object.freeze([]);
-function ClusterDatabaseLab({onGuideOpen,onGuideProgress,selection,onSelectionChange,workspace,comparison,onChange,onComparisonChange,busy,active,ownSource=null,onOpenOwn,hotList}: {/** Front R4 review 1 L3: opening the E05 guide is VIREO's HR Diagrams menu (exercise code 7); a stable callback. */onGuideOpen?:()=>void;/** Front GUIDE-COMPANION: the guide's progress, reported to the shell's companion strip whenever it changes; a stable callback. */onGuideProgress?:(progress:ClusterLabProgress)=>void;hotList?:SharedHotListHandle;selection:ClusterSelectionWorkspace|null;onSelectionChange:(w:ClusterSelectionWorkspace|null)=>void;workspace:ClusterDatabaseWorkspace|null;comparison:ClusterComparisonWorkspace|null;onChange:(w:ClusterDatabaseWorkspace|null)=>void;onComparisonChange:(w:ClusterComparisonWorkspace|null)=>void;busy:boolean;active:boolean;ownSource?:PhotometerState|null;onOpenOwn?:()=>void}){
+function ClusterDatabaseLab({onGuideOpen,onOpenGuide,onGuideProgress,selection,onSelectionChange,workspace,comparison,onChange,onComparisonChange,busy,active,ownSource=null,onOpenOwn,hotList}: {/** Front R4 review 1 L3: opening the E05 guide is VIREO's HR Diagrams menu (exercise code 7); a stable callback. */onGuideOpen?:()=>void;/** Front NEWCOMER NC4: opens another lab's guide (the guide's What next); a stable callback. */onOpenGuide?:(lab:LabSlug)=>void;/** Front GUIDE-COMPANION: the guide's progress, reported to the shell's companion strip whenever it changes; a stable callback. */onGuideProgress?:(progress:ClusterLabProgress)=>void;hotList?:SharedHotListHandle;selection:ClusterSelectionWorkspace|null;onSelectionChange:(w:ClusterSelectionWorkspace|null)=>void;workspace:ClusterDatabaseWorkspace|null;comparison:ClusterComparisonWorkspace|null;onChange:(w:ClusterDatabaseWorkspace|null)=>void;onComparisonChange:(w:ClusterComparisonWorkspace|null)=>void;busy:boolean;active:boolean;ownSource?:PhotometerState|null;onOpenOwn?:()=>void}){
  // Own-observation route status(phase1 item1.9) from the live photometer pairs;counted here, never stored or graded.
  const ownPairs=useMemo(()=>{if(!ownSource)return 0;try{return pleiadesPoints(ownSource).length;}catch{return 0;}},[ownSource?.colors,ownSource?.entries,ownSource?.readings]);
  const ownStatus=clusterOwnStatus(ownPairs,PLEIADES_PHOTOMETER_TARGETS.length,!!ownSource?.nativeClusterFit);
@@ -125,7 +126,7 @@ function ClusterDatabaseLab({onGuideOpen,onGuideProgress,selection,onSelectionCh
    csv={{disabled:false,bytes:()=>{const l=fieldStarCsvLines(report.lines);return l?{bytes:variableStarSaveText(l),name:`${report.stem}.CSV`}:{caption:vireo(CLUSTER_HR_CAPTIONS.information),text:HR.reportUnavailable};}}} onClose={()=>setReportOpen(false)} box={reportBox} onBox={setReportBox}/>
   :<p role="alert" data-testid="cluster-report-unavailable">{HR.reportUnavailable}</p>):<p role="status" className="observatory-note" data-testid="cluster-report-status">{detail==='error'?HR.detailError:HR.detailLoading}</p>)}
  <dialog ref={removeDialog} aria-labelledby="cluster-point-remove-title" onCancel={e=>{e.preventDefault();cancelRemoval();}} onClose={()=>setPendingRemoval(null)}><h2 id="cluster-point-remove-title">{t('ce.confirmTitle')}</h2><p>{t('ce.confirmHelp',{id:pendingRemoval?.id??''})}</p><div className="sky-actions"><button className="secondary-button" autoFocus onClick={cancelRemoval}>{t('ce.cancel')}</button><button className="primary-button" disabled={busy||!pendingRemoval} onClick={confirmRemoval}>{t('ce.confirm')}</button></div></dialog>
- <ClusterLabGuide dialogRef={guide} progress={labProgress} cluster={activeLoaded&&info?info.name:null} onNavigate={goTo} own={ownStatus} onOpenOwn={onOpenOwn}/></main>;
+ <ClusterLabGuide dialogRef={guide} progress={labProgress} cluster={activeLoaded&&info?info.name:null} onNavigate={goTo} own={ownStatus} onOpenOwn={onOpenOwn} onNext={onOpenGuide}/></main>;
 }
 // Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).
 export default memo(ClusterDatabaseLab);

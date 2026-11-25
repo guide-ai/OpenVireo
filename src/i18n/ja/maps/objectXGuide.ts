@@ -6,6 +6,7 @@ import type {Translation} from '../../maps';
 export const OBJECT_X_GUIDE_JA:Translation<typeof OBJECT_X_GUIDE_EN>=Object.freeze({
  eyebrow:'実習E08のガイド',title:'天体Xを探る',
  intro:'手がかりは識別子と座標だけです。観測装置を使ってどんな種類の天体かを判断し、そのあとで正体を明かします。手順は作業に合わせて更新され、正体を明かすまでは、答えが正しいかどうかは判定されません。',
+ why:'与えられた座標にあるのは、どんな種類の天体でしょうか？正体が明かされる前に、天文台の観測装置を使って判断します。',
  counts:(done,total,images)=>`${total}手順中${done}手順 · 自分の天体の画像${images}枚`,
  done:'（完了）',todo:'（未完了）',
  steps:Object.freeze({

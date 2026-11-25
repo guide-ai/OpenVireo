@@ -4,6 +4,8 @@ import {t} from './i18n';
 import {CLASSIFICATION_LAB_COUNTED_STEPS,CLASSIFICATION_LAB_STEPS,type ClassificationLabProgress,type ClassificationLabStep} from './core/classificationLab';
 import {CLASSIFICATION_CATALOG} from './core/classification';
 import {moreDetail,stepTitle} from './guideMoreDetail';
+import {whatNext,whyLead} from './guideLead';
+import type {LabSlug} from './seo/labSlugs';
 import './hubble-lab.css';
 import './pulsar-lab.css';
 import './pleiades-lab.css';
@@ -21,20 +23,22 @@ export function classificationStepBody(step:ClassificationLabStep,ids=true){
 
 /** WEB-CLASSIFICATION-GUIDE-01: the Stellar classification (E03) guide, with the PleiadesLabGuide layout. Every mark is
  * recomputed from the current state by classificationLabProgress; nothing is stored. It gives no answer and grades nothing. */
-function ClassificationLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:ClassificationLabProgress;onNavigate:()=>void}){
+function ClassificationLabGuide({dialogRef,progress,onNavigate,onNext}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:ClassificationLabProgress;onNavigate:()=>void;/** Front NEWCOMER NC4: opens another lab's guide (What next); a stable callback. */onNext:(lab:LabSlug)=>void}){
  function go(){dialogRef.current?.close();onNavigate();}
  const doneCount=CLASSIFICATION_LAB_COUNTED_STEPS.filter(s=>progress.done[s]).length;
+ /** The guide's counts line, in its progress block and as What next's recap (Front NEWCOMER NC4). */
+ const counts=t('classLab.counts',{done:doneCount,total:CLASSIFICATION_LAB_COUNTED_STEPS.length});
  const practice=CLASSIFICATION_CATALOG.practice.find(p=>p.id===progress.practiceId);
  const statusText=(step:ClassificationLabStep)=>step==='save'?t('classLab.status.save'):t(progress.done[step]?'classLab.status.done':'classLab.status.notYet');
- return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog pleiades-lab-dialog classification-lab-dialog" aria-labelledby="classification-lab-heading" aria-describedby="classification-lab-intro" data-testid="classification-lab-dialog">
+ return <dialog ref={dialogRef} className="hubble-lab-dialog pulsar-lab-dialog pleiades-lab-dialog classification-lab-dialog" aria-labelledby="classification-lab-heading" aria-describedby="classification-lab-why" data-testid="classification-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('classLab.eyebrow')}</div><h2 id="classification-lab-heading">{t('classLab.title')}</h2></div>
    <button className="secondary-button" autoFocus data-testid="classification-lab-close" onClick={()=>dialogRef.current?.close()}>{t('classLab.close')}</button></div>
-  <p id="classification-lab-intro">{t('classLab.intro')}</p><details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('classLab.introOptions')}</p>
-   {/* Front NEWCOMER NC3: the adaptation note is a research note, below the always-visible intro. */}
+  {whyLead('classification-lab-why',t('classLab.why'))}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('classLab.intro')}</p><p>{t('classLab.introOptions')}</p>
+   {/* Front NEWCOMER NC3: the adaptation note is a research note (NC4: with the former intro, below the why-line). */}
    <p className="lab-recovery" data-testid="classification-lab-adaptation">{t('classLab.adaptation')}</p></details>
   <section className="lab-progress" aria-labelledby="classification-lab-progress-heading">
    <h3 id="classification-lab-progress-heading">{t('classLab.progress')}</h3>
-   <p data-testid="classification-lab-counts" role="status">{t('classLab.counts',{done:doneCount,total:CLASSIFICATION_LAB_COUNTED_STEPS.length})}</p>
+   <p data-testid="classification-lab-counts" role="status">{counts}</p>
    {progress.scope==='practice'?practice&&<p data-testid="classification-lab-practice">{t('classLab.practice',{label:practice.label})}</p>:<p className="lab-recovery" data-testid="classification-lab-scope">{t('classLab.scopeOther')}</p>}
    <p className="pulsar-lab-next" data-testid="classification-lab-next" data-next={progress.next}>{t(`classLab.next.${progress.next}`)}</p>
    <button className="secondary-button" data-testid="classification-lab-continue" onClick={go}>{t('classLab.continue')}</button>
@@ -48,6 +52,7 @@ function ClassificationLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefOb
     {moreDetail(`classification-lab-step-${step}`,progress.next===step,classificationStepBody(step))}
    </li>)}
   </ol>
+  {progress.next==='save'&&whatNext('classification-lab','stellar-classification',next=>{dialogRef.current?.close();onNext(next);},counts)}
   <details className="lab-troubleshooting"><summary>{t('classLab.troubleshooting')}</summary><dl>{(['load','draft','limit','width','import']as const).map(key=><div key={key}>
    <dt>{t(`classLab.problem.${key}`)}</dt><dd>{t(`classLab.recover.${key}`)}</dd></div>)}</dl></details>
   <details className="lab-sources"><summary>{t('classLab.sources')}</summary><p>{t('classLab.sourceHelp')}</p>
@@ -56,4 +61,4 @@ function ClassificationLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefOb
  </dialog>;
 }
 // Front Perf: the closed guide re-renders only when its progress (plain data), ref or handler changes.
-export default memo(ClassificationLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&sameData(a.progress,b.progress));
+export default memo(ClassificationLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&a.onNext===b.onNext&&sameData(a.progress,b.progress));

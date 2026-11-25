@@ -37,13 +37,6 @@
  {
   "file": "src/ClassificationLabGuide.tsx",
   "kind": "original",
-  "value": "CLASSIFICATION_LAB_COUNTED_STEPS.length",
-  "count": 1,
-  "reason": "identifier: a step count (a number)"
- },
- {
-  "file": "src/ClassificationLabGuide.tsx",
-  "kind": "original",
   "value": "CLASSIFICATION_LAB_STEPS.map",
   "count": 1,
   "reason": "identifier: the guide step ids (keys of classLab.step.* texts and test ids)"
@@ -145,13 +138,6 @@
   "value": "NATIVE_CLUSTER_MODELS[c.parameters.modelIndex]",
   "count": 1,
   "reason": "identifier: the recorded metallicity model labels ([Z=0.019, Y=0.273] (Solar Values)), as read from the contract"
- },
- {
-  "file": "src/ClusterLabGuide.tsx",
-  "kind": "original",
-  "value": "CLUSTER_LAB_STEPS.length",
-  "count": 1,
-  "reason": "identifier: the guide step ids and their count"
  },
  {
   "file": "src/ClusterLabGuide.tsx",
@@ -660,13 +646,6 @@
  {
   "file": "src/ObjectXLabGuide.tsx",
   "kind": "original",
-  "value": "OBJECT_X_LAB_STEPS.length",
-  "count": 1,
-  "reason": "identifier: a step count (a number)"
- },
- {
-  "file": "src/ObjectXLabGuide.tsx",
-  "kind": "original",
   "value": "OBJECT_X_LAB_STEPS.map",
   "count": 1,
   "reason": "identifier: the guide step ids (keys of the objectXGuide.steps texts and test ids)"
@@ -919,13 +898,6 @@
  {
   "file": "src/PleiadesLabGuide.tsx",
   "kind": "original",
-  "value": "PLEIADES_LAB_COUNTED_STEPS.length",
-  "count": 1,
-  "reason": "identifier: the number of counted guide steps"
- },
- {
-  "file": "src/PleiadesLabGuide.tsx",
-  "kind": "original",
   "value": "PLEIADES_LAB_STEPS.map",
   "count": 1,
   "reason": "identifier: the guide's step ids; each step's text is a catalog key (pleiadesLab.step.*)"
@@ -964,13 +936,6 @@
   "value": "PLEIADES_HTL.archiveSha256",
   "count": 1,
   "reason": "identifier: a SHA-256 hash"
- },
- {
-  "file": "src/PulsarLabGuide.tsx",
-  "kind": "original",
-  "value": "PULSAR_LAB_REQUIRED_STEPS.length",
-  "count": 1,
-  "reason": "identifier: a step count (a number)"
  },
  {
   "file": "src/PulsarLabGuide.tsx",

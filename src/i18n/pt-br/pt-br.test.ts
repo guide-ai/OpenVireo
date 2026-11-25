@@ -126,7 +126,7 @@ describe('Front PT0: the Brazilian Portuguese (pt-BR) bundle',()=>{
   expect(PT5_KEYS.filter(k=>!Object.hasOwn(pt,k))).toEqual([]);
  });
  it('Front PT6: the catalog covers E06 and E08 (every key of their prefixes), and with them every en.json key',()=>{
-  expect(PT6_KEYS.length).toBe(137);
+  expect(PT6_KEYS.length).toBe(138);// 138: Front NEWCOMER NC4 adds pulsarLab.why
   expect(PT6_KEYS.filter(k=>!Object.hasOwn(pt,k))).toEqual([]);
   expect(Object.keys(en).filter(k=>!Object.hasOwn(pt,k))).toEqual([]);
  });

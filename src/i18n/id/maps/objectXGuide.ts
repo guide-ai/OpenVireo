@@ -6,6 +6,7 @@ import type {Translation} from '../../maps';
 export const OBJECT_X_GUIDE_ID:Translation<typeof OBJECT_X_GUIDE_EN>=Object.freeze({
  eyebrow:'Panduan praktikum E08',title:'Pencarian Objek X',
  intro:'Anda hanya mendapat pengenal dan koordinat. Gunakan instrumen untuk menentukan jenis objeknya, lalu ungkap identitasnya. Langkah-langkah diperbarui seiring pekerjaan Anda; tidak ada yang menilai jawaban Anda sebelum pengungkapan.',
+ why:'Objek jenis apa yang ada di koordinat yang Anda terima? Anda akan menentukannya dengan instrumen observatorium sebelum identitasnya diungkap.',
  counts:(done:number,total:number,images:number)=>`${done} dari ${total} langkah · ${images} citra objek Anda`,
  done:'(selesai)',todo:'(belum dikerjakan)',
  steps:Object.freeze({

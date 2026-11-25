@@ -151,11 +151,11 @@ describe('Front ID0: the Indonesian (id) bundle',()=>{
   expect(ID2_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
  });
  it('Front ID3: the catalog covers E03 (every key of its prefixes, continuity.restoreExposure and ssp.header)',()=>{
-  expect(ID3_KEYS.length).toBe(772);
+  expect(ID3_KEYS.length).toBe(773); // 773: Front NEWCOMER NC4 adds classLab.why
   expect(ID3_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
  });
  it('Front ID4: the catalog covers E04 and E05 (every key of ph, pa, pleiadesLab, nc, db, ce, clusterLab, ownHr and obsHr)',()=>{
-  expect(ID4_KEYS.length).toBe(651);
+  expect(ID4_KEYS.length).toBe(653); // 653: Front NEWCOMER NC4 adds pleiadesLab.why and clusterLab.why
   expect(ID4_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
  });
  it('Front ID5: every radio direction caption and original letter is read in the `direction` context (U/S/T/B, not the longitude letters)',()=>{
@@ -169,7 +169,7 @@ describe('Front ID0: the Indonesian (id) bundle',()=>{
   expect(ID5_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
  });
  it('Front ID6: the catalog covers E06 and E08 (every key of pulsarLab, plr and fits), and with them every en.json key',()=>{
-  expect(ID6_KEYS.length).toBe(137);
+  expect(ID6_KEYS.length).toBe(138);// 138: Front NEWCOMER NC4 adds pulsarLab.why
   expect(ID6_KEYS.filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
   expect(Object.keys(en).filter(k=>!Object.hasOwn(idCatalog,k))).toEqual([]);
  });

@@ -4,6 +4,7 @@ import type {Translation} from '../../maps';
 export const OBJECT_X_GUIDE_ZH_HANS:Translation<typeof OBJECT_X_GUIDE_EN>=Object.freeze({
  eyebrow:'实验E08指南',title:'探寻天体X',
  intro:'你只会得到一个标识符和坐标。用仪器判断它是哪一类天体，然后揭晓它的身份。这些步骤会随着你的操作更新；揭晓之前，不会对你的答案做任何评判。',
+ why:'给你的坐标处是哪一类天体？在揭晓它的身份之前，你将用天文台的仪器作出判断。',
  counts:(done,total,images)=>`共${total}步，已完成${done}步 · 你的天体的图像${images}张`,
  done:'（已完成）',todo:'（待完成）',
  steps:Object.freeze({

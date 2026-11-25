@@ -1,0 +1,183 @@
+import {readFileSync} from 'node:fs';
+import path from 'node:path';
+import {createElement,type ReactElement} from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
+import {describe,expect,it} from 'vitest';
+import en from './i18n/en.json';
+import {LANGUAGES} from './i18n/languages';
+import {LAB_SLUGS,type LabSlug} from './seo/labSlugs';
+import {LAB_NEXT} from './home/labNext';
+import {OBJECT_X_GUIDE_EN,OBJECT_X_LAB_EN} from './objectx/ObjectXMessages';
+import HubbleLabGuide from './HubbleLabGuide';
+import LssLabGuide from './LssLabGuide';
+import ObjectXLabGuide from './ObjectXLabGuide';
+import ClassificationLabGuide from './ClassificationLabGuide';
+import ClusterLabGuide from './ClusterLabGuide';
+import PulsarLabGuide from './PulsarLabGuide';
+import PleiadesLabGuide from './PleiadesLabGuide';
+import {hubbleLabProgress} from './core/hubbleLab';
+import {EMPTY_HUBBLE} from './core/hubbleAnalysis';
+import {INITIAL_LSS_LAB_SUMMARY,lssLabProgress} from './core/lssLab';
+import {INITIAL_OBJECT_X_LAB_SUMMARY,objectXLabProgress} from './core/objectXLab';
+import {EMPTY_CLASSIFICATION_EXERCISE_SUMMARY,classificationLabProgress} from './core/classificationLab';
+import {EMPTY_CLASSIFICATION_WORKSPACE} from './core/classification';
+import {clusterLabProgress,clusterOwnStatus} from './core/clusterLab';
+import {EMPTY_PULSAR_MEASUREMENT_SUMMARY,INITIAL_RADIO_EXERCISE_SUMMARY,pulsarLabProgress} from './core/pulsarLab';
+import {EMPTY_PLEIADES_EXERCISE_SUMMARY,pleiadesLabProgress} from './core/pleiadesLab';
+
+// Front NEWCOMER NC4 (plan analysis/front-plans/front-newcomer.md §2.4, review M1; user decision of 2026-11-24): each guide's
+// window opens with a why-line that asks the question the visitor will answer and never states the lab's result, not even
+// qualitatively, and ends with What next once its counted steps are done.
+
+type Catalog=Record<string,string>;
+const DIRS=['en',...LANGUAGES.map(l=>l.dir)];
+const catalog=(dir:string):Catalog=>JSON.parse(readFileSync(path.join(import.meta.dirname,'i18n',dir==='en'?'en.json':`${dir}/${dir}.json`),'utf8'));
+/** Each language's Object X maps (the guide's why-line and the five kind names). */
+const maps=(name:string)=>Object.fromEntries(Object.entries(import.meta.glob<Record<string,Record<string,unknown>>>('./i18n/*/maps/{objectXGuide,objectXLab}.ts',{eager:true}))
+ .filter(([file])=>file.endsWith(`/${name}.ts`)).map(([file,module])=>[file.split('/')[2],Object.values(module)[0]]));
+const GUIDE_MAPS:Record<string,Record<string,unknown>>={en:OBJECT_X_GUIDE_EN,...maps('objectXGuide')};
+const LAB_MAPS:Record<string,Record<string,unknown>>={en:OBJECT_X_LAB_EN,...maps('objectXLab')};
+
+/** Each lab's why-line key (Object X: the `why` of its guide map). */
+const WHY:Readonly<Record<LabSlug,string|null>>={hubble:'lab.why','large-scale-structure':'lssLab.why','stellar-classification':'classLab.why',
+ pleiades:'pleiadesLab.why','cluster-hr':'clusterLab.why',pulsars:'pulsarLab.why','object-x':null};
+const why=(dir:string,lab:LabSlug)=>{const key=WHY[lab];return key?catalog(dir)[key]!:GUIDE_MAPS[dir]!.why as string;};
+
+/** The result each guide's own texts let the visitor find, as words of each language: the Hubble guide's interpretation and
+ * reflection questions (lab.interpretHelp, lab.reflect.*: an expansion, a proportional or linear relation and its slope); the LSS
+ * guide's questions (lssLab.reflect.*: walls, voids, filaments, galaxies crowding or spread evenly); the pulsar guide's
+ * dispersion measure and its causes (pulsarLab.data.*, the delay formula: a spinning neutron star, electrons and gas between the
+ * stars); the classification guide's temperature sequence; the Pleiades and cluster guides' distance and age outcomes (light-years,
+ * parsecs, a young or old cluster, its turnoff). An alphabetic entry matches at the start of a word (a prefix unless it ends with
+ * `$`, a whole word); a CJK entry anywhere. Object X: the five kind names of the language (OBJECT_X_LAB.kinds). */
+const RESULT:Readonly<Record<Exclude<LabSlug,'object-x'|'cluster-hr'>,Readonly<Record<string,readonly string[]>>>>={
+ hubble:{
+  en:['expan','faster','proportion','linear','slope'],es:['expan','más rápid','proporcion','lineal','pendiente'],
+  'pt-br':['expan','mais rápid','proporcion','linear','inclinação'],fr:['expansion','plus vite','plus rapide','proportionn','linéaire','pente'],
+  id:['mengembang','ekspansi','lebih cepat','sebanding','proporsional','linear','linier','kemiringan'],
+  hi:['फैल','प्रसार','अधिक तेज़','आनुपातिक','रैखिक','ढलान'],ja:['膨張','速く','比例','直線','傾き'],
+  'zh-hans':['膨胀','更快','正比','线性','斜率'],'zh-hant':['膨脹','更快','正比','線性','斜率'],ru:['расшир','быстрее','пропорциональн','линейн','наклон'],
+ },
+ 'large-scale-structure':{
+  en:['wall','void','filament','crowd','evenly','cosmic web','bubble'],es:['muralla','pared','vacío','filament','agrup','uniforme','red cósmica','burbuja'],
+  'pt-br':['muralha','parede','vazio','filament','aglomer','uniforme','teia cósmica','bolha'],fr:['mur$','murs$','vide','filament','amas','uniformément','toile cosmique','bulle'],
+  id:['dinding','kosong','filamen','berkerumun','merata','jaring kosmik','gelembung'],hi:['दीवार','रिक्त','तंतु','झुंड','समान रूप','ब्रह्मांडीय जाल'],
+  ja:['壁','空洞','ボイド','フィラメント','密集','一様','網の目','泡'],'zh-hans':['墙','空洞','巨洞','纤维','聚集','均匀','宇宙网','泡'],
+  'zh-hant':['牆','空洞','巨洞','纖維','聚集','均勻','宇宙網','泡'],ru:['стен','пуст','войд','волокн','нит$','нити$','равномерн','паутин','пузыр'],
+ },
+ 'stellar-classification':{
+  en:['temperature','hotter','cooler','hot$','cool$'],es:['temperatura','caliente','fría','frío'],'pt-br':['temperatura','quente','fria','frio'],
+  fr:['température','chaud','froid'],id:['suhu','temperatur','panas','dingin'],hi:['तापमान','गर्म','ठंड','शीतल'],
+  ja:['温度','高温','低温','熱い','冷たい'],'zh-hans':['温度','高温','低温','更热','更冷'],'zh-hant':['溫度','高溫','低溫','更熱','更冷'],ru:['температур','горяч','холодн'],
+ },
+ pleiades:{
+  en:['light-year','light year','parsec','young','old$','older','turnoff','turn-off','million','billion'],es:['año luz','años luz','pársec','joven','jóven','viej','millon'],
+  'pt-br':['ano-luz','anos-luz','parsec','jovem','velh','milh'],fr:['année-lumière','années-lumière','parsec','jeune','vieux','vieil','million','milliard'],
+  id:['tahun cahaya','parsek','muda$','tua$','juta$','miliar'],hi:['प्रकाश-वर्ष','प्रकाशवर्ष','पारसेक','युवा','पुरान','बूढ़','लाख','करोड़','अरब'],
+  ja:['光年','パーセク','若い','古い','ターンオフ','億'],'zh-hans':['光年','秒差距','年轻','年老','古老','拐点','亿'],'zh-hant':['光年','秒差距','年輕','年老','古老','轉折點','億'],
+  ru:['светов','парсек','молод','стар','точк[аи] поворота','миллион','миллиард'],
+ },
+ pulsars:{
+  en:['neutron','electron','gas$','gases','spin','rotat','dispersion','plasma','interstellar'],es:['neutr','electr','gas$','gases','gira','rotación','dispersi','plasma','interestelar'],
+  'pt-br':['nêutron','neutr','elétr','gás','gira','rotação','dispers','plasma','interestelar'],fr:['neutron','électron','gaz','rotation','tourn','dispersion','plasma','interstellaire'],
+  id:['neutron','elektron','gas$','berputar','rotasi','dispersi','plasma','antarbintang'],hi:['न्यूट्रॉन','इलेक्ट्रॉन','गैस','घूर्णन','घूम','परिक्षेपण','प्लाज़्मा','अंतरतारकीय'],
+  ja:['中性子','電子','ガス','自転','回転','分散','プラズマ','星間'],'zh-hans':['中子','电子','气体','自转','旋转','色散','等离子','星际'],
+  'zh-hant':['中子','電子','氣體','自轉','旋轉','色散','電漿','星際'],ru:['нейтрон','электрон','газ','враща','дисперси','плазм','межзвёздн'],
+ },
+};
+const CJK=new Set(['ja','zh-hans','zh-hant']);
+const stems=(dir:string,lab:LabSlug):readonly string[]=>{
+ if(lab==='object-x'){const kinds=Object.values(LAB_MAPS[dir]!.kinds as Record<string,string>).map(k=>k.replace(/\s*[(（].*$/u,''));return [...kinds,'QSO'];}
+ return RESULT[lab==='cluster-hr'?'pleiades':lab][dir]!;
+};
+const matcher=(dir:string,stem:string)=>{
+ const whole=stem.endsWith('$'),body=whole?stem.slice(0,-1):stem;
+ return CJK.has(dir)?new RegExp(body,'u'):new RegExp(`(?<![\\p{L}\\p{M}])${body}${whole?'(?![\\p{L}\\p{M}])':''}`,'iu');
+};
+const statesResult=(dir:string,lab:LabSlug,text:string)=>stems(dir,lab).filter(stem=>matcher(dir,stem).test(text));
+
+describe('Front NEWCOMER NC4: the why-lines ask, and never answer',()=>{
+ it('ten languages, seven labs, every result list complete',()=>{
+  expect(DIRS).toHaveLength(10);
+  for(const lists of Object.values(RESULT))expect(Object.keys(lists).sort()).toEqual([...DIRS].sort());
+ });
+ for(const dir of DIRS)it(`${dir}: each why-line is a question, with no digit and none of its guide's results`,()=>{
+  for(const lab of LAB_SLUGS){
+   const text=why(dir,lab);
+   expect(text,`${dir} ${lab}`).toBeTruthy();
+   expect(text,`${dir} ${lab}`).toMatch(/[?？]/u);
+   expect(text,`${dir} ${lab}: a digit`).not.toMatch(/\p{Nd}/u);
+   expect(statesResult(dir,lab,text),`${dir} ${lab}: ${text}`).toEqual([]);
+   if(dir!=='en')expect(text,`${dir} ${lab}: untranslated`).not.toBe(why('en',lab));
+  }
+ });
+ it('each why-line is at most 60 English words (plan §7: the lead paragraph)',()=>{
+  for(const lab of LAB_SLUGS)expect(why('en',lab).split(/\s+/).length,lab).toBeLessThanOrEqual(60);
+ });
+ for(const dir of DIRS)it(`${dir}: the Hubble and LSS home cards say what the visitor does, not what they find`,()=>{
+  const c=catalog(dir);
+  expect(statesResult(dir,'hubble',c['home.hubbleSummary']!),c['home.hubbleSummary']).toEqual([]);
+  expect(statesResult(dir,'large-scale-structure',c['home.lssSummary']!),c['home.lssSummary']).toEqual([]);
+ });
+ it('the check bites: the former home summaries and textbook answers are caught',()=>{
+  expect(statesResult('en','hubble','Measure how fast galaxies are moving away and how far they are, then work out how fast the universe expands.')).toEqual(['expan']);
+  expect(statesResult('en','large-scale-structure','Measure the redshifts of many galaxies and map the cosmic web.')).toEqual(['cosmic web']);
+  expect(statesResult('en','cluster-hr','How old is this young cluster?')).toEqual(['young','old$']);
+  expect(statesResult('es','hubble','Mide y calcula a qué ritmo se expande el universo.')).toEqual(['expan']);
+  expect(statesResult('ja','pulsars','パルサーは中性子星です。')).toEqual(['中性子']);
+  expect(statesResult('ru','stellar-classification','Чем горячее звезда?')).toEqual(['горяч']);
+  expect(statesResult('fr','object-x','Est-ce un astéroïde ?')).toEqual(['astéroïde']);
+  expect(statesResult('en','pleiades','Is it bold?')).toEqual([]);
+ });
+});
+
+describe('Front NEWCOMER NC4: What next',()=>{
+ it('every lab suggests another lab, and every lab is suggested',()=>{
+  expect(Object.keys(LAB_NEXT).sort()).toEqual([...LAB_SLUGS].sort());
+  for(const lab of LAB_SLUGS){expect(LAB_SLUGS).toContain(LAB_NEXT[lab]);expect(LAB_NEXT[lab],lab).not.toBe(lab);}
+  expect(new Set(Object.values(LAB_NEXT)).size).toBeGreaterThanOrEqual(6);
+  expect(LAB_NEXT.pleiades).toBe('cluster-hr');
+ });
+ for(const dir of DIRS)it(`${dir}: the three What next strings exist and keep {lab}`,()=>{
+  const c=catalog(dir);
+  for(const key of ['lab.whatNext','lab.tryNext','lab.openNext'])expect(c[key],`${dir} ${key}`).toBeTruthy();
+  expect(c['lab.tryNext']).toContain('{lab}');
+ });
+});
+
+const E=en as Catalog;
+const ref={current:null};
+const noop=()=>{};
+const html=(el:ReactElement)=>renderToStaticMarkup(el);
+/** Each window at its first step and in its closing state. */
+const WINDOWS:readonly (readonly [LabSlug,string,(closing:boolean)=>string])[]=[
+ ['hubble','hubble-lab',c=>html(createElement(HubbleLabGuide,{dialogRef:ref,progress:{...hubbleLabProgress([],[],EMPTY_HUBBLE),...c?{next:'interpret' as const}:{}},onNavigate:noop,onNext:noop}))],
+ ['large-scale-structure','lss-lab',c=>html(createElement(LssLabGuide,{dialogRef:ref,progress:{...lssLabProgress(INITIAL_LSS_LAB_SUMMARY),...c?{next:'done' as const}:{}},onNavigate:noop,onNext:noop}))],
+ ['object-x','objectx-lab',c=>html(createElement(ObjectXLabGuide,{dialogRef:ref,progress:{...objectXLabProgress(INITIAL_OBJECT_X_LAB_SUMMARY),...c?{next:'done' as const}:{}},onNavigate:noop,onNext:noop}))],
+ ['stellar-classification','classification-lab',c=>html(createElement(ClassificationLabGuide,{dialogRef:ref,progress:{...classificationLabProgress(EMPTY_CLASSIFICATION_WORKSPACE,EMPTY_CLASSIFICATION_EXERCISE_SUMMARY),...c?{next:'save' as const}:{}},onNavigate:noop,onNext:noop}))],
+ ['cluster-hr','cluster-lab',c=>html(createElement(ClusterLabGuide,{dialogRef:ref,progress:clusterLabProgress({loaded:true,inspected:c,validTrial:c,confirmed:c,reportOpened:c}),cluster:null,onNavigate:noop,own:clusterOwnStatus(0,10,false),onNext:noop}))],
+ ['pulsars','pulsar-lab',c=>html(createElement(PulsarLabGuide,{dialogRef:ref,progress:{...pulsarLabProgress({radio:INITIAL_RADIO_EXERCISE_SUMMARY,analysis:EMPTY_PULSAR_MEASUREMENT_SUMMARY,captureRows:0}),...c?{next:'save' as const}:{}},onNavigate:noop,onNext:noop}))],
+ ['pleiades','pleiades-lab',c=>html(createElement(PleiadesLabGuide,{dialogRef:ref,progress:{...pleiadesLabProgress({list:true,pointed:false,photometer:EMPTY_PLEIADES_EXERCISE_SUMMARY}),...c?{next:'save' as const}:{}},onNavigate:noop,onNext:noop}))],
+];
+const NAME:Readonly<Record<LabSlug,string>>={hubble:E['home.hubble']!,'large-scale-structure':E['home.lss']!,'stellar-classification':E['home.classification']!,
+ pleiades:E['home.pleiades']!,'cluster-hr':E['home.clusterHr']!,pulsars:E['home.pulsars']!,'object-x':E['home.objectX']!};
+const esc=(s:string)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
+
+describe('Front NEWCOMER NC4: the seven windows',()=>{
+ for(const [lab,prefix,render] of WINDOWS)it(`${lab}: the why-line describes the dialog, the former intro is a research note, What next only once done`,()=>{
+  const open=render(false),done=render(true);
+  expect(open).toContain(`aria-describedby="${prefix}-why"`);
+  // The why-line comes first after the heading, before the research notes and the progress block.
+  const lead=new RegExp(`<p id="${prefix}-why" class="lab-why">([^<]+)</p><details class="research-notes"><summary>${E['notes.summary']}</summary><p>([^<]+)</p>`).exec(open);
+  expect(lead,lab).not.toBeNull();
+  expect(lead![1]).toBe(esc(why('en',lab)));
+  expect(open.indexOf(`id="${prefix}-why"`)).toBeLessThan(open.indexOf('class="lab-progress"'));
+  expect(open).not.toContain('lab-what-next');
+  const next=LAB_NEXT[lab];
+  expect(done).toContain(`<section class="lab-what-next" aria-labelledby="${prefix}-what-next" data-next-lab="${next}"><h3 id="${prefix}-what-next">${E['lab.whatNext']}</h3>`);
+  expect(done).toContain(`<p>${esc(E['lab.tryNext']!.replace('{lab}',NAME[next]))}</p><button type="button" class="secondary-button">${E['lab.openNext']}</button></section>`);
+ });
+ it('the cluster window shows no What next without a way to open the next guide',()=>{
+  expect(html(createElement(ClusterLabGuide,{dialogRef:ref,progress:clusterLabProgress({loaded:true,inspected:true,validTrial:true,confirmed:true,reportOpened:true}),cluster:null,onNavigate:noop,own:clusterOwnStatus(0,10,false)}))).not.toContain('lab-what-next');
+ });
+});

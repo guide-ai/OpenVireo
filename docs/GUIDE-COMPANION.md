@@ -282,7 +282,8 @@ M2, M5, M7 and m7):
   cluster and Pleiades already kept theirs there). The pulsar guide's backup note (how Save investigation and Restore work)
   moves from the progress block into the body of its step Save the investigation (folded with it; review N1a). The Pleiades
   guide's E05 note stays in the progress block, visible, beside the Data from Observations button it explains (review N1b).
-  The intro paragraphs stay visible (the dialogs' `aria-describedby` still points at them) until NC4 replaces them.
+  The intro paragraphs stayed visible (the dialogs' `aria-describedby` pointed at them) until NC4 put the why-line in their
+  place ("Why it matters, and what next" below).
 - **Twelve titles were rewritten** in plain words (same keys, ten languages; docs/I18N.md "Plain step titles"): Hubble's five
   items, cluster HR trial and report, pulsars' delay, Pleiades measure, color and sample, and Object X's measure step.
 - **The strip's line is the step's title** in all seven guides (`companionContent`). The classification guide's «n · » number is
@@ -313,6 +314,47 @@ M2, M5, M7 and m7):
   libraries). A summary named by its step's title is also found by `getByLabel(<title>)`: `tests/object-x-path.spec.ts` and
   `tests/object-x-spectrum.spec.ts` now look for the Object X answer box («Describe your evidence», also a step title) inside
   the Object X page.
+
+## Why it matters, and what next
+
+Front NEWCOMER NC4 (user decision, 2026-11-24, recorded in AGENTS.md; plan analysis/front-plans/front-newcomer.md §2.4, review
+M1 and m7, answer Q14):
+
+- **Each of the seven guide windows opens with a why-line** (`whyLead` in `src/guideLead.tsx`): the question the visitor will
+  answer, then what they will do, in at most 60 English words, for example «How far away is the Pleiades cluster? You will work
+  it out from your own measurements of its stars’ brightness and color.» It never states the lab's result, not even
+  qualitatively (Q14 «no»), names no number and says nothing about Object X's identity. Keys `lab.why`, `lssLab.why`,
+  `classLab.why`, `pleiadesLab.why`, `clusterLab.why`, `pulsarLab.why` and the Object X map's `why`. The why-line is the dialog's
+  description (`aria-describedby="<guide>-why"`; the id moved from the intro, review m7). The former intro paragraph is the first
+  research note (Research notes, which the pulsar and Object X windows gain), before the Options and adaptation notes. NC6 adds
+  the time and level line under the why-line and NC5 the version choice; neither is in NC4.
+- **The Hubble and LSS home cards** were reworded the same way (Q14): «Measure how fast galaxies are moving away and how far away
+  they are, then compare the two.» and «Measure the redshifts of many galaxies across a strip of sky and map where they lie.»
+  (they said «…then work out how fast the universe expands» and «…map the cosmic web», plan F11). `homeBoot` mirrors them.
+- **What next** (`whatNext` in `src/guideLead.tsx`), once the guide's counted steps are all done (the same closing states as
+  `companionNow(...).allDone`: Hubble `interpret`, LSS and Object X `done`, classification, pulsars and Pleiades `save`, cluster
+  `preserve`): a labelled region «What next» with a recap made only of the guide's own counts line, «A lab to try next: {lab}.»
+  (the lab's name as on its home card, after a colon so every language keeps it in the nominative) and «Open its guide». The
+  next lab comes from `src/home/labNext.ts` (`LAB_NEXT`, pure): Hubble → large-scale structure → Hubble, classification →
+  Pleiades → cluster HR (which can use the visitor's own Pleiades pairs) → pulsars → Object X → Hubble. The button closes the
+  window and calls the shell's `companion.next`, the lab's own opener (`openGuide[lab]`, as its Guides menu button), so the new
+  window opens with the focus on its close button and the strip follows the new guide. In the window it sits right after the
+  step list (Hubble before Targets, progress and original V references, classification and Pleiades before Troubleshooting,
+  pulsars before Three kinds of data, cluster after Keep your work, LSS after its questions, Object X before Return). The strip's Step details end
+  with the same section in the closing state, without the recap (its counts are already in the strip). One new tab stop. It
+  shows no answer, expected value or grade and stores nothing. The counts line is computed once per window (`counts`) for the
+  progress block and the recap, so five `*_STEPS.length` receipts of `src/i18n/vireo-literals.json` left the JSX and were removed;
+  `src/i18n/coverage.test.ts` counts `src/guideLead.tsx` (152 files).
+- **Tests:** `src/guideLead.test.ts`: every why-line in ten languages is a question («?» or «？»), has no digit of any script and
+  none of its guide's result words in that language (curated from what the guide's reflect, interpret and outcome texts lead
+  to: Hubble expansion, faster, proportional, linear, slope; LSS walls, voids, filaments, crowding, evenly, the cosmic web;
+  classification temperature, hotter, cooler; Pleiades and cluster light-years, parsecs, young, old, turnoff, millions; pulsars
+  neutron, electron, gas, spin, dispersion, plasma, interstellar; Object X the language's five kind names from
+  `OBJECT_X_LAB.kinds`), with a self-check that the old home summaries and textbook answers are caught; the Hubble and LSS home
+  cards against the same lists; `LAB_NEXT` (every lab suggests another lab); each window's why-line as description, the former
+  intro as the first research note and What next only in the closing state. `tests/classification-guide.spec.ts`: a finished
+  classification shows What next in the strip's Step details and in the window, and each button opens the Pleiades window,
+  described by its why-line.
 
 ## Layout and accessibility
 

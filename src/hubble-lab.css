@@ -42,6 +42,13 @@
 .lab-step-more{margin-top:8px}
 .lab-step-more summary{font-size:var(--ov-text-sm);font-weight:500;min-height:24px;color:var(--ov-accent-text)}
 .lab-step-more[open]>summary{margin-bottom:4px}
+/* Front NEWCOMER NC4: the why-line that opens each guide window (guideLead.tsx) reads as the window's lead, in the text colour;
+   What next, at the end once the counted steps are done, is set off like the progress block. */
+.hubble-lab-dialog .lab-why{font-size:var(--ov-text-lg);color:var(--ov-text);margin:12px 0 8px}
+.lab-what-next{margin:20px 0;padding:12px 18px;border-inline-start:3px solid var(--ov-accent);background:var(--ov-accent-soft);border-radius:var(--ov-radius-sm)}
+.lab-what-next h3{margin-top:4px}
+.lab-what-next p{color:var(--ov-text)}
+@media(max-width:620px){.hubble-lab-dialog .lab-why{font-size:var(--ov-text-md)}}
 /* Front NEWCOMER NC3 review (S1): a guide window printed while it is open prints as the whole page. The page behind it is
    hidden (every element that is not the window, inside it or an ancestor of it: the cluster guide sits inside <main>), and the
    window loses its screen height limit and scrolling, so every step flows onto as many pages as it needs. help/printDetails.ts

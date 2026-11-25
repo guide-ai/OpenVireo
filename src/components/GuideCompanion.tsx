@@ -9,6 +9,7 @@ import {sameData} from '../renderStability';
 import {APP_SHELL_MESSAGES as SHELL} from './AppShellMessages';
 import {companionContent} from './guideCompanionContent';
 import {companionPlace} from './guideCompanionRoute';
+import {whatNext} from '../guideLead';
 import '../observatory/observatory-dialogs.css';
 import './guide-companion.css';
 
@@ -62,9 +63,10 @@ function RestartConfirm({lab,opener,onClose}:{lab:LabSlug;opener:RefObject<HTMLB
  * a host-level modal is open or the investigation is busy, and not shown while a guide's window is open (guide-companion.css).
  * Its height, written to `--ov-companion-height` on <html> by a ResizeObserver (no React render), keeps the end of the page
  * and focused controls clear of it (WCAG 2.4.11). */
-function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionProgress;inert:boolean;
+function GuideCompanion({progress,inert,onGo,onFull,onHide,onNext}:{progress:CompanionProgress;inert:boolean;
  /** Goes to the page of the current step (the shell's own guide destinations); a stable callback. */onGo:()=>void;
- /** Opens the guide's window again; a stable callback. */onFull:()=>void;/** Removes the strip; a stable callback. */onHide:()=>void}){
+ /** Opens the guide's window again; a stable callback. */onFull:()=>void;/** Removes the strip; a stable callback. */onHide:()=>void;
+ /** Front NEWCOMER NC4: opens another lab's guide (What next in Step details); a stable callback. */onNext:(lab:LabSlug)=>void}){
  const C=SHELL.companion,now=companionNow(progress),content=companionContent(progress),selectors=guideTargets(now.lab,content.target);
  /** The lab of a guide with a window and an exercise; null for the first look. */
  const lab:LabSlug|null=now.lab==='first-look'?null:now.lab;
@@ -173,7 +175,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
   setDetails(false);
  }
  return <aside ref={strip} className="guide-companion" aria-label={C.label} inert={inert} onKeyDown={keyDown} data-testid="guide-companion" data-lab={now.lab} data-step={now.step} data-target={content.target} data-route={companionPlace(progress)?.route} data-all-done={now.allDone||undefined} data-i18n-shell="">
-  {details&&<div className="guide-companion-details" id={`${id}-d`} role="group" aria-label={C.details} data-testid="guide-companion-details">{content.details}</div>}
+  {details&&<div className="guide-companion-details" id={`${id}-d`} role="group" aria-label={C.details} data-testid="guide-companion-details">{content.details}{/* Front NEWCOMER NC4: the closing state's Step details end with the guide's What next; its counts are already in the strip. */}{now.allDone&&lab&&whatNext(`${id}-n`,lab,onNext)}</div>}
   <div className="guide-companion-row">
    <div className="guide-companion-text">
     <p className="guide-companion-place"><strong data-testid="guide-companion-lab">{content.name}</strong>{!content.closing&&<>{' '}<span data-testid="guide-companion-step">{C.stepOf(now.index,now.total)}</span></>}{content.counts&&<span data-testid="guide-companion-counts">{content.counts}</span>}</p>
@@ -194,4 +196,4 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide}:{progress:CompanionP
  </aside>;
 }
 // The strip renders again only when the guide's progress (plain data), the modal state or a handler changes.
-export default memo(GuideCompanion,(a,b)=>a.inert===b.inert&&a.onGo===b.onGo&&a.onFull===b.onFull&&a.onHide===b.onHide&&sameData(a.progress,b.progress));
+export default memo(GuideCompanion,(a,b)=>a.inert===b.inert&&a.onGo===b.onGo&&a.onFull===b.onFull&&a.onHide===b.onHide&&a.onNext===b.onNext&&sameData(a.progress,b.progress));

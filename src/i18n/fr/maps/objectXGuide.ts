@@ -6,6 +6,7 @@ import type {Translation} from '../../maps';
 export const OBJECT_X_GUIDE_FR:Translation<typeof OBJECT_X_GUIDE_EN>=Object.freeze({
  eyebrow:'Guide du TP E08',title:'La quête de l’Objet X',
  intro:'Vous recevez seulement un identifiant et des coordonnées. Utilisez les instruments pour décider de quel type d’objet il s’agit, puis révélez son identité. Les étapes se mettent à jour au fil de votre travail ; rien ne juge votre réponse avant la révélation.',
+ why:'Quel type d’objet se trouve aux coordonnées que vous recevez ? Vous le déciderez avec les instruments de l’observatoire, avant que son identité soit révélée.',
  counts:(done,total,images)=>`Étapes : ${done} sur ${total} · images de votre objet : ${images}`,
  done:'(terminée)',todo:'(à faire)',
  steps:Object.freeze({

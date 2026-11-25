@@ -482,6 +482,7 @@ export interface MessageParameters {
   "lab.close": never;
   "lab.return": never;
   "lab.intro": never;
+  "lab.why": never;
   "lab.introOptions": never;
   "lab.progress": never;
   "lab.counts": "archived" | "measured" | "rows" | "total";
@@ -509,6 +510,9 @@ export interface MessageParameters {
   "lab.sspHelp": never;
   "lab.interpretTitle": never;
   "lab.moreDetail": never;
+  "lab.whatNext": never;
+  "lab.tryNext": "lab";
+  "lab.openNext": never;
   "lab.interpretHelp": never;
   "lab.reflect.data": never;
   "lab.reflect.fit": never;
@@ -611,6 +615,7 @@ export interface MessageParameters {
   "classLab.title": never;
   "classLab.close": never;
   "classLab.intro": never;
+  "classLab.why": never;
   "classLab.introOptions": never;
   "classLab.adaptation": never;
   "classLab.progress": never;
@@ -1300,6 +1305,7 @@ export interface MessageParameters {
   "clusterLab.eyebrow": never;
   "clusterLab.title": never;
   "clusterLab.intro": never;
+  "clusterLab.why": never;
   "clusterLab.introOptions": never;
   "clusterLab.close": never;
   "clusterLab.return": never;
@@ -2903,6 +2909,7 @@ export interface MessageParameters {
   "pulsarLab.title": never;
   "pulsarLab.close": never;
   "pulsarLab.intro": never;
+  "pulsarLab.why": never;
   "pulsarLab.progress": never;
   "pulsarLab.counts": "done" | "total";
   "pulsarLab.next.setup": never;
@@ -3015,6 +3022,7 @@ export interface MessageParameters {
   "pleiadesLab.close": never;
   "pleiadesLab.return": never;
   "pleiadesLab.intro": never;
+  "pleiadesLab.why": never;
   "pleiadesLab.adaptation": never;
   "pleiadesLab.progress": never;
   "pleiadesLab.counts": "done" | "total";
@@ -3277,6 +3285,7 @@ export interface MessageParameters {
   "lssLab.eyebrow": never;
   "lssLab.title": never;
   "lssLab.intro": never;
+  "lssLab.why": never;
   "lssLab.introOptions": never;
   "lssLab.counts": "done" | "fields" | "galaxies" | "plotted" | "records" | "total";
   "lssLab.done": never;

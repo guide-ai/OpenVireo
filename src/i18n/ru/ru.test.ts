@@ -162,11 +162,11 @@ describe('Front RU0: the Russian (ru) bundle',()=>{
   expect(RU2_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
  });
  it('Front RU3: the catalog covers exercise E03 (every key of its prefixes, continuity.restoreExposure and ssp.header)',()=>{
-  expect(RU3_KEYS.length).toBe(772);
+  expect(RU3_KEYS.length).toBe(773); // 773: Front NEWCOMER NC4 adds classLab.why
   expect(RU3_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
  });
  it('Front RU4: the catalog covers exercises E04 and E05 (every key of their prefixes and all four forms of the obsHr families)',()=>{
-  expect(RU4_KEYS.length).toBe(651);
+  expect(RU4_KEYS.length).toBe(653); // 653: Front NEWCOMER NC4 adds pleiadesLab.why and clusterLab.why
   expect(RU4_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
   const obsHr=FAMILIES.filter(h=>h.startsWith('obsHr.')).flatMap(h=>pluralFamilyKeys(h,en,'ru'));
   expect(obsHr.length).toBe(40);
@@ -177,7 +177,7 @@ describe('Front RU0: the Russian (ru) bundle',()=>{
   expect(RU5_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
  });
  it('Front RU6: the catalog covers E06 and E08 (every key of their prefixes), and with them every en.json key',()=>{
-  expect(RU6_KEYS.length).toBe(137);
+  expect(RU6_KEYS.length).toBe(138);// 138: Front NEWCOMER NC4 adds pulsarLab.why
   expect(RU6_KEYS.filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
   expect(Object.keys(en).filter(k=>!Object.hasOwn(catalog,k))).toEqual([]);
  });
