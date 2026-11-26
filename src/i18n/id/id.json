@@ -668,7 +668,7 @@
  "classLab.status.notYet": "Belum",
  "classLab.status.save": "Instruksi · tidak dihitung",
  "classLab.step.choose.title": "1 · Pilih objek latihan",
- "classLab.step.choose.help": "Di Sumber klasifikasi, biarkan Pustaka latihan asli, lalu pilih salah satu dari 25 objek di Objek latihan (Latihan daftar program menawarkan objek yang sama dengan urutan daftar asli). Tunggu hingga spektrum asli terverifikasi.",
+ "classLab.step.choose.help": "Di Sumber klasifikasi, biarkan Pustaka latihan asli, lalu pilih salah satu dari 25 objek di Objek latihan (Latihan daftar program menawarkan objek yang sama dengan urutan daftar asli). Tunggu hingga spektrum asli terverifikasi. Untuk tetap memakai objek yang sudah ditampilkan, cukup mulai membandingkannya.",
  "classLab.step.compare.title": "2 · Bandingkan dengan atlas",
  "classLab.step.compare.help": "Mulailah dengan atlas deret utama. Telusuri pasangan standar dengan Sebelumnya/Berikutnya hingga objek latihan berada di antara dua tetangga, lalu coba atlas luminositas di dekat tipe itu. Standar − latihan menampilkan selisih bertanda.",
  "classLab.step.inspect.title": "3 · Periksa garis dan lebar",

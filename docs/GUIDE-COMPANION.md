@@ -107,18 +107,22 @@ The sequence (`GuideCompanion.tsx` `show`):
    focused and outlined. The outline follows the control and goes at the student's next press or key, when the step changes, or
    after 6 s.
 4. While the outline is shown the control keeps both: a page whose module finishes loading late focuses its own heading (and
-   scrolls to it), which would leave the control under the strip, so a heading that takes the focus gives it back. If a
-   disabled control had to be outlined (a list that loaded slowly) and the page then enables the step's control, the outline
-   and the focus move to it. If the page disables the outlined control for a moment without the step changing (the
-   classification page's practice select while its spectra load), the control takes back the focus once it is enabled again.
-   Both stop as soon as the student presses, types or scrolls.
+   scrolls to it), which would leave the control under the strip, so a heading that takes the focus gives it back. If a disabled
+   control had to be outlined (a list that loaded slowly) and the page then enables the step's control, the outline and the
+   focus move to it. If the focus is on the page's body (nowhere) while the outlined control is enabled, for example after the
+   page disabled it for a moment without the step changing (the classification page's practice select while its spectra load),
+   the control takes the focus back. That check runs every 250 ms while the outline is held, at most 6 s; if the outline goes
+   while the control is still disabled and the focus is nowhere (spectra that load slowly), the return stays pending until the
+   page enables the control (at most 60 s, `FOCUS_RETURN_MS`). All of this stops as soon as the student presses, types or
+   scrolls, at a new step or Show me where, and the pending return also stops when the focus lands anywhere.
 5. If no control is on the page, the strip says so ("That control is not on screen yet…") and outlines nothing.
 
 If the page itself moves the guide on while step 2 is still waiting (a page that finishes loading after it is shown; the
 classification page's preselected practice no longer does this since 2026-11-25, as its Choose step waits for the visitor's own
-choice or act on that practice) and the student has pressed nothing since, the search starts again for the new step, so a request is never dropped
-without an outline or a note. If the page disables or removes the focused control after step 3 and the step changes, the focus
-would be nowhere; it returns to the strip. A focus that has landed anywhere else in between is left alone.
+choice or act on that practice) and the student has pressed nothing since, the search starts again for the new step, so a
+request is never dropped without an outline or a note. If the page disables or removes the focused control after step 3 and the
+step changes, the focus would be nowhere; it returns to the strip. A focus that has landed anywhere else in between is left
+alone.
 
 **Full guide** shows the guide's window scrolled to its current step (`li[data-next]`). **Hide** moves the focus to the heading
 of the page shown before the strip goes. Escape closes Step details.

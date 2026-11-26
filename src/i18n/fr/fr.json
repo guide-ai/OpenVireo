@@ -668,7 +668,7 @@
  "classLab.status.notYet": "Pas encore",
  "classLab.status.save": "Instruction · non comptée",
  "classLab.step.choose.title": "1 · Choisir un objet d’entraînement",
- "classLab.step.choose.help": "Dans Source de classification, gardez Bibliothèque d’entraînement d’origine, puis choisissez l’un des 25 objets dans Objet d’entraînement (Objet d’entraînement de la liste du programme propose les mêmes objets dans l’ordre de la liste d’origine). Attendez que les spectres d’origine soient vérifiés.",
+ "classLab.step.choose.help": "Dans Source de classification, gardez Bibliothèque d’entraînement d’origine, puis choisissez l’un des 25 objets dans Objet d’entraînement (Objet d’entraînement de la liste du programme propose les mêmes objets dans l’ordre de la liste d’origine). Attendez que les spectres d’origine soient vérifiés. Pour garder l’objet déjà affiché, commencez simplement à le comparer.",
  "classLab.step.compare.title": "2 · Comparer avec l’atlas",
  "classLab.step.compare.help": "Commencez par l’atlas de la séquence principale. Parcourez les paires d’étalons avec Précédent/Suivant jusqu’à ce que l’objet d’entraînement se situe entre deux étalons voisins, puis essayez un atlas de luminosité proche de ce type. Étalon − entraînement affiche la différence signée.",
  "classLab.step.inspect.title": "3 · Examiner les raies et les largeurs",

@@ -668,7 +668,7 @@
  "classLab.status.notYet": "尚未完成",
  "classLab.status.save": "說明 · 不計入",
  "classLab.step.choose.title": "1 · 選擇一個練習天體",
- "classLab.step.choose.help": "在「分類來源」中保持「原版練習庫」，然後在「練習天體」中選擇25個天體之一（「觀測計畫清單中的練習」以原版清單順序提供相同的天體）。等待原版光譜驗證完畢。",
+ "classLab.step.choose.help": "在「分類來源」中保持「原版練習庫」，然後在「練習天體」中選擇25個天體之一（「觀測計畫清單中的練習」以原版清單順序提供相同的天體）。等待原版光譜驗證完畢。要保留已顯示的天體，直接開始比較即可。",
  "classLab.step.compare.title": "2 · 與星圖集比較",
  "classLab.step.compare.help": "從主序星圖集開始。用「上一個」／「下一個」依次檢視標準星對，直到練習天體位於兩個相鄰標準星之間，再試試該類型附近的光度星圖集。「標準星 − 練習天體」顯示帶正負號的差值。",
  "classLab.step.inspect.title": "3 · 檢查譜線和寬度",

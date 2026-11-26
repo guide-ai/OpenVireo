@@ -668,7 +668,7 @@
   "classLab.status.notYet": "Not yet",
   "classLab.status.save": "Instruction · not counted",
   "classLab.step.choose.title": "1 · Choose a practice",
-  "classLab.step.choose.help": "In Classification source keep Original practice library, then pick one of the 25 objects in Practice object (Program-list practice offers the same objects in the original list order). Wait until the original spectra are verified.",
+  "classLab.step.choose.help": "In Classification source keep Original practice library, then pick one of the 25 objects in Practice object (Program-list practice offers the same objects in the original list order). Wait until the original spectra are verified. To keep the object already shown, just start comparing it.",
   "classLab.step.compare.title": "2 · Compare with the atlas",
   "classLab.step.compare.help": "Start with the main sequence atlas. Move through the standard pairs with Previous/Next until the practice lies between two neighbours, then try a luminosity atlas near that type. Standard − practice shows the signed difference.",
   "classLab.step.inspect.title": "3 · Inspect lines and widths",

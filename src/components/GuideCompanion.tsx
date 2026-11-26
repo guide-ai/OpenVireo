@@ -16,6 +16,8 @@ import './guide-companion.css';
 
 /** How long Show me where waits for the step's control (a page that is still loading). */
 export const SHOW_WAIT_MS=4000;
+/** How long a focus return left pending after the outline went (its control still disabled) keeps waiting for the control. */
+export const FOCUS_RETURN_MS=60000;
 /** How long the outline stays when nothing else clears it. */
 export const SPOT_MS=6000;
 /** Space between a control and its outline: less than the tour's, which outlines whole parts of the page. */
@@ -73,7 +75,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide,onNext}:{progress:Com
  const lab:LabSlug|null=now.lab==='first-look'?null:now.lab;
  const restartButton=useRef<HTMLButtonElement>(null),detailsButton=useRef<HTMLButtonElement>(null);
  const [details,setDetails]=useState(false),[restart,setRestart]=useState(false),[missing,setMissing]=useState(false),[spot,setSpot]=useState<Element|null>(null),[box,setBox]=useState<Box|null>(null);
- const strip=useRef<HTMLElement>(null),run=useRef(0),lost=useRef(false),searching=useRef(false),held=useRef<{token:number;el:Element}|null>(null),id=useId(),step=`${now.lab}/${content.target}`;
+ const strip=useRef<HTMLElement>(null),run=useRef(0),lost=useRef(false),searching=useRef(false),held=useRef<{token:number;el:Element}|null>(null),pending=useRef(0),id=useId(),step=`${now.lab}/${content.target}`;
  // A new step (or another guide) ends a search in progress, its outline and its note. If the page itself moved the guide on
  // while Show me where was still looking (a page whose own loading completes a step) and the student
  // has pressed nothing since, the search starts again for the new step, so the request is never dropped without a word. When
@@ -95,6 +97,18 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide,onNext}:{progress:Com
   const focused=document.activeElement;lost.current=false;
   if(focused&&(focused===el||el.contains(focused)))focused.addEventListener('focusout',()=>{window.setTimeout(()=>{lost.current=document.activeElement===document.body;},0);},{once:true});
  }
+ /** The outline went (after SPOT_MS) while the page still kept its control disabled and the focus nowhere (a practice whose
+  * spectra load slowly): the control takes the focus back once the page enables it. Ends at the student's press, key or
+  * scroll (`touched`), at a new step or Show me where (`token`), when the focus lands anywhere, or after FOCUS_RETURN_MS. */
+ function returnFocusWhenEnabled(el:Element,token:number){
+  window.clearInterval(pending.current);
+  const until=Date.now()+FOCUS_RETURN_MS;
+  const stop=()=>{window.clearInterval(pending.current);pending.current=0;};
+  pending.current=window.setInterval(()=>{
+   if(token!==run.current||!el.isConnected||document.activeElement!==document.body||Date.now()>until){stop();return;}
+   if(!(el.matches(':disabled')||el.closest('[aria-disabled="true"]')!==null)){stop();place(el);}
+  },250);
+ }
  /** Outlines `el` as the control found by the search `token`, and holds it there while the outline is shown (`held`). */
  function point(el:Element,token:number){place(el);setSpot(el);held.current={token,el};}
  // The student's own press, key or scroll ends a search's claim to follow the guide to its next step and the hold of the
@@ -103,14 +117,14 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide,onNext}:{progress:Com
  // loading, which would leave the control under the strip; while the outline is shown the control takes the focus and the
  // scroll back from a heading (Skip to content focuses a heading too, after a key).
  useEffect(()=>{
-  const touched=()=>{searching.current=false;held.current=null;};
+  const touched=()=>{searching.current=false;held.current=null;window.clearInterval(pending.current);pending.current=0;};
   const landed=(event:FocusEvent)=>{
    lost.current=false;
    const hold=held.current;
    if(hold&&hold.token===run.current&&event.target instanceof HTMLHeadingElement&&event.target!==hold.el)place(hold.el);
   };
   window.addEventListener('pointerdown',touched,true);window.addEventListener('keydown',touched,true);window.addEventListener('wheel',touched,{capture:true,passive:true});document.addEventListener('focusin',landed);
-  return()=>{searching.current=false;held.current=null;window.removeEventListener('pointerdown',touched,true);window.removeEventListener('keydown',touched,true);window.removeEventListener('wheel',touched,true);document.removeEventListener('focusin',landed);};
+  return()=>{searching.current=false;held.current=null;window.clearInterval(pending.current);pending.current=0;window.removeEventListener('pointerdown',touched,true);window.removeEventListener('keydown',touched,true);window.removeEventListener('wheel',touched,true);document.removeEventListener('focusin',landed);};
  },[]);
  useEffect(()=>{
   const el=strip.current,root=document.documentElement;
@@ -131,14 +145,16 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide,onNext}:{progress:Com
   // The page can still move under the outline without a scroll (a part that finishes loading above the control). While the
   // control is held, the same check moves the outline when a disabled control had to be outlined and the page has now enabled
   // the step's control (a list that loaded slowly), and retries a focus that a heading still has.
-  const timer=window.setTimeout(clear,SPOT_MS),settle=window.setInterval(()=>{
+  // At SPOT_MS the outline goes; a focus that the page left nowhere while it still disables the held control is returned later.
+  const expire=()=>{const hold=held.current;if(hold&&hold.token===run.current&&hold.el===spot&&document.activeElement===document.body&&disabled(spot))returnFocusWhenEnabled(spot,hold.token);clear();};
+  const timer=window.setTimeout(expire,SPOT_MS),settle=window.setInterval(()=>{
    measure();
    const hold=held.current;
    if(!hold||hold.token!==run.current||hold.el!==spot)return;
    const found=disabled(spot)?findGuideTarget(selectors):null;
    if(found?.enabled&&found.el!==spot&&revealGuideTarget(found.el)){point(found.el,hold.token);return;}
    // The page disabled the outlined control for a moment (the classification page's practice select while its spectra load)
-   // and the step did not change: once it is enabled again it takes back the focus that was left nowhere.
+   // and the step did not change: once it is enabled again it takes back the focus that was left nowhere (on <body>).
    if(document.activeElement===document.body&&!disabled(spot)){place(spot);return;}
    // A heading that is itself the outlined control (the welcome's lab list) keeps the focus, and the page may scroll away from it.
    if(document.activeElement instanceof HTMLHeadingElement&&document.activeElement!==spot)place(spot);
@@ -149,6 +165,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide,onNext}:{progress:Com
    window.removeEventListener('pointerdown',clear,true);window.removeEventListener('keydown',clear,true);if(held.current?.el===spot)held.current=null;};
  },[spot]);
  function show(){
+  window.clearInterval(pending.current);pending.current=0;
   const token=++run.current;searching.current=true;setMissing(false);setSpot(null);onGo();
   // After this click: React has then rendered the navigation, so the destination page is shown (or has started to load). A
   // timer, not an animation frame, so it also runs while the tab is not being painted.

@@ -668,7 +668,7 @@
  "classLab.status.notYet": "Aún no",
  "classLab.status.save": "Instrucción · no cuenta",
  "classLab.step.choose.title": "1 · Elige una práctica",
- "classLab.step.choose.help": "En Origen de la clasificación deja Biblioteca de prácticas originales y luego elige uno de los 25 objetos en Objeto de práctica (Práctica de la lista de programa ofrece los mismos objetos en el orden de la lista original). Espera hasta que se verifiquen los espectros originales.",
+ "classLab.step.choose.help": "En Origen de la clasificación deja Biblioteca de prácticas originales y luego elige uno de los 25 objetos en Objeto de práctica (Práctica de la lista de programa ofrece los mismos objetos en el orden de la lista original). Espera hasta que se verifiquen los espectros originales. Para quedarte con el objeto que ya se muestra, simplemente empieza a compararlo.",
  "classLab.step.compare.title": "2 · Compara con el atlas",
  "classLab.step.compare.help": "Empieza con el atlas de la secuencia principal. Recorre los pares de estándares con Anterior/Siguiente hasta que la práctica quede entre dos vecinos y luego prueba un atlas de luminosidad cerca de ese tipo. Estándar − práctica muestra la diferencia con signo.",
  "classLab.step.inspect.title": "3 · Revisa líneas y anchos",

@@ -137,12 +137,13 @@ test('Classification guide: visiting the page loads the first practice without c
  // The preselected practice loads and is verified, but step 1 waits for the visitor's own choice.
  await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled({timeout:30_000});
  await expect(strip(page)).toHaveAttribute('data-step','choose');await expect(id(page,'guide-companion-step')).toHaveText('Step 1 of 5');
- // The practice select was focused, then disabled while its spectra loaded: the focus is on the strip, never nowhere.
- expect(await page.evaluate(()=>document.activeElement?.tagName)).not.toBe('BODY');
+ // The practice select was focused, then disabled while its spectra loaded, and the step did not change: once it is enabled
+ // again it takes back the focus (on the outline's next check), never left nowhere.
+ await expect(page.locator('#class-practice')).toBeFocused();
  await show(page);await expect(page.locator('#class-practice')).toBeFocused();
  await page.locator('#class-practice').selectOption('u2');
  await expect(strip(page)).toHaveAttribute('data-step','compare',{timeout:30_000});await expect(id(page,'guide-companion-step')).toHaveText('Step 2 of 5');
- expect(await page.evaluate(()=>document.activeElement?.tagName)).not.toBe('BODY');
+ await expect.poll(()=>page.evaluate(()=>document.activeElement?.tagName)).not.toBe('BODY');
  await show(page);
  await expect(page.locator('#class-standard')).toBeFocused();
 });
@@ -157,7 +158,26 @@ test('Classification guide: Restart exercise starts again at step 1, even though
  await id(page,'classification-lab-continue').click();await expect(guideWindow(page)).toHaveCount(0);
  await expect(page).toHaveURL(/#classification$/);
  await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled({timeout:30_000});
+ // Full guide is a new click: React has handled the loaded practice's report before it, so the window shows the propagated
+ // state, which with the old rule read Done here.
+ await id(page,'guide-companion-full').click();await expect(guideWindow(page)).toBeVisible();
+ await expect(id(page,'classification-lab-status-choose')).toHaveText('Not yet');await expect(id(page,'classification-lab-next')).toHaveAttribute('data-next','choose');
+ await closeGuide(page);
  await expect(strip(page)).toHaveAttribute('data-step','choose');await expect(id(page,'guide-companion-step')).toHaveText('Step 1 of 5');
+});
+
+test('Classification guide: when the practice\'s spectra load slower than the outline lasts, the practice select still takes back the focus once enabled',async({page})=>{
+ test.setTimeout(90_000);
+ // Every spectrum answers after 8 s, longer than the outline's 6 s.
+ await page.route('**/original/classification/*.SP',async route=>{await new Promise(r=>setTimeout(r,8_000));await route.continue().catch(()=>{});});
+ await openGuide(page,'stellar-classification');await closeGuide(page);
+ await id(page,'guide-companion-show').click();
+ await expect(page).toHaveURL(/#classification$/);
+ await expect(id(page,'guide-companion-spot')).toHaveCount(0,{timeout:15_000});
+ await expect(page.locator('#class-practice')).toBeDisabled();
+ await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled({timeout:30_000});
+ await expect(page.locator('#class-practice')).toBeFocused();
+ await expect(strip(page)).toHaveAttribute('data-step','choose');
 });
 
 test('LSS: loading a list moves the strip to the next step; opening another guide switches the strip',async({page})=>{
