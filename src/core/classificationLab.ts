@@ -1,8 +1,10 @@
 /** WEB-CLASSIFICATION-GUIDE-01: progress of the Stellar classification (E03) student guide, recomputed from the current
  * classification workspace and the lab's reported view state on every render. Nothing is stored: a reload loses the temporary
- * "compared" and "inspected" marks, and a Restore clears them and derives Inspect only from the practice's own records (a
- * classification record with a line ≥ 0 or a width record); a retained line index alone never counts. "Done" means the learner
- * loaded, compared, inspected or recorded something; it never judges whether a type is correct, and no answer key exists.
+ * "chosen", "compared" and "inspected" marks, and a Restore clears them and derives Inspect only from the practice's own records (a
+ * classification record with a line ≥ 0 or a width record); a retained line index alone never counts. Choose needs the verified
+ * spectra and the learner's own act on the current practice (choosing it, comparing, inspecting, or own records for it): the
+ * preselected default practice that loads on its own never counts by itself. "Done" means the learner chose, compared,
+ * inspected or recorded something; it never judges whether a type is correct, and no answer key exists.
  * The guide follows the original practice library only: while an acquired or imported source is active every counted step is
  * false (records, drafts and the marker are kept) and the guide points back to the practice. Pure: no React, i18n, clock or I/O. */
 import type {ClassificationWorkspace} from './classification';
@@ -12,14 +14,16 @@ export type ClassificationExerciseSummary=Readonly<{
  unknownId:string;
  /** The original practice library is selected and its verified spectra are loaded for unknownId. */
  ready:boolean;
+ /** The learner chose unknownId in Practice object or in the program-list practice (a successful load). Temporary. */
+ chosen:boolean;
  /** The learner made a comparison action (atlas, standard pair, Previous/Next or difference) for unknownId. Temporary. */
  compared:boolean;
  /** The learner explicitly chose a diagnostic line row (click, Space or arrow keys) for unknownId. Temporary. */
  inspected:boolean;
 }>;
-export const EMPTY_CLASSIFICATION_EXERCISE_SUMMARY:ClassificationExerciseSummary=Object.freeze({unknownId:'',ready:false,compared:false,inspected:false});
+export const EMPTY_CLASSIFICATION_EXERCISE_SUMMARY:ClassificationExerciseSummary=Object.freeze({unknownId:'',ready:false,chosen:false,compared:false,inspected:false});
 export const sameClassificationExerciseSummary=(a:ClassificationExerciseSummary,b:ClassificationExerciseSummary)=>
- a.unknownId===b.unknownId&&a.ready===b.ready&&a.compared===b.compared&&a.inspected===b.inspected;
+ a.unknownId===b.unknownId&&a.ready===b.ready&&a.chosen===b.chosen&&a.compared===b.compared&&a.inspected===b.inspected;
 
 /** 'save' is an instruction (Save complete investigation, reload, Restore) and is never counted. */
 export type ClassificationLabStep='choose'|'compare'|'inspect'|'record'|'save';
@@ -41,7 +45,7 @@ export function classificationLabProgress(w:ClassificationWorkspace,summary:Clas
  const recorded=owned&&practice.records.some(r=>r.unknownId===id);
  const inspected=owned&&(practice.records.some(r=>r.unknownId===id&&r.line>=0)||!!practice.features?.records.some(r=>r.unknownId===id));
  const done:Record<ClassificationLabStep,boolean>={
-  choose:current&&summary.ready,
+  choose:current&&summary.ready&&(summary.chosen||summary.compared||summary.inspected||recorded||inspected),
   compare:recorded||current&&summary.compared,
   inspect:inspected||current&&summary.inspected,
   record:recorded,

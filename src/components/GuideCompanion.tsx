@@ -75,7 +75,7 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide,onNext}:{progress:Com
  const [details,setDetails]=useState(false),[restart,setRestart]=useState(false),[missing,setMissing]=useState(false),[spot,setSpot]=useState<Element|null>(null),[box,setBox]=useState<Box|null>(null);
  const strip=useRef<HTMLElement>(null),run=useRef(0),lost=useRef(false),searching=useRef(false),held=useRef<{token:number;el:Element}|null>(null),id=useId(),step=`${now.lab}/${content.target}`;
  // A new step (or another guide) ends a search in progress, its outline and its note. If the page itself moved the guide on
- // while Show me where was still looking (the classification page loads its first practice when it is shown) and the student
+ // while Show me where was still looking (a page whose own loading completes a step) and the student
  // has pressed nothing since, the search starts again for the new step, so the request is never dropped without a word. When
  // Show me where had moved the focus to a control that the page then disabled or removed (the step it belonged to is done),
  // the focus is nowhere: it comes back to the strip, which now shows the next step.
@@ -137,6 +137,9 @@ function GuideCompanion({progress,inert,onGo,onFull,onHide,onNext}:{progress:Com
    if(!hold||hold.token!==run.current||hold.el!==spot)return;
    const found=disabled(spot)?findGuideTarget(selectors):null;
    if(found?.enabled&&found.el!==spot&&revealGuideTarget(found.el)){point(found.el,hold.token);return;}
+   // The page disabled the outlined control for a moment (the classification page's practice select while its spectra load)
+   // and the step did not change: once it is enabled again it takes back the focus that was left nowhere.
+   if(document.activeElement===document.body&&!disabled(spot)){place(spot);return;}
    // A heading that is itself the outlined control (the welcome's lab list) keeps the focus, and the page may scroll away from it.
    if(document.activeElement instanceof HTMLHeadingElement&&document.activeElement!==spot)place(spot);
   },250);

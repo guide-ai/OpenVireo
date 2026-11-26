@@ -129,16 +129,35 @@ for(const [lab,name,step,counter,route] of FIRST_STEPS)test(`${name}: the strip 
  expect(focus.y+focus.height).toBeLessThanOrEqual(bar.y+1);
 });
 
-test('Classification guide: visiting the page loads the first practice, so the strip moves on and takes back the focus the page dropped',async({page})=>{
+test('Classification guide: visiting the page loads the first practice without counting it as the visitor\'s choice; choosing one moves the strip on, which takes back the focus the page dropped',async({page})=>{
  await openGuide(page,'stellar-classification');await closeGuide(page);
  await expect(strip(page)).toHaveAttribute('data-step','choose');await expect(id(page,'guide-companion-step')).toHaveText('Step 1 of 5');
  await id(page,'guide-companion-show').click();
  await expect(page).toHaveURL(/#classification$/);
- await expect(strip(page)).toHaveAttribute('data-step','compare',{timeout:30_000});await expect(id(page,'guide-companion-step')).toHaveText('Step 2 of 5');
+ // The preselected practice loads and is verified, but step 1 waits for the visitor's own choice.
+ await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled({timeout:30_000});
+ await expect(strip(page)).toHaveAttribute('data-step','choose');await expect(id(page,'guide-companion-step')).toHaveText('Step 1 of 5');
  // The practice select was focused, then disabled while its spectra loaded: the focus is on the strip, never nowhere.
+ expect(await page.evaluate(()=>document.activeElement?.tagName)).not.toBe('BODY');
+ await show(page);await expect(page.locator('#class-practice')).toBeFocused();
+ await page.locator('#class-practice').selectOption('u2');
+ await expect(strip(page)).toHaveAttribute('data-step','compare',{timeout:30_000});await expect(id(page,'guide-companion-step')).toHaveText('Step 2 of 5');
  expect(await page.evaluate(()=>document.activeElement?.tagName)).not.toBe('BODY');
  await show(page);
  await expect(page.locator('#class-standard')).toBeFocused();
+});
+
+test('Classification guide: Restart exercise starts again at step 1, even though the preselected practice loads again',async({page})=>{
+ await openGuide(page,'stellar-classification');await closeGuide(page);await show(page);
+ await page.locator('#class-practice').selectOption('u2');
+ await expect(strip(page)).toHaveAttribute('data-step','compare',{timeout:30_000});
+ await id(page,'guide-companion-restart').click();await id(page,'guide-companion-restart-go').click();
+ await expect(guideWindow(page)).toBeVisible({timeout:30_000});
+ await expect(id(page,'classification-lab-next')).toHaveAttribute('data-next','choose');
+ await id(page,'classification-lab-continue').click();await expect(guideWindow(page)).toHaveCount(0);
+ await expect(page).toHaveURL(/#classification$/);
+ await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled({timeout:30_000});
+ await expect(strip(page)).toHaveAttribute('data-step','choose');await expect(id(page,'guide-companion-step')).toHaveText('Step 1 of 5');
 });
 
 test('LSS: loading a list moves the strip to the next step; opening another guide switches the strip',async({page})=>{

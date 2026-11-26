@@ -22,8 +22,8 @@ const noOverflow=(p:Page)=>p.evaluate(()=>document.documentElement.scrollWidth<=
 test('guided journey: verified practice, atlas comparison, line table, wide EW, own record, Save and fresh-context Restore',async({page,browser})=>{
  test.setTimeout(120_000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/#observatory');await openGuide(page);await expect(page.getByTestId('classification-lab-counts')).toHaveText('0 of 4 steps done');await expect(page.getByTestId('classification-lab-next')).toHaveAttribute('data-next','choose');await guide(page).locator('.research-notes > summary').click();/* Front NEWCOMER NC3: the adaptation note is a research note */await expect(page.getByTestId('classification-lab-adaptation')).toBeVisible();await expect(page.getByTestId('classification-lab-status-save')).toHaveText('Instruction · not counted');await expect(page.getByTestId('classification-lab-tools')).toContainText('for viewing only');
- await page.getByTestId('classification-lab-continue').click();await expect(guide(page)).not.toBeVisible();await expect(page).toHaveURL(/#classification$/);await practice(page,'u1',catalog.practice[0].label);await counts(page,1,'compare');
- // Compare: a standard-pair change is a comparison action for this practice.
+ await page.getByTestId('classification-lab-continue').click();await expect(guide(page)).not.toBeVisible();await expect(page).toHaveURL(/#classification$/);await practice(page,'u1',catalog.practice[0].label);await counts(page,0,'choose');
+ // Compare: a standard-pair change is a comparison action for this practice, and the visitor's own act on the default practice also counts Choose.
  await page.getByLabel('Standard pair',{exact:true}).selectOption('3');await expect(page.getByRole('group',{name:'Upper standard · A1 V',exact:true})).toBeVisible();await practice(page,'u1');await counts(page,2,'inspect');
  // Line table: the marker is drawn on all three printed panes.
  await table(page).getByRole('radio',{name:lineName(12),exact:true}).check();await expect(page.locator('.class-comparison .class-marker')).toHaveCount(3);await counts(page,3,'record');
@@ -51,6 +51,20 @@ test('guided journey: verified practice, atlas comparison, line table, wide EW, 
  await openGuide(page);const windowNext=guide(page).getByRole('region',{name:'What next',exact:true});await expect(windowNext).toContainText('4 of 4 steps done');await expect(windowNext).toContainText('A lab to try next: Pleiades photometry.');
  await windowNext.getByRole('button',{name:'Open its guide',exact:true}).click();await expect(guide(page)).not.toBeVisible();await expect(pleiades).toBeVisible();await expect(strip).toHaveAttribute('data-lab','pleiades');
  await page.keyboard.press('Escape');await expect(pleiades).not.toBeVisible();expect(await page.evaluate(()=>document.activeElement!==document.body&&document.activeElement!==null)).toBe(true);
+ expect(errors).toEqual([]);
+});
+
+test('Choose waits for the visitor: the preselected practice loads on its own but step 1 stays current until a practice is chosen',async({page})=>{
+ test.setTimeout(120_000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));const strip=page.getByTestId('guide-companion');
+ await page.goto('/#lab=stellar-classification');await expect(guide(page)).toBeVisible({timeout:30_000});
+ await expect(page.getByTestId('classification-lab-next')).toHaveAttribute('data-next','choose');await expect(page.getByTestId('classification-lab-counts')).toHaveText('0 of 4 steps done');
+ await page.getByTestId('classification-lab-continue').click();await expect(guide(page)).not.toBeVisible();await expect(page).toHaveURL(/#classification$/);
+ // The default practice u1 is loaded and verified, yet step 1 is still current in the strip and in the window.
+ await practice(page,'u1',catalog.practice[0].label);await expect(strip).toHaveAttribute('data-step','choose');await expect(page.getByTestId('guide-companion-step')).toHaveText('Step 1 of 5');
+ await openGuide(page);await expect(page.getByTestId('classification-lab-next')).toHaveAttribute('data-next','choose');await expect(page.getByTestId('classification-lab-step-choose')).toHaveAttribute('data-done','false');await closeGuide(page);
+ // Choosing another practice object is the visitor's own choice: the guide moves to step 2.
+ await page.getByLabel('Practice object',{exact:true}).selectOption('u2');await practice(page,'u2',catalog.practice[1].label);
+ await expect(strip).toHaveAttribute('data-step','compare');await expect(page.getByTestId('guide-companion-step')).toHaveText('Step 2 of 5');await counts(page,1,'compare');
  expect(errors).toEqual([]);
 });
 
@@ -87,7 +101,7 @@ test('upper, lower and unknown sources accept regions at their own interval boun
 
 test('failed load retry, malformed and cancelled restore, and a limited imported interval keep work and bytes',async({page})=>{
  await page.route('**/original/classification/A0000001.SP',route=>route.fulfill({status:200,body:'4000 1\n4100 1\n'}));await page.goto('/#classification');await expect(page.locator('.class-feedback [role=alert]')).toContainText('SHA-256');await openGuide(page);await expect(page.getByTestId('classification-lab-status-choose')).toHaveText('Not yet');await closeGuide(page);
- await page.unroute('**/original/classification/A0000001.SP');await page.getByRole('button',{name:'Retry source load',exact:true}).click();await practice(page,'u1');await counts(page,1,'compare');
+ await page.unroute('**/original/classification/A0000001.SP');await page.getByRole('button',{name:'Retry source load',exact:true}).click();await practice(page,'u1');await counts(page,0,'choose');
  await table(page).getByRole('radio',{name:lineName(5),exact:true}).check();const saved=await save(page),bad=JSON.parse(saved.toString());bad.classification.workspace.practice.line=99;await table(page).getByRole('radio',{name:lineName(6),exact:true}).check();await page.getByLabel('Restore complete investigation JSON (up to 16 MiB)',{exact:true}).setInputFiles({name:'bad.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(bad))});await expect(page.getByRole('alert')).toContainText('Existing acquisitions, measurements, drafts and classifications were kept');await expect(table(page).getByRole('radio',{name:lineName(6),exact:true})).toBeChecked();
  const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'Restore complete investigation',exact:true}).click();await(await chooser).setFiles([]);await expect(table(page).getByRole('radio',{name:lineName(6),exact:true})).toBeChecked();
  await page.getByLabel('Import SP or SSP for visual classification (up to 2 MiB)',{exact:true}).setInputFiles({name:'limited.sp',mimeType:'text/plain',buffer:Buffer.from('3900 .2\n4200 .8\n4500 .4\n')});await expect(card(page)).toHaveAttribute('data-width-source',/^imported:/);await expect(page.getByTestId('width-domain')).toContainText('3900–4500 Å');const before=await save(page);
@@ -109,9 +123,9 @@ test('Inspect counts only an explicit line choice for the current practice and a
  await table(page).getByRole('radio',{name:lineName(2),exact:true}).check();await stepDone(page,'inspect',false);await counts(page,0,'choose');
  await page.locator('#class-source').selectOption('practice');await practice(page,'u4');await expect(table(page).getByRole('radio',{name:lineName(1),exact:true})).toBeChecked();await stepDone(page,'inspect',true);
  const a=await save(page);await trial(page,'Trial type B');await page.getByRole('button',{name:'Save classification',exact:true}).click();await expect(page.getByRole('heading',{name:'Classification records · 1',exact:true})).toBeVisible();const b=await save(page);
- // Same page, no record: Restore clears the temporary witness and keeps the restored line index.
+ // Same page, no record: Restore clears the temporary witnesses (Choose included) and keeps the restored line index.
  await page.getByLabel('Restore complete investigation JSON (up to 16 MiB)',{exact:true}).setInputFiles({name:'a.json',mimeType:'application/json',buffer:a});await expect(page.getByRole('heading',{name:'Classification records · 0',exact:true})).toBeVisible();await practice(page,'u4');
- await expect(table(page).getByRole('radio',{name:lineName(1),exact:true})).toBeChecked();await stepDone(page,'inspect',false);await counts(page,1,'compare');
+ await expect(table(page).getByRole('radio',{name:lineName(1),exact:true})).toBeChecked();await stepDone(page,'inspect',false);await counts(page,0,'choose');
  // Fresh context: the own record (line 1) restores every counted step.
  const context=await browser.newContext(),fresh=await context.newPage();fresh.on('pageerror',e=>errors.push(e.message));await fresh.goto('/#classification');await practice(fresh,'u1');
  await fresh.getByLabel('Restore complete investigation JSON (up to 16 MiB)',{exact:true}).setInputFiles({name:'b.json',mimeType:'application/json',buffer:b});await expect(fresh.getByRole('heading',{name:'Classification records · 1',exact:true})).toBeVisible();await practice(fresh,'u4');await counts(fresh,4,'save');
@@ -120,14 +134,14 @@ test('Inspect counts only an explicit line choice for the current practice and a
 
 test('Compare counts only a committed comparison load, never an obsolete or failed one or Retry',async({page})=>{
  test.setTimeout(120_000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));const files='**/original/classification/*.SP',pair=page.getByLabel('Standard pair',{exact:true});
- await page.goto('/#classification');await practice(page,'u1');await counts(page,1,'compare');
+ await page.goto('/#classification');await practice(page,'u1');await counts(page,0,'choose');
  // Obsolete: the requested pair is still loading when the route is left; the late response commits nothing.
  let release=()=>{};const gate=new Promise<void>(r=>{release=r;});await page.route(files,async route=>{await gate;await route.continue().catch(()=>{});});
  await pair.selectOption('3');await page.evaluate(()=>{location.hash='#observatory';});await expect(page.locator('.classification-main')).not.toBeVisible();await page.evaluate(()=>{location.hash='#classification';});await expect(page).toHaveURL(/#classification$/);release();
  await practice(page,'u1');await expect(pair).toHaveValue('0');await stepDone(page,'compare',false);await page.unroute(files);
  // Failed: every source request is refused.
- await page.route(files,route=>route.abort());await pair.selectOption('3');await expect(page.locator('.class-feedback [role=alert]')).toBeVisible();await expect(pair).toHaveValue('0');await stepDone(page,'compare',false);await counts(page,1,'compare');
- await page.unroute(files);await page.getByRole('button',{name:'Retry source load',exact:true}).click();await practice(page,'u1');await counts(page,1,'compare');
+ await page.route(files,route=>route.abort());await pair.selectOption('3');await expect(page.locator('.class-feedback [role=alert]')).toBeVisible();await expect(pair).toHaveValue('0');await stepDone(page,'compare',false);await counts(page,0,'choose');
+ await page.unroute(files);await page.getByRole('button',{name:'Retry source load',exact:true}).click();await practice(page,'u1');await counts(page,0,'choose');
  await pair.selectOption('3');await expect(page.getByRole('group',{name:'Upper standard · A1 V',exact:true})).toBeVisible();await practice(page,'u1');await counts(page,2,'inspect');
  expect(errors).toEqual([]);
 });

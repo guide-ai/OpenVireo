@@ -109,11 +109,14 @@ The sequence (`GuideCompanion.tsx` `show`):
 4. While the outline is shown the control keeps both: a page whose module finishes loading late focuses its own heading (and
    scrolls to it), which would leave the control under the strip, so a heading that takes the focus gives it back. If a
    disabled control had to be outlined (a list that loaded slowly) and the page then enables the step's control, the outline
-   and the focus move to it. Both stop as soon as the student presses, types or scrolls.
+   and the focus move to it. If the page disables the outlined control for a moment without the step changing (the
+   classification page's practice select while its spectra load), the control takes back the focus once it is enabled again.
+   Both stop as soon as the student presses, types or scrolls.
 5. If no control is on the page, the strip says so ("That control is not on screen yet…") and outlines nothing.
 
-If the page itself moves the guide on while step 2 is still waiting (the classification page loads its first practice when it
-is shown) and the student has pressed nothing since, the search starts again for the new step, so a request is never dropped
+If the page itself moves the guide on while step 2 is still waiting (a page that finishes loading after it is shown; the
+classification page's preselected practice no longer does this since 2026-11-25, as its Choose step waits for the visitor's own
+choice or act on that practice) and the student has pressed nothing since, the search starts again for the new step, so a request is never dropped
 without an outline or a note. If the page disables or removes the focused control after step 3 and the step changes, the focus
 would be nowhere; it returns to the strip. A focus that has landed anywhere else in between is left alone.
 
